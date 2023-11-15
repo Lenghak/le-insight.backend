@@ -2,6 +2,7 @@ import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
+import { AuthModule } from "./features/auth/auth.module";
 
 /**
  * The `bootstrap` function sets up a NestJS application, creates a Swagger document for API
@@ -19,7 +20,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {
-    include: [AppModule], //the modules that you want to include in your swagger docs
+    include: [AppModule, AuthModule], //the modules that you want to include in your swagger docs
   });
 
   SwaggerModule.setup("api", app, document);
@@ -27,4 +28,6 @@ async function bootstrap() {
   await app.listen(8000);
 }
 
-bootstrap();
+bootstrap()
+  .then((_) => undefined)
+  .catch((_) => undefined);
