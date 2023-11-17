@@ -1,8 +1,8 @@
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
-import { AppModule } from "./app.module";
-import { AuthModule } from "./features/auth/auth.module";
+import { AppModule } from "./modules/app.module";
+import { AuthModule } from "./modules/auth/auth.module";
 
 /**
  * The `bootstrap` function sets up a NestJS application, creates a Swagger document for API
