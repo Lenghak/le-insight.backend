@@ -2,9 +2,14 @@ version: "3.8"
 
 services:
   postgres-db:
-    image: postgres:14-alpine
-    env_file:
-      - docker.local.env
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=localhost
+      - POSTGRES_PASSWORD=localhost
+      - POSTGRES_DB=localhost
+      - POSTGRES_SCHEMA=public
     ports:
       - 5432:5432
     networks:

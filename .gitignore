@@ -131,4 +131,9 @@ dist
 
 # Jetbrains IDE
 .idea
+
+
+# other
 data
+migrations
+

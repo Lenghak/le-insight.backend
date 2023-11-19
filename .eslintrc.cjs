@@ -14,7 +14,7 @@ module.exports = {
   env: {
     node: true,
   },
-  ignorePatterns: [".eslintrc.js"],
+  ignorePatterns: [".eslintrc.cjs"],
   rules: {
     "prettier/prettier": ["error", { endOfLine: "auto" }],
     "@typescript-eslint/interface-name-prefix": "off",
