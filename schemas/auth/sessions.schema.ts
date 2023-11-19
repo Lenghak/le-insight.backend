@@ -7,10 +7,10 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { usersTable } from "./user.schema";
+import { usersTable } from "./users.schema";
 
-export const sessionTable = pgTable(
-  "sessionTable",
+export const sessionsTable = pgTable(
+  "sessions",
   {
     id: uuid("id").notNull().unique().primaryKey().defaultRandom(),
     user_id: uuid("user_id")
