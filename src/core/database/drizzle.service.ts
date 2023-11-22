@@ -15,11 +15,7 @@ export const db = drizzle(queryClient);
 export const drizzleProvider = {
   provide: DRIZZLE_ASYNC_PROVIDER,
   useFactory: async () => {
-    return {
-      migrationClient,
-      queryClient,
-      db,
-    };
+    return db;
   },
   export: [DRIZZLE_ASYNC_PROVIDER],
 };
