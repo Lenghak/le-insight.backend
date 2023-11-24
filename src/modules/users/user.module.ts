@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { DrizzleModule } from "@/core/database/drizzle.module";
+import { DrizzleModule } from "@/database/drizzle.module";
 
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";

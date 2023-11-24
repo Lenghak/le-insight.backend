@@ -1,7 +1,8 @@
-import { drizzle } from "drizzle-orm/postgres-js";
+import type * as schemas from "@/database/schemas/index.schema";
+import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-import env from "../env";
+import env from "../core/env";
 
 export const DRIZZLE_ASYNC_PROVIDER = "DRIZZLE_ASYNC_PROVIDER";
 
@@ -10,7 +11,7 @@ export const migrationClient = postgres(env().DATABASE_URL, { max: 1 });
 
 // for query purposes
 export const queryClient = postgres(env().DATABASE_URL);
-export const db = drizzle(queryClient);
+export const db: PostgresJsDatabase<typeof schemas> = drizzle(queryClient);
 
 export const drizzleProvider = {
   provide: DRIZZLE_ASYNC_PROVIDER,
@@ -19,3 +20,5 @@ export const drizzleProvider = {
   },
   export: [DRIZZLE_ASYNC_PROVIDER],
 };
+
+export const drizzleMigrateProvider = {};
