@@ -13,7 +13,8 @@
     "start:prod": "node dist/app",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "prepare": "husky install",
-    "seed": "tsx ./src/seed.ts"
+    "db:seed": "tsx ./src/seed.ts",
+    "db:migrate": "tsx ./src/migrate.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.2.10",
