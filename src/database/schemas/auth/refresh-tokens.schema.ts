@@ -8,7 +8,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-import { sessionTable } from "./session.schema";
+import { sessionsTable } from "./sessions.schema";
 
 export const refreshTokensTable = pgTable(
   "refresh_tokens",
@@ -21,7 +21,7 @@ export const refreshTokensTable = pgTable(
     parent: varchar("parent", { length: 255 }),
     session_id: uuid("session_id")
       .unique()
-      .references(() => sessionTable.id),
+      .references(() => sessionsTable.id),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },

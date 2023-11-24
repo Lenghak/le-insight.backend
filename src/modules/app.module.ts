@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
-import { DrizzleModule } from "@/core/database/drizzle.module";
+import { DrizzleModule } from "@/database/drizzle.module";
 
 import validateEnv from "../core/env";
 import { AppController } from "./app.controller";
