@@ -52,6 +52,7 @@ export const usersTable = pgTable(
     ),
 
     encrypted_password: varchar("encrypted_password", { length: 255 }),
+    salt: varchar("salt", { length: 16 }),
 
     recovery_token: varchar("recovery_token", { length: 255 }).unique(),
     recovery_sent_at: timestamp("recovery_sent_at", { withTimezone: true }),

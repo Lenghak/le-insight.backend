@@ -6,12 +6,12 @@ import { UserService } from "./user.service";
 @ApiTags("Users")
 @Controller({ path: "/users" })
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private user: UserService) {}
 
   @Get("/")
   async lists() {
     return {
-      data: await this.userService.findAll(),
+      data: await this.user.findAll(),
     };
   }
 }

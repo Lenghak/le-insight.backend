@@ -3,7 +3,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./modules/app.module";
 import { AuthModule } from "./modules/auth/auth.module";
-import { UserModule } from "./modules/users/user.module";
+import { UserModule } from "./modules/user/user.module";
 
 /**
  * The `bootstrap` function sets up a NestJS application, creates a Swagger document for API
