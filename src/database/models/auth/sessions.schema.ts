@@ -7,16 +7,13 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { usersTable } from "./users.schema";
+import { users } from "./users.schema";
 
-export const sessionsTable = pgTable(
+export const sessions = pgTable(
   "sessions",
   {
     id: uuid("id").notNull().unique().primaryKey().defaultRandom(),
-    user_id: uuid("user_id")
-      .unique()
-      .notNull()
-      .references(() => usersTable.id),
+    user_id: uuid("user_id").references(() => users.id),
     factor_id: uuid("factor_id"),
     not_after: timestamp("not_after", { withTimezone: true }),
     refreshed_at: timestamp("refreshed_at", { withTimezone: false }),

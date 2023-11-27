@@ -21,13 +21,13 @@ export class UserService {
   ) {}
 
   /**
-   * The `findAll` function retrieves all records from the `usersTable` in the database.
+   * The `findAll` function retrieves all records from the `users` in the database.
    * @returns The `findAll()` function is returning the result of the database query, which is a list
-   * of all the records from the `usersTable` in the `schema`.
+   * of all the records from the `users` in the `schema`.
    */
   async findAll() {
     // TODO: include pagination
-    return await this.db.select().from(schema.usersTable).limit(50);
+    return await this.db.select().from(schema.users).limit(50);
   }
 
   /**
@@ -49,7 +49,7 @@ export class UserService {
     const encryptedPassword = await hash(createUserDTO.password, salt);
 
     return await this.db
-      .insert(schema.usersTable)
+      .insert(schema.users)
       .values({
         email: createUserDTO.email,
         encrypted_password: encryptedPassword,
@@ -68,8 +68,8 @@ export class UserService {
   async findByEmail(email: string) {
     return await this.db
       .selectDistinct()
-      .from(schema.usersTable)
-      .where(eq(schema.usersTable.email, email))
+      .from(schema.users)
+      .where(eq(schema.users.email, email))
       .limit(1);
   }
 

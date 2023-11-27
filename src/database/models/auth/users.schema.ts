@@ -1,6 +1,8 @@
+import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
+  pgEnum,
   pgTable,
   text,
   timestamp,
@@ -8,18 +10,20 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-/**
- * Role
- */
-const USER_ROLE = ["GUEST", "USER", "ADMIN"] as const;
+import { profiles } from "../profiles.schema";
+
+export const userRoleEnum = pgEnum("user_role", ["GUEST", "USER", "ADMIN"]);
 
 /**
  * User model
  */
-export const usersTable = pgTable(
+export const users = pgTable(
   "users",
   {
     id: uuid("id").unique().primaryKey().defaultRandom(),
+    profile_id: uuid("profile_id")
+      .unique()
+      .references(() => profiles.id),
 
     aud: varchar("aud", { length: 255 }),
 
@@ -29,7 +33,7 @@ export const usersTable = pgTable(
       withTimezone: true,
     }),
 
-    role: varchar("role", { enum: USER_ROLE, length: 255 }).default("GUEST"),
+    role: userRoleEnum("role").default("GUEST"),
     is_sso_user: boolean("is_sso_user").notNull().default(false),
     is_super_admin: boolean("is_super_admin").default(false),
 
@@ -87,3 +91,10 @@ export const usersTable = pgTable(
     users_email_idx: index("users_instance_id_email_idx").on(table.email),
   }),
 );
+
+export const userProfileRelation = relations(users, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [users.profile_id],
+    references: [profiles.id],
+  }),
+}));
