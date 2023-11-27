@@ -8,6 +8,6 @@ export class AppController {
 
   @Get()
   getHello() {
-    return { message: "Welcome" };
+    return { message: "Welcome to Le-Insight" };
   }
 }

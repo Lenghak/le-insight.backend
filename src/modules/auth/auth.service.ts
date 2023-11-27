@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Body, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 
 import { UserService } from "@/modules/user/user.service";
@@ -21,7 +21,7 @@ export class AuthService {
     // -> if true redirect user to home page
   }
 
-  async signUp(createUserDTO: CreateUserDTO) {
+  async signUp(@Body() createUserDTO: CreateUserDTO) {
     return await this.user.create(createUserDTO);
   }
 
@@ -29,5 +29,5 @@ export class AuthService {
     // -> remove sessions & token from request
   }
 
-  async getAuthenticatedUser() {}
+  async refresh() {}
 }

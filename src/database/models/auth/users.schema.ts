@@ -33,7 +33,7 @@ export const users = pgTable(
       withTimezone: true,
     }),
 
-    role: userRoleEnum("role").default("GUEST"),
+    role: userRoleEnum("role").default("USER"),
     is_sso_user: boolean("is_sso_user").notNull().default(false),
     is_super_admin: boolean("is_super_admin").default(false),
 
@@ -56,7 +56,7 @@ export const users = pgTable(
     ),
 
     encrypted_password: varchar("encrypted_password", { length: 255 }),
-    salt: varchar("salt", { length: 16 }),
+    salt: varchar("salt", { length: 32 }),
 
     recovery_token: varchar("recovery_token", { length: 255 }).unique(),
     recovery_sent_at: timestamp("recovery_sent_at", { withTimezone: true }),
@@ -83,8 +83,8 @@ export const users = pgTable(
     banned_until: timestamp("banned_until", { withTimezone: true }),
     last_sign_in_at: timestamp("last_sign_in_at", { withTimezone: true }),
     invited_at: timestamp("invited_at", { withTimezone: true }),
-    created_at: timestamp("created_at", { withTimezone: true }),
-    updated_at: timestamp("updated_at", { withTimezone: true }),
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
     deleted_at: timestamp("deleted_at", { withTimezone: true }),
   },
   (table) => ({

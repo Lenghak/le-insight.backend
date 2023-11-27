@@ -1,3 +1,4 @@
+import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
@@ -11,6 +12,16 @@ import { UserModule } from "./modules/user/user.module";
  */
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      forbidNonWhitelisted: true,
+      forbidUnknownValues: true,
+      skipMissingProperties: false,
+      whitelist: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle("Le-Insight")

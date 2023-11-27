@@ -22,5 +22,12 @@ export class AuthController {
   }
 
   @Post("/sign-out")
-  async signOut() {}
+  async signOut() {
+    return await this.auth.signOut();
+  }
+
+  @Post("/refresh")
+  async refresh() {
+    return await this.auth.refresh();
+  }
 }

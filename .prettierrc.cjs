@@ -11,8 +11,8 @@ module.exports = {
   importOrder: [
     "^@nestjs/(.*)$",
     "^@express/(.*)$",
-    "^@prisma/(.*)$",
-    "^@/db/(.*)$",
+    "^@/modules/(.*)$",
+    "^@/database/(.*)$",
     "<THIRD_PARTY_MODULES>",
     "^[./]",
     "^@/types/(.*)$",

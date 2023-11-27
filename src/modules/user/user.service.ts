@@ -4,9 +4,11 @@ import {
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as schema from "@/database/models/index.schema";
+
 import { compare, genSalt, hash } from "bcrypt";
 import { eq } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -17,7 +19,8 @@ import { type CreateUserDTO } from "./dto/create-user.dto";
 export class UserService {
   constructor(
     @Inject(DRIZZLE_ASYNC_PROVIDER)
-    private db: PostgresJsDatabase<typeof schema>,
+    private readonly db: PostgresJsDatabase<typeof schema>,
+    private readonly config: ConfigService,
   ) {}
 
   /**
@@ -41,12 +44,14 @@ export class UserService {
   async create(createUserDTO: CreateUserDTO) {
     const isExist = await this.findByEmail(createUserDTO.email);
 
-    if (isExist) {
+    if (isExist.length) {
       throw new ConflictException();
     }
 
-    const salt = await genSalt(16);
-    const encryptedPassword = await hash(createUserDTO.password, salt);
+    const salt = await genSalt(12);
+    const pepper = this.config.getOrThrow("PEPPER_SECRET");
+
+    const encryptedPassword = await hash(createUserDTO.password, salt + pepper);
 
     return await this.db
       .insert(schema.users)
