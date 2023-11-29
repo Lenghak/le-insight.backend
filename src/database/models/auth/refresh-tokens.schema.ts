@@ -8,9 +8,9 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-import { sessionsTable } from "./sessions.schema";
+import { sessions } from "./sessions.schema";
 
-export const refreshTokensTable = pgTable(
+export const refreshTokens = pgTable(
   "refresh_tokens",
   {
     id: uuid("id").unique().primaryKey().defaultRandom(),
@@ -21,7 +21,7 @@ export const refreshTokensTable = pgTable(
     parent: varchar("parent", { length: 255 }),
     session_id: uuid("session_id")
       .unique()
-      .references(() => sessionsTable.id),
+      .references(() => sessions.id),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
@@ -35,3 +35,13 @@ export const refreshTokensTable = pgTable(
     ).on(table.session_id, table.revoked),
   }),
 );
+
+// export const refreshTokensSessionRelation = relations(
+//   refreshTokens,
+//   ({ one }) => ({
+//     sessions: one(sessions, {
+//       fields: [refreshTokens.session_id],
+//       references: [sessions.id],
+//     }),
+//   }),
+// );
