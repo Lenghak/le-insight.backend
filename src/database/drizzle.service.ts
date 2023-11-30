@@ -1,4 +1,4 @@
-import type * as schemas from "@/database/models/index.schema";
+import type * as schemas from "@/database/models";
 
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
@@ -21,5 +21,3 @@ export const drizzleProvider = {
   },
   export: [DRIZZLE_ASYNC_PROVIDER],
 };
-
-export const drizzleMigrateProvider = {};

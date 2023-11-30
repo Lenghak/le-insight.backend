@@ -7,7 +7,7 @@ import {
 import { ConfigService } from "@nestjs/config";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
-import * as schema from "@/database/models/index.schema";
+import * as schema from "@/database/models";
 
 import { compare, genSalt, hash } from "bcrypt";
 import { eq } from "drizzle-orm";
