@@ -1,6 +1,6 @@
 export { refreshTokens } from "./auth/refresh-tokens.schema";
 export { sessions } from "./auth/sessions.schema";
-export { users } from "./auth/users.schema";
+export { userRelations, userRoleEnum, users } from "./auth/users.schema";
 
 export { images } from "./image.schema";
-export { profiles } from "./profiles.schema";
+export { profileRelations, profiles, sexEnum } from "./profiles.schema";

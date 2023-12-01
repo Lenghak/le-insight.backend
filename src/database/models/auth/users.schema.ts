@@ -92,7 +92,7 @@ export const users = pgTable(
   }),
 );
 
-export const userProfileRelation = relations(users, ({ one }) => ({
+export const userRelations = relations(users, ({ one }) => ({
   profile: one(profiles, {
     fields: [users.profile_id],
     references: [profiles.id],
