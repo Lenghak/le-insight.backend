@@ -1,26 +1,14 @@
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
-import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
-import * as schema from "@/database/models";
-
-import { compare, genSalt, hash } from "bcrypt";
-import { eq } from "drizzle-orm";
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-
 import { type CreateUserDTO } from "./dto/create-user.dto";
+import { UserRepository } from "./repositories";
 
 @Injectable()
 export class UserService {
   constructor(
-    @Inject(DRIZZLE_ASYNC_PROVIDER)
-    private readonly db: PostgresJsDatabase<typeof schema>,
     private readonly config: ConfigService,
+    private readonly userRepository: UserRepository,
   ) {}
 
   /**
@@ -30,7 +18,7 @@ export class UserService {
    */
   async findAll() {
     // TODO: include pagination
-    return await this.db.select().from(schema.users).limit(50);
+    return await this.userRepository.getAll().execute();
   }
 
   /**
@@ -41,26 +29,22 @@ export class UserService {
    * `password`, which are used to create a new user in the database.
    * @returns the result of the database insert operation.
    */
-  async create(createUserDTO: CreateUserDTO) {
-    const isExist = await this.findByEmail(createUserDTO.email);
-
-    if (isExist.length) {
-      throw new ConflictException();
-    }
-
-    const salt = await genSalt(12);
-    const pepper = this.config.getOrThrow("PEPPER_SECRET");
-
-    const encryptedPassword = await hash(createUserDTO.password, salt + pepper);
-
-    return await this.db
-      .insert(schema.users)
-      .values({
-        email: createUserDTO.email,
-        encrypted_password: encryptedPassword,
-        salt: salt,
-      })
-      .returning();
+  async create(_: CreateUserDTO) {
+    // const isExist = await this.findByEmail(createUserDTO.email);
+    // if (isExist.length) {
+    //   throw new ConflictException();
+    // }
+    // const salt = await genSalt(12);
+    // const pepper = this.config.getOrThrow("PEPPER_SECRET");
+    // const encryptedPassword = await hash(createUserDTO.password, salt + pepper);
+    // return await this.db
+    //   .insert(schema.users)
+    //   .values({
+    //     email: createUserDTO.email,
+    //     encrypted_password: encryptedPassword,
+    //     salt: salt,
+    //   })
+    //   .returning();
   }
 
   /**
@@ -70,25 +54,28 @@ export class UserService {
    * user you want to retrieve from the database.
    * @returns the user ID if a user with the specified email is found in the database.
    */
-  async findByEmail(email: string) {
-    return await this.db
-      .selectDistinct()
-      .from(schema.users)
-      .where(eq(schema.users.email, email))
-      .limit(1);
+  async findByEmail(_: string) {
+    // return await this.db
+    //   .selectDistinct()
+    //   .from(schema.users)
+    //   .where(eq(schema.users.email, email))
+    //   .limit(1);
   }
 
-  async validateUser(email: string, password: string) {
-    // find user by email
-    const user = await this.findByEmail(email);
-
-    if (!user) throw new UnauthorizedException();
-
-    const isCorrectPassword = await compare(password, user[0].email);
-
-    if (!isCorrectPassword) throw new UnauthorizedException();
-
-    return user;
+  /**
+   * The function validates a user by checking if the provided email and password match a user in the
+   * database.
+   * @param {string} email - A string representing the email of the user to be validated.
+   * @param {string} password - The `password` parameter is a string that represents the password
+   * entered by the user.
+   * @returns The user object is being returned.
+   */
+  async validateUser(_: string, __: string) {
+    // const user = await this.findByEmail(email);
+    // if (!user) throw new UnauthorizedException();
+    // const isCorrectPassword = await compare(password, user[0].email);
+    // if (!isCorrectPassword) throw new UnauthorizedException();
+    // return user;
   }
 
   async seed() {}

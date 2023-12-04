@@ -1,24 +1,13 @@
-import { UserRoleEnum } from "@/common/types/modules/user.types";
 import {
   IsBoolean,
   IsDate,
   IsEmail,
-  IsEnum,
   IsPhoneNumber,
   IsString,
-  IsUUID,
   Max,
 } from "class-validator";
 
-export class UserDTO {
-  @IsString()
-  @IsUUID()
-  readonly id: string;
-
-  @IsString()
-  @Max(256)
-  readonly aud: string;
-
+export class UpdateUserDTO {
   @IsDate()
   readonly confirmedAt: Date;
 
@@ -29,14 +18,9 @@ export class UserDTO {
   @IsDate()
   readonly confirmation_sent_at: Date;
 
-  @IsEnum(UserRoleEnum)
-  readonly role: UserRoleEnum;
-
-  @IsBoolean()
-  readonly is_sso_user: boolean;
-
-  @IsBoolean()
-  readonly is_super_admin: boolean;
+  //TODO : Add Role field for update
+  // @IsEnum(UserRoleEnum)
+  // readonly role:  | SQL;
 
   @IsEmail()
   @IsString()
@@ -66,10 +50,6 @@ export class UserDTO {
   @IsString()
   @Max(255)
   readonly encrypted_password: string;
-
-  @IsString()
-  @Max(32)
-  readonly salt: string;
 
   @IsString()
   @Max(255)
