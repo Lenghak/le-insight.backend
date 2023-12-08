@@ -6,7 +6,7 @@ import { DrizzleModule } from "@/database/drizzle.module";
 import { envSchema } from "../core/env";
 import { AppController } from "./app.controller";
 import { AuthModule } from "./auth/auth.module";
-import { UserModule } from "./user/user.module";
+import { UsersModule } from "./users/users.module";
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { UserModule } from "./user/user.module";
     }),
     AuthModule,
     DrizzleModule,
-    UserModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [],

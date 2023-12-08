@@ -1,13 +1,16 @@
-import { UserRoleEnum } from "@/common/types/modules/user.types";
+import "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+
+import { UserRoleEnum } from "@/common/types/modules/user.enum";
 import {
   IsBoolean,
-  IsDate,
+  IsDateString,
   IsEmail,
   IsEnum,
   IsPhoneNumber,
   IsString,
   IsUUID,
-  Max,
+  MaxLength,
 } from "class-validator";
 
 export class UserDTO {
@@ -15,108 +18,139 @@ export class UserDTO {
   @IsUUID()
   readonly id: string;
 
+  @ApiPropertyOptional()
   @IsString()
-  @Max(256)
+  @MaxLength(255)
   readonly aud: string;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly confirmedAt: Date;
 
+  @ApiPropertyOptional()
   @IsString()
-  @Max(255)
+  @MaxLength(255)
   readonly confirmation_token: string;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly confirmation_sent_at: Date;
 
+  @ApiPropertyOptional({ enum: UserRoleEnum })
   @IsEnum(UserRoleEnum)
   readonly role: UserRoleEnum;
 
+  @ApiPropertyOptional()
   @IsBoolean()
   readonly is_sso_user: boolean;
 
+  @ApiPropertyOptional()
   @IsBoolean()
   readonly is_super_admin: boolean;
 
+  @ApiPropertyOptional()
   @IsEmail()
   @IsString()
   readonly email: string;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly email_confirmed_at: Date;
 
+  @ApiPropertyOptional()
   @IsString()
-  @Max(255)
+  @MaxLength(255)
   readonly email_change_token_current: string;
 
+  @ApiPropertyOptional()
   @IsString()
-  @Max(255)
+  @MaxLength(255)
   readonly email_change_token_new: string;
 
+  @ApiPropertyOptional()
   @IsString()
-  @Max(255)
+  @MaxLength(255)
   readonly email_change: string;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly email_change_sent_at: Date;
 
+  @ApiPropertyOptional()
   @IsBoolean()
   readonly email_change_confirm_status: boolean;
 
+  @ApiPropertyOptional()
   @IsString()
-  @Max(255)
+  @MaxLength(255)
   readonly encrypted_password: string;
 
+  @ApiPropertyOptional()
   @IsString()
-  @Max(32)
+  @MaxLength(325)
   readonly salt: string;
 
+  @ApiPropertyOptional()
   @IsString()
-  @Max(255)
+  @MaxLength(255)
   readonly recovery_token: string;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly recovery_sent_at: Date;
 
+  @ApiPropertyOptional()
   @IsString()
   @IsPhoneNumber()
   readonly phone: string;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly phone_confirmed_at: Date;
 
+  @ApiPropertyOptional()
   @IsString()
   @IsPhoneNumber()
   readonly phone_change: string;
 
+  @ApiPropertyOptional()
   @IsString()
   readonly phone_change_token: string;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly phone_change_sent_at: Date;
 
+  @ApiPropertyOptional()
   @IsString()
-  @Max(255)
+  @MaxLength(255)
   readonly reauthentication_token: string;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly reauthentication_sent_at: Date;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly banned_until: Date;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly last_sign_in_at: Date;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly invited_at: Date;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly created_at: Date;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly updated_at: Date;
 
-  @IsDate()
+  @ApiPropertyOptional()
+  @IsDateString()
   readonly deleted_at: Date;
 }

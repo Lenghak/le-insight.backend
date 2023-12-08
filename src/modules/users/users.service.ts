@@ -2,13 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";
-import { UserRepository } from "./repositories";
+import { UsersRepository } from "./repo/users.repository";
 
 @Injectable()
-export class UserService {
+export class UsersService {
   constructor(
     private readonly config: ConfigService,
-    private readonly userRepository: UserRepository,
+    private readonly usersRepository: UsersRepository,
   ) {}
 
   /**
@@ -18,7 +18,7 @@ export class UserService {
    */
   async findAll() {
     // TODO: include pagination
-    return await this.userRepository.getAll().execute();
+    return await this.usersRepository.getAll().execute();
   }
 
   /**
@@ -61,6 +61,8 @@ export class UserService {
     //   .where(eq(schema.users.email, email))
     //   .limit(1);
   }
+
+  async update() {}
 
   /**
    * The function validates a user by checking if the provided email and password match a user in the

@@ -2,14 +2,13 @@ import { Body, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
-import { UserService } from "@/modules/user/user.service";
-
-import { type CreateUserDTO } from "../user/dto/create-user.dto";
+import { type CreateUserDTO } from "../users/dto/create-user.dto";
+import { UsersService } from "../users/users.service";
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly user: UserService,
+    private readonly user: UsersService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
   ) {}

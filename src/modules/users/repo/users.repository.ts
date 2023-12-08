@@ -3,6 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as schema from "@/database/models";
 
+import { UserRoleEnum } from "@/common/types/modules/user.enum";
 import { type Users } from "@/common/types/modules/user.types";
 import { eq, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -11,7 +12,7 @@ import { type CreateUserDTO } from "../dto/create-user.dto";
 import { type UpdateUserDTO } from "../dto/update-user.dto";
 
 @Injectable()
-export class UserRepository {
+export class UsersRepository {
   constructor(
     @Inject(DRIZZLE_ASYNC_PROVIDER)
     private readonly db: PostgresJsDatabase<typeof schema>,
@@ -56,7 +57,8 @@ export class UserRepository {
   update(updateUserDTO: UpdateUserDTO) {
     const statement = this.db
       .update(schema.users)
-      .set(updateUserDTO)
+      .set({ ...updateUserDTO, role: UserRoleEnum[updateUserDTO.role] })
+      .where(eq(schema.users.id, sql.placeholder("id")))
       .prepare("update_user");
 
     return statement;
