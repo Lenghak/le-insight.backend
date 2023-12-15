@@ -2,6 +2,7 @@ import "@nestjs/swagger";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 
 import { UserRoleEnum } from "@/common/types/modules/user.enum";
+
 import {
   IsBoolean,
   IsDateString,
