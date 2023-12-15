@@ -11,8 +11,10 @@ module.exports = {
   importOrder: [
     "^@nestjs/(.*)$",
     "^@express/(.*)$",
+    "^@/common/(.*)$",
     "^@/modules/(.*)$",
     "^@/database/(.*)$",
+    "^drizzle-orm",
     "<THIRD_PARTY_MODULES>",
     "^[./]",
     "^@/types/(.*)$",
