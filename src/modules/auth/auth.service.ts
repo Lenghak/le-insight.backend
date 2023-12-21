@@ -4,6 +4,7 @@ import { JwtService } from "@nestjs/jwt";
 
 import { type CreateUserDTO } from "../users/dto/create-user.dto";
 import { UsersService } from "../users/users.service";
+import { type SignTokensDTO } from "./dto/sign-token.dto";
 
 @Injectable()
 export class AuthService {
@@ -23,10 +24,15 @@ export class AuthService {
   }
 
   async signUp(@Body() createUserDTO: CreateUserDTO) {
-    const user = await this.user.create(createUserDTO);
+    const user = await this.user.create(createUserDTO)[0];
 
-    // const [accessToken, refreshToken] = this.signTokens();
     // sign accessTokens and refreshTokens
+    const [accessToken, refreshToken] = await this.signTokens({
+      id: user,
+      email: createUserDTO.email,
+    });
+
+    console.log(accessToken, refreshToken);
     // assign new refreshTokens to the user's data
 
     return user;
@@ -36,32 +42,22 @@ export class AuthService {
     // -> remove sessions & token from request
   }
 
-  async getRefreshToken() {}
-
-  async refresh() {}
-
-  async signTokens(sub: string, email: string) {
+  async signTokens(signTokensDTO: SignTokensDTO) {
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwt.signAsync(
-        {
-          sub,
-          email,
-        },
-        { secret: this.config.get("ACCESS_TOKEN_SECRET"), expiresIn: 15 * 60 },
-      ),
-      this.jwt.signAsync(
-        {
-          sub,
-          email,
-        },
-        {
-          secret: this.config.get("REFRESH_TOKEN_SECRET"),
-          expiresIn: 7 * 24 * 60 * 60,
-        },
-      ),
+      this.jwt.signAsync(signTokensDTO, {
+        secret: this.config.get("ACCESS_TOKEN_SECRET"),
+        expiresIn: 15 * 60,
+      }),
+      this.jwt.signAsync(signTokensDTO, {
+        secret: this.config.get("REFRESH_TOKEN_SECRET"),
+        expiresIn: 7 * 24 * 60 * 60,
+      }),
     ]);
 
-    console.log(accessToken, refreshToken);
-    return { accessToken, refreshToken };
+    return [accessToken, refreshToken];
+  }
+
+  async refresh() {
+    return "Sending refresh token";
   }
 }

@@ -78,6 +78,7 @@ export class UsersRepository {
     const statement = this.db
       .insert(schema.users)
       .values(createUser)
+      .returning()
       .prepare("insert_user");
 
     return statement;
@@ -93,7 +94,10 @@ export class UsersRepository {
   update(updateUserDTO: UpdateUserDTO) {
     const statement = this.db
       .update(schema.users)
-      .set({ ...updateUserDTO, role: UserRoleEnum[updateUserDTO.role] })
+      .set({
+        ...updateUserDTO,
+        role: UserRoleEnum[updateUserDTO.role] ?? undefined,
+      })
       .where(eq(schema.users.id, sql.placeholder("id")))
       .prepare("update_user");
 

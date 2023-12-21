@@ -14,4 +14,7 @@ export class CreateUserDTO extends SignInDTO {
   @IsString()
   @ApiProperty()
   lastName: string;
+
+  @ApiProperty()
+  salts: string;
 }

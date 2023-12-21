@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";
+import { type UpdateUserDTO } from "./dto/update-user.dto";
 import { UsersRepository } from "./repo/users.repository";
 
 @Injectable()
@@ -12,7 +13,7 @@ export class UsersService {
   ) {}
 
   async create(createUserDTO: CreateUserDTO) {
-    return this.usersRepository.create(createUserDTO).execute();
+    return await this.usersRepository.create(createUserDTO).execute();
   }
 
   /**
@@ -25,7 +26,9 @@ export class UsersService {
     return await this.usersRepository.getAll().execute();
   }
 
-  async update() {}
+  async update(updateUserDTO: UpdateUserDTO, id: string) {
+    return this.usersRepository.update(updateUserDTO).execute({ id });
+  }
 
   async seed() {}
 }
