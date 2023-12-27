@@ -77,7 +77,11 @@ export class UsersRepository {
   create(createUser: CreateUserDTO) {
     const statement = this.db
       .insert(schema.users)
-      .values(createUser)
+      .values({
+        email: createUser.email,
+        encrypted_password: createUser.password,
+        salt: createUser.salt,
+      })
       .returning()
       .prepare("insert_user");
 

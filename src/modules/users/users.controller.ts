@@ -11,7 +11,7 @@ export class UsersController {
   @Get("/")
   async lists() {
     return {
-      data: await this.user.findAll(),
+      data: await this.user.getAll(),
     };
   }
 }

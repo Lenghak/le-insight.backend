@@ -3,7 +3,8 @@ import { ConfigModule } from "@nestjs/config";
 
 import { DrizzleModule } from "@/database/drizzle.module";
 
-import { envSchema } from "../core/env";
+import { envSchema } from "@/core/env";
+
 import { AppController } from "./app.controller";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
