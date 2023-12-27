@@ -35,7 +35,7 @@ async function bootstrap() {
     include: [AppModule, AuthModule, UsersModule], //the modules that you want to include in your swagger docs
   });
 
-  SwaggerModule.setup("api", app, document);
+  SwaggerModule.setup("docs", app, document);
 
   await app.listen(8000);
 }

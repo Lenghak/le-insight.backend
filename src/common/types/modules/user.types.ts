@@ -63,16 +63,3 @@ export type Users = {
 
   deleted_at: Date;
 };
-
-// export type UserSelectableFields = Pick<
-//   Users,
-//   | "id"
-//   | "banned_until"
-//   | "created_at"
-//   | "deleted_at"
-//   | "email"
-//   | "email_confirmed_at"
-//   | "phone"
-//   | "role"
-//   | "updated_at"
-// >;

@@ -3,6 +3,7 @@ import { ApiTags } from "@nestjs/swagger";
 
 import { CreateUserDTO } from "../users/dto/create-user.dto";
 import { AuthService } from "./auth.service";
+import { SignInDTO } from "./dto/sign-in.dto";
 
 @ApiTags("Auth")
 @Controller({ path: "/auth" })
@@ -12,22 +13,17 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @Post("/sign-up")
   async signUp(@Body() createUserDTO: CreateUserDTO) {
-    const user = this.auth.signUp(createUserDTO);
-    return user;
+    return await this.auth.signUp(createUserDTO);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Post("/sign-in")
-  async signIn() {
-    return this.auth.signIn();
+  async signIn(@Body() signInDTO: SignInDTO) {
+    return this.auth.signIn(signInDTO);
   }
 
   @Post("/sign-out")
   async signOut() {
     return await this.auth.signOut();
-  }
-
-  @Post("/refresh")
-  async refresh() {
-    return await this.auth.refresh();
   }
 }

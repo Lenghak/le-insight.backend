@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 
 import { SignInDTO } from "@/modules/auth/dto/sign-in.dto";
 
@@ -15,6 +15,6 @@ export class CreateUserDTO extends SignInDTO {
   @ApiProperty()
   lastName: string;
 
-  @ApiProperty()
-  salts: string;
+  @ApiHideProperty()
+  salt: string;
 }
