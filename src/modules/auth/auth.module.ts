@@ -5,10 +5,10 @@ import { PassportModule } from "@nestjs/passport";
 
 import { DrizzleModule } from "@/database/drizzle.module";
 
+import { RefreshTokensModule } from "../refresh-tokens/refresh-tokens.module";
 import { UsersModule } from "../users/users.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
-import { RefreshTokensRepository } from "./repo/refresh-tokens.repository";
 import { AccessTokenStrategy } from "./strategies/access.strategy";
 import { RefreshTokensStrategy } from "./strategies/refresh.strategy";
 
@@ -16,6 +16,7 @@ import { RefreshTokensStrategy } from "./strategies/refresh.strategy";
   imports: [
     DrizzleModule,
     UsersModule,
+    RefreshTokensModule,
     PassportModule,
     ConfigModule,
     JwtModule.registerAsync({
@@ -30,12 +31,7 @@ import { RefreshTokensStrategy } from "./strategies/refresh.strategy";
     }),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    AccessTokenStrategy,
-    RefreshTokensStrategy,
-    RefreshTokensRepository,
-  ],
+  providers: [AuthService, AccessTokenStrategy, RefreshTokensStrategy],
   exports: [PassportModule, JwtModule],
 })
 export class AuthModule {}

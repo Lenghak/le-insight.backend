@@ -7,8 +7,7 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
-import { type Users } from "@/common/types/modules/user.types";
-
+import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
 import { type CreateUserDTO } from "@/modules/users/dto/create-user.dto";
 import { UsersService } from "@/modules/users/users.service";
 
@@ -16,7 +15,6 @@ import bycrypt from "bcrypt";
 
 import { type SignInDTO } from "./dto/sign-in.dto";
 import { type SignTokensDTO } from "./dto/sign-token.dto";
-import { RefreshTokensRepository } from "./repo/refresh-tokens.repository";
 
 @Injectable()
 export class AuthService {
@@ -24,7 +22,7 @@ export class AuthService {
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly refreshTokensRepository: RefreshTokensRepository,
+    private readonly refreshTokensService: RefreshTokensService,
   ) {}
 
   async signIn(signInDTO: SignInDTO) {
@@ -45,12 +43,10 @@ export class AuthService {
     const tokens = await this.signTokens({ id: user.id, email: user.email });
 
     // assign new refreshTokens to the user's data
-    await this.refreshTokensRepository
-      .update({
-        userId: user.id,
-        token: tokens.refreshToken,
-      })
-      .execute();
+    await this.refreshTokensService.update({
+      userId: user.id,
+      token: tokens.refreshToken,
+    });
 
     return tokens;
   }
@@ -82,25 +78,23 @@ export class AuthService {
     const { digest, salt } = await this.hashData(createUserDTO.password);
 
     // else create another user's account
-    const user: Users = await this.userService.create({
+    const user = await this.userService.create({
       ...createUserDTO,
       password: digest,
       salt: salt,
-    })[0];
+    });
 
     // sign accessTokens and refreshTokens
     const tokens = await this.signTokens({
-      id: user.id,
+      id: user[0].id,
       email: createUserDTO.email,
     });
 
     // assign new refreshTokens to the user's data
-    await this.refreshTokensRepository
-      .update({
-        userId: user.id,
-        token: tokens.refreshToken,
-      })
-      .execute();
+    await this.refreshTokensService.update({
+      userId: user[0].id,
+      token: tokens.refreshToken,
+    });
 
     return {
       data: user,

@@ -7,7 +7,7 @@ import type * as userSchema from "@/database/models/auth/users.schema";
 import { eq } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
-import { type UpdateRefreshTokensDTO } from "../dto/update-refresh-tokens.dto";
+import { type UpdateRefreshTokensDTO } from "./update-refresh-tokens.dto";
 
 @Injectable()
 export class RefreshTokensRepository {
