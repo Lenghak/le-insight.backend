@@ -35,13 +35,3 @@ export const refreshTokens = pgTable(
     ).on(table.session_id, table.revoked),
   }),
 );
-
-// export const refreshTokensSessionRelation = relations(
-//   refreshTokens,
-//   ({ one }) => ({
-//     sessions: one(sessions, {
-//       fields: [refreshTokens.session_id],
-//       references: [sessions.id],
-//     }),
-//   }),
-// );

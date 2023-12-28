@@ -1,17 +1,17 @@
 import { Controller, Get } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 
-import { UserService } from "./user.service";
+import { UsersService } from "./users.service";
 
 @ApiTags("Users")
 @Controller({ path: "/users" })
-export class UserController {
-  constructor(private user: UserService) {}
+export class UsersController {
+  constructor(private user: UsersService) {}
 
   @Get("/")
   async lists() {
     return {
-      data: await this.user.findAll(),
+      data: await this.user.getAll(),
     };
   }
 }

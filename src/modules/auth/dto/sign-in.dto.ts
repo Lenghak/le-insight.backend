@@ -9,17 +9,17 @@ import {
 } from "class-validator";
 
 export class SignInDTO {
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @IsEmail()
   @MaxLength(255)
-  @ApiProperty()
   email: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @IsStrongPassword()
   @MaxLength(255)
-  @ApiProperty()
   password: string;
 }

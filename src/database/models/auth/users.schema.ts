@@ -28,7 +28,7 @@ export const users = pgTable(
     aud: varchar("aud", { length: 255 }),
 
     confirmed_at: timestamp("confirmed_at", { withTimezone: true }),
-    confirmation_token: varchar("confirmation_token", { length: 255 }).unique(),
+    confirmation_token: varchar("confirmation_token", { length: 255 }),
     confirmation_sent_at: timestamp("confirmation_sent_at", {
       withTimezone: true,
     }),
@@ -41,16 +41,15 @@ export const users = pgTable(
     email_confirmed_at: timestamp("email_confirmed_at", { withTimezone: true }),
     email_change_token_new: varchar("email_change_token_new", {
       length: 255,
-    }).unique(),
+    }),
     email_change: varchar("email_change", { length: 255 }),
     email_change_sent_at: timestamp("email_change_sent_at", {
       withTimezone: true,
     }),
     email_change_token_current: varchar("email_change_token_current", {
       length: 255,
-    })
-      .default("")
-      .unique(),
+    }).default(""),
+
     email_change_confirm_status: boolean("email_change_confirm_status").default(
       false,
     ),
@@ -58,24 +57,20 @@ export const users = pgTable(
     encrypted_password: varchar("encrypted_password", { length: 255 }),
     salt: varchar("salt", { length: 32 }),
 
-    recovery_token: varchar("recovery_token", { length: 255 }).unique(),
+    recovery_token: varchar("recovery_token", { length: 255 }),
     recovery_sent_at: timestamp("recovery_sent_at", { withTimezone: true }),
 
-    phone: text("phone").unique(),
+    phone: text("phone"),
     phone_confirmed_at: timestamp("phone_confirmed_at", { withTimezone: true }),
     phone_change: text("phone_change").default(""),
-    phone_change_token: varchar("phone_change_token", { length: 255 })
-      .default("")
-      .unique(),
+    phone_change_token: varchar("phone_change_token", { length: 255 }),
     phone_change_sent_at: timestamp("phone_change_sent_at", {
       withTimezone: true,
     }),
 
     reauthentication_token: varchar("reauthentication_token", {
       length: 255,
-    })
-      .default("")
-      .unique(),
+    }),
     reauthentication_sent_at: timestamp("reauthentication_sent_at", {
       withTimezone: true,
     }),
@@ -92,7 +87,7 @@ export const users = pgTable(
   }),
 );
 
-export const userProfileRelation = relations(users, ({ one }) => ({
+export const userRelations = relations(users, ({ one }) => ({
   profile: one(profiles, {
     fields: [users.profile_id],
     references: [profiles.id],

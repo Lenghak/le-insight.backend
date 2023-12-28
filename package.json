@@ -14,9 +14,9 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "prepare": "husky install",
     "cruise": "npx depcruise src -p",
-    "db:seed": "tsx ./src/seed.ts",
+    "db:seed": "tsx ./src/core/seed.ts",
     "db:generate": "pnpm drizzle-kit generate:pg",
-    "db:migrate": "tsx ./src/migrate.ts",
+    "db:migrate": "tsx ./src/core/migrate.ts",
     "db:push": "pnpm drizzle-kit push:pg",
     "db:studio": "pnpm drizzle-kit studio --verbose --port 5000",
     "db:drop": "pnpm drizzle-kit drop"
@@ -34,7 +34,7 @@
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.3.1",
-    "drizzle-orm": "^0.29.1",
+    "drizzle-orm": "^0.29.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.11.3",
@@ -60,15 +60,15 @@
     "@types/passport-jwt": "^3.0.13",
     "@types/passport-local": "^1.0.38",
     "@types/supertest": "^2.0.16",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
     "dependency-cruiser": "^15.5.0",
     "dotenv-flow": "^4.0.1",
     "dotenv-flow-cli": "^1.0.0",
-    "drizzle-kit": "^0.20.7",
+    "drizzle-kit": "^0.20.8",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.1.0",
+    "eslint-plugin-prettier": "^5.1.2",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
     "prettier": "^3.1.1",
@@ -82,5 +82,10 @@
   },
   "lint-staged": {
     "**/*.{js,ts,json}": ["prettier --write --config .prettierrc.cjs"]
+  },
+  "pnpm": {
+    "overrides": {
+      "semver@>=7.0.0 <7.5.2": ">=7.5.2"
+    }
   }
 }

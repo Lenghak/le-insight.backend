@@ -18,7 +18,7 @@ export const profiles = pgTable("profiles", {
   sex: sexEnum("sex"),
 });
 
-export const profileImageRelation = relations(profiles, ({ one }) => ({
+export const profileRelations = relations(profiles, ({ one }) => ({
   image_avatar: one(images, {
     fields: [profiles.image_id],
     references: [images.id],
