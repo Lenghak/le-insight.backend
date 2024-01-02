@@ -1,7 +1,12 @@
 import { Module } from "@nestjs/common";
 
-import { ProfileController } from "./profiles.controller";
-import { ProfileService } from "./profiles.service";
+import { DrizzleModule } from "@/database/drizzle.module";
 
-@Module({ controllers: [ProfileController], providers: [ProfileService] })
-export class ProfileModule {}
+import { ProfilesRepository } from "./profiles.repository";
+import { ProfilesService } from "./profiles.service";
+
+@Module({
+  imports: [DrizzleModule],
+  providers: [ProfilesRepository, ProfilesService],
+})
+export class ProfilesModule {}

@@ -7,7 +7,7 @@ NO_COLOR='\033[0m'
 
 
 echo "${LIGHT_BLUE}!${NO_COLOR} Checking Lint"
-pnpx eslint ${staged}
+pnpm run lint || exit $
 echo "${GREEN}✔${NO_COLOR} Done Running Lint"
 
 echo "${LIGHT_BLUE}!${NO_COLOR} Prettier is Formatting Staged Files"

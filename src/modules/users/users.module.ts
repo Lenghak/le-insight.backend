@@ -3,8 +3,8 @@ import { ConfigModule } from "@nestjs/config";
 
 import { DrizzleModule } from "@/database/drizzle.module";
 
-import { UsersRepository } from "./repo/users.repository";
 import { UsersController } from "./users.controller";
+import { UsersRepository } from "./users.repository";
 import { UsersService } from "./users.service";
 
 @Module({

@@ -3,7 +3,7 @@ import { pgEnum, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
 
 import { images } from "./image.schema";
 
-export const sexEnum = pgEnum("sexEnum", ["male", "female", "rather not say"]);
+export const sexEnum = pgEnum("sexEnum", ["MALE", "FEMALE", "RNTS"]);
 
 export const profiles = pgTable("profiles", {
   id: uuid("id").notNull().unique().primaryKey().defaultRandom(),
