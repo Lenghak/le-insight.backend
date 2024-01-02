@@ -2,8 +2,9 @@
   "a-file-icon-vscode.activeIconPacks": [
     "nest"
   ],
-  "workbench.iconTheme": "a-file-icon-vscode",
+  "workbench.iconTheme": "material-icon-theme-simon",
   "a-file-icon-vscode.saturation": 1,
   "a-file-icon-vscode.opacity": 1,
   "a-file-icon-vscode.folderColor": "#727272",
+  "a-file-icon-vscode.folderTheme": "specific",
 }
