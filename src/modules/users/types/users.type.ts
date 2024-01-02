@@ -1,4 +1,4 @@
-import { type UserRoleEnum } from "./user.enum";
+import { type UserRoleEnum } from "./users.enum";
 
 export type Users = {
   id: string;

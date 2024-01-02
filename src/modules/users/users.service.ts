@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 
-import { type Users } from "@/common/types/modules/user.types";
+import { type Users } from "@/modules/users/types/users.type";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";
 import { type UpdateUserDTO } from "./dto/update-user.dto";
-import { UsersRepository } from "./repo/users.repository";
+import { UsersRepository } from "./users.repository";
 
 @Injectable()
 export class UsersService {

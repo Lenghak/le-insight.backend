@@ -5,7 +5,10 @@ import { type CreateProfileDTO } from "@/modules/profiles/dto/create-profile.dto
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as schema from "@/database/models/profiles.schema";
 
+import { eq } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+
+import { type Profiles } from "./types/profiles.type";
 
 @Injectable()
 export class ProfilesRepository {
@@ -23,5 +26,19 @@ export class ProfilesRepository {
       })
       .returning()
       .prepare("insert_profile");
+  }
+
+  getAll() {
+    return this.db.query.profiles
+      .findMany({
+        limit: 50,
+      })
+      .prepare("get_all_profiles");
+  }
+
+  get({ by }: { by: keyof Profiles }) {
+    return this.db.query.profiles
+      .findFirst({ where: eq(schema.profiles, by) })
+      .prepare("get_a_profile");
   }
 }

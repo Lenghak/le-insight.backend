@@ -1,11 +1,12 @@
 import { Module } from "@nestjs/common";
 
-import { ProfilesController } from "./profiles.controller";
+import { DrizzleModule } from "@/database/drizzle.module";
+
+import { ProfilesRepository } from "./profiles.repository";
 import { ProfilesService } from "./profiles.service";
 
 @Module({
-  imports: [],
-  controllers: [ProfilesController],
-  providers: [ProfilesService],
+  imports: [DrizzleModule],
+  providers: [ProfilesRepository, ProfilesService],
 })
 export class ProfilesModule {}

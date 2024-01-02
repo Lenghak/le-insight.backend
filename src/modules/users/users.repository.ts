@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { UserRoleEnum } from "@/common/types/modules/user.enum";
-import { type Users } from "@/common/types/modules/user.types";
+import { UserRoleEnum } from "@/modules/users/types/users.enum";
+import { type Users } from "@/modules/users/types/users.type";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as schema from "@/database/models/auth/users.schema";
@@ -9,8 +9,8 @@ import * as schema from "@/database/models/auth/users.schema";
 import { eq, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
-import { type CreateUserDTO } from "../dto/create-user.dto";
-import { type UpdateUserDTO } from "../dto/update-user.dto";
+import { type CreateUserDTO } from "./dto/create-user.dto";
+import { type UpdateUserDTO } from "./dto/update-user.dto";
 
 @Injectable()
 export class UsersRepository {
