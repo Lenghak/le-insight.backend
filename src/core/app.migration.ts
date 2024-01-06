@@ -1,17 +1,21 @@
-import { migrationClient } from "@/database/drizzle.service";
+import { Logger } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
 
-import { drizzle } from "drizzle-orm/postgres-js";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { MigrationModule } from "@/database/migration/migration.module";
+import { MigrationService } from "@/database/migration/migration.service";
 
-import { exit } from "process";
+async function bootstrap() {
+  const context = await NestFactory.createApplicationContext(MigrationModule);
 
-// Might be configure another application context from Nest JS
-migrate(drizzle(migrationClient), { migrationsFolder: "migrations" })
-  .then((_) => {
-    console.log("Migration Done!");
-    exit(0);
-  })
-  .catch((err) => {
-    console.error(err);
-    exit(1);
+  const logger = context.get(Logger);
+  const migrationService = context.get(MigrationService);
+
+  logger.debug("Migration Started!");
+
+  migrationService.execute().finally(() => {
+    logger.debug("Migration Done Running!");
+    context.close().finally(() => process.exit(0));
   });
+}
+
+bootstrap();
