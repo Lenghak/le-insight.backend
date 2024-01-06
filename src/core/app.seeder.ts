@@ -5,26 +5,14 @@ import { SeederModule } from "@/database/seeder/seeder.module";
 import { SeederService } from "@/database/seeder/seeder.service";
 
 async function bootstrap() {
-  NestFactory.createApplicationContext(SeederModule)
-    .then((appContext) => {
-      const logger = appContext.get(Logger);
-      const seeder = appContext.get(SeederService);
+  const context = await NestFactory.createApplicationContext(SeederModule);
+  const logger = context.get(Logger);
+  const seederService = context.get(SeederService);
 
-      seeder
-        .seed()
-        .then(() => {
-          logger.debug("Seeding complete!");
-        })
-        .catch((error) => {
-          logger.error("Seeding failed!");
-          throw error;
-        })
-        .finally(() => {
-          appContext.close();
-        });
-    })
-    .catch((error) => {
-      throw error;
-    });
+  await seederService.seed();
+
+  logger.debug("Seeding Done Running!");
+
+  await context.close();
 }
 bootstrap();

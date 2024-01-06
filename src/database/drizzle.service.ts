@@ -2,9 +2,8 @@ import * as schemas from "@/database/models";
 
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
+import env from "@/core/env";
 import postgres from "postgres";
-
-import env from "../core/env";
 
 export const DRIZZLE_ASYNC_PROVIDER = "DRIZZLE_ASYNC_PROVIDER";
 
