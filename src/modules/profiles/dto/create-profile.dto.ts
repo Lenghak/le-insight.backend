@@ -1,13 +1,18 @@
+import { IsString } from "class-validator";
+
 export class CreateProfileDTO {
-  id: string;
-  userID: string;
+  // id: string;
+  // userID: string;
+  @IsString()
   firstName: string;
+
+  @IsString()
   lastName: string;
 
-  imageID: string;
+  // imageID: string;
 
-  bio: string;
-  gender: string;
+  // bio: string;
+  // gender: string;
 
-  sex: Enumerator<"MALE" | "FEMALE" | "RNTS">;
+  // sex: "MALE" | "FEMALE" | "RNTS";
 }
