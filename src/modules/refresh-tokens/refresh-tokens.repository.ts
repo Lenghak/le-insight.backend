@@ -4,9 +4,10 @@ import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as refreshTokenSchema from "@/database/models/auth/refresh-tokens.schema";
 import type * as userSchema from "@/database/models/auth/users.schema";
 
-import { eq } from "drizzle-orm";
+import { and, eq, not } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
+import { type SignOutDTO } from "../auth/dto/sign-out.dto";
 import { type UpdateRefreshTokensDTO } from "./update-refresh-tokens.dto";
 
 @Injectable()
@@ -37,6 +38,22 @@ export class RefreshTokensRepository {
       )
       .returning()
       .prepare("update_refresh_token");
+
+    return statement;
+  }
+
+  delete(signOutDTO: SignOutDTO) {
+    const statement = this.db
+      .update(refreshTokenSchema.refreshTokens)
+      .set({ token: null })
+      .where(
+        and(
+          not(eq(refreshTokenSchema.refreshTokens.user_id, null)),
+          eq(refreshTokenSchema.refreshTokens.user_id, signOutDTO.userID),
+        ),
+      )
+      .returning()
+      .prepare("delete_refresh_token");
 
     return statement;
   }

@@ -8,5 +8,6 @@ import { ProfilesService } from "./profiles.service";
 @Module({
   imports: [DrizzleModule],
   providers: [ProfilesRepository, ProfilesService],
+  exports: [ProfilesService],
 })
 export class ProfilesModule {}

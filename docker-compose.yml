@@ -15,7 +15,7 @@ services:
     networks:
       - default
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data:z
 
   redis-kv:
     image: redis:latest
@@ -24,7 +24,7 @@ services:
     networks:
       - default
     volumes:
-      - ./data/redis:/data
+      - ./data/redis:/data/redis
 
 networks:
   default:

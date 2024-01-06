@@ -81,6 +81,7 @@ export class UsersRepository {
         email: createUser.email,
         encrypted_password: createUser.password,
         salt: createUser.salt,
+        profile_id: createUser.profileID,
       })
       .returning()
       .prepare("insert_user");

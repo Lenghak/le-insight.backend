@@ -5,6 +5,7 @@ import { PassportModule } from "@nestjs/passport";
 
 import { DrizzleModule } from "@/database/drizzle.module";
 
+import { ProfilesModule } from "../profiles/profiles.module";
 import { RefreshTokensModule } from "../refresh-tokens/refresh-tokens.module";
 import { UsersModule } from "../users/users.module";
 import { AuthController } from "./auth.controller";
@@ -16,6 +17,7 @@ import { RefreshTokensStrategy } from "./strategies/refresh.strategy";
   imports: [
     DrizzleModule,
     UsersModule,
+    ProfilesModule,
     RefreshTokensModule,
     PassportModule,
     ConfigModule,

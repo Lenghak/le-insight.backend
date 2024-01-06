@@ -14,8 +14,6 @@ export class LoggerMiddleware implements NestMiddleware {
     const startAt = process.hrtime();
     const { method, headers } = req;
 
-    this.logger.debug(headers);
-
     res.on("finish", () => {
       const { statusCode } = res;
 

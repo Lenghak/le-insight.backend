@@ -7,19 +7,22 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
+import { ProfilesService } from "@/modules/profiles/profiles.service";
 import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
-import { type CreateUserDTO } from "@/modules/users/dto/create-user.dto";
 import { UsersService } from "@/modules/users/users.service";
 
 import bycrypt from "bcrypt";
 
 import { type SignInDTO } from "./dto/sign-in.dto";
+import { type SignOutDTO } from "./dto/sign-out.dto";
 import { type SignTokensDTO } from "./dto/sign-token.dto";
+import { SignUpDTO } from "./dto/sign-up.dto";
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UsersService,
+    private readonly profileService: ProfilesService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly refreshTokensService: RefreshTokensService,
@@ -31,10 +34,10 @@ export class AuthService {
       values: { email: signInDTO.email },
     });
 
-    if (!user) throw new UnauthorizedException();
+    if (!user?.id) throw new UnauthorizedException();
 
     const isPasswordMatched = await bycrypt.compare(
-      (await this.hashData(signInDTO.password)).digest,
+      signInDTO.password,
       user.encrypted_password,
     );
 
@@ -62,12 +65,12 @@ export class AuthService {
    * object that was created, and the "tokens" property contains an object with two properties:
    * "accessToken" and "refreshToken".
    */
-  async signUp(@Body() createUserDTO: CreateUserDTO) {
+  async signUp(@Body() signUpDTO: SignUpDTO) {
     // check if user is already exist
     const existingUser = await this.userService.get({
       by: "email",
       values: {
-        email: createUserDTO.email,
+        email: signUpDTO.email,
       },
     });
 
@@ -75,11 +78,18 @@ export class AuthService {
     if (existingUser) throw new ConflictException();
 
     // hash the password and get the salt before store in
-    const { digest, salt } = await this.hashData(createUserDTO.password);
+    const { digest, salt } = await this.hashData(signUpDTO.password);
+
+    // create an profile object
+    const profile = await this.profileService.create({
+      firstName: signUpDTO.firstName,
+      lastName: signUpDTO.lastName,
+    });
 
     // else create another user's account
     const user = await this.userService.create({
-      ...createUserDTO,
+      ...signUpDTO,
+      profileID: profile[0].id,
       password: digest,
       salt: salt,
     });
@@ -87,7 +97,7 @@ export class AuthService {
     // sign accessTokens and refreshTokens
     const tokens = await this.signTokens({
       id: user[0].id,
-      email: createUserDTO.email,
+      email: signUpDTO.email,
     });
 
     // assign new refreshTokens to the user's data
@@ -98,12 +108,13 @@ export class AuthService {
 
     return {
       data: user,
-      tokens,
+      // tokens,
     };
   }
 
-  async signOut() {
+  async signOut(signOutDTO: SignOutDTO) {
     // -> remove sessions & token from request
+    return await this.refreshTokensService.delete(signOutDTO);
   }
 
   /**
@@ -136,8 +147,8 @@ export class AuthService {
    * hash.
    * @returns a promise that resolves to the hashed data.
    */
-  async hashData(data: string) {
-    const salt = await bycrypt.genSalt(12);
+  async hashData(data: string, defaultSalt?: string) {
+    const salt = defaultSalt ?? (await bycrypt.genSalt(12));
     const pepper = await this.configService.get("PEPPER_SECRET");
 
     return {
