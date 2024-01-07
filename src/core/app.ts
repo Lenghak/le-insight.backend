@@ -1,4 +1,5 @@
 import { ValidationPipe } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import {
   FastifyAdapter,
@@ -18,8 +19,12 @@ import { AppModule } from "./app.module";
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ trustProxy: ["127.0.0.1"] }),
+    new FastifyAdapter({
+      trustProxy: ["127.0.0.1"],
+    }),
   );
+
+  const configService = app.get(ConfigService);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -45,7 +50,7 @@ async function bootstrap() {
 
   SwaggerModule.setup("docs", app, document);
 
-  await app.listen(8000);
+  await app.listen(configService.get("NODE_ENV") === "dev" ? 8000 : 443);
 }
 
 bootstrap()
