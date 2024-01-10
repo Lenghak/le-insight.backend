@@ -1,5 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { type SignOutDTO } from "@/modules/auth/dto/sign-out.dto";
+
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as refreshTokenSchema from "@/database/models/auth/refresh-tokens.schema";
 import type * as userSchema from "@/database/models/auth/users.schema";
@@ -7,8 +9,8 @@ import type * as userSchema from "@/database/models/auth/users.schema";
 import { and, eq, not } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
-import { type SignOutDTO } from "../auth/dto/sign-out.dto";
-import { type UpdateRefreshTokensDTO } from "./update-refresh-tokens.dto";
+import { type CreateRefreshTokensDTO } from "./dto/create-refresh-tokens.dto";
+import { type UpdateRefreshTokensDTO } from "./dto/update-refresh-tokens.dto";
 
 @Injectable()
 export class RefreshTokensRepository {
@@ -18,6 +20,14 @@ export class RefreshTokensRepository {
       typeof refreshTokenSchema & typeof userSchema
     >,
   ) {}
+
+  create(createRefreshTokensDTO: CreateRefreshTokensDTO) {
+    const statement = this.db
+      .insert(refreshTokenSchema.refreshTokens)
+      .values(createRefreshTokensDTO);
+
+    return statement;
+  }
 
   /**
    * The function updates the token value of a refresh token in the database based on the provided user
