@@ -25,7 +25,7 @@ export class UsersRepository {
    * @returns a prepared statement for retrieving users from the database.
    */
   getAll() {
-    const statement = this.db.query.users
+    return this.db.query.users
       .findMany({
         columns: {
           id: true,
@@ -42,8 +42,6 @@ export class UsersRepository {
         },
       })
       .prepare("get_users");
-
-    return statement;
   }
 
   /**
@@ -55,7 +53,7 @@ export class UsersRepository {
    * database based on a specified key.
    */
   get({ by }: { by: keyof Users }) {
-    const statement = this.db.query.users
+    return this.db.query.users
       .findFirst({
         with: {
           profile: true,
@@ -63,8 +61,6 @@ export class UsersRepository {
         where: (users, { eq }) => eq(users[by], sql.placeholder(by)),
       })
       .prepare("get_user_by_id");
-
-    return statement;
   }
 
   /**
@@ -75,7 +71,7 @@ export class UsersRepository {
    * database.
    */
   create(createUser: CreateUserDTO) {
-    const statement = this.db
+    return this.db
       .insert(schema.users)
       .values({
         email: createUser.email,
@@ -85,8 +81,6 @@ export class UsersRepository {
       })
       .returning()
       .prepare("insert_user");
-
-    return statement;
   }
 
   /**
@@ -97,7 +91,7 @@ export class UsersRepository {
    * @returns a prepared statement for updating a user in the database.
    */
   update(updateUserDTO: UpdateUserDTO) {
-    const statement = this.db
+    return this.db
       .update(schema.users)
       .set({
         ...updateUserDTO,
@@ -105,8 +99,6 @@ export class UsersRepository {
       })
       .where(eq(schema.users.id, sql.placeholder("id")))
       .prepare("update_user");
-
-    return statement;
   }
 
   /**
@@ -115,10 +107,8 @@ export class UsersRepository {
    * @returns The `delete()` function is returning a statement that deletes a record from the database.
    */
   delete() {
-    const statement = this.db
+    return this.db
       .delete(schema.users)
       .where(eq(schema.users.id, sql.placeholder("id")));
-
-    return statement;
   }
 }

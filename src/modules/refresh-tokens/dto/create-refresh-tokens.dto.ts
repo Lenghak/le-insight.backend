@@ -4,15 +4,15 @@ export class CreateRefreshTokensDTO {
   @IsString()
   @IsJWT()
   @IsNotEmpty()
-  token: string;
+  token?: string;
 
   @IsString()
   @IsUUID()
   @IsNotEmpty()
-  user_id: string;
+  userID?: string;
 
   @IsString()
   @IsUUID()
   @IsNotEmpty()
-  sessionID: string;
+  sessionID?: string;
 }

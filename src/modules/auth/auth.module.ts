@@ -7,6 +7,7 @@ import { DrizzleModule } from "@/database/drizzle.module";
 
 import { ProfilesModule } from "../profiles/profiles.module";
 import { RefreshTokensModule } from "../refresh-tokens/refresh-tokens.module";
+import { SessionsModule } from "../sessions/sessions.module";
 import { UsersModule } from "../users/users.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
@@ -19,6 +20,7 @@ import { RefreshTokensStrategy } from "./strategies/refresh.strategy";
     UsersModule,
     ProfilesModule,
     RefreshTokensModule,
+    SessionsModule,
     PassportModule,
     ConfigModule,
     JwtModule.registerAsync({

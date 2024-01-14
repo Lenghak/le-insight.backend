@@ -22,11 +22,11 @@ export class RefreshTokensRepository {
   ) {}
 
   create(createRefreshTokensDTO: CreateRefreshTokensDTO) {
-    const statement = this.db
+    return this.db
       .insert(refreshTokenSchema.refreshTokens)
-      .values(createRefreshTokensDTO);
-
-    return statement;
+      .values(createRefreshTokensDTO)
+      .returning()
+      .prepare("insert_refresh_token");
   }
 
   /**
@@ -37,23 +37,21 @@ export class RefreshTokensRepository {
    * @returns The prepared statement "update_refresh_token" is being returned.
    */
   update(updateRefreshTokensDTO: UpdateRefreshTokensDTO) {
-    const statement = this.db
+    return this.db
       .update(refreshTokenSchema.refreshTokens)
       .set({ token: updateRefreshTokensDTO.token })
       .where(
         eq(
           refreshTokenSchema.refreshTokens.user_id,
-          updateRefreshTokensDTO.userId,
+          updateRefreshTokensDTO.userID,
         ),
       )
       .returning()
       .prepare("update_refresh_token");
-
-    return statement;
   }
 
   delete(signOutDTO: SignOutDTO) {
-    const statement = this.db
+    return this.db
       .update(refreshTokenSchema.refreshTokens)
       .set({ token: null })
       .where(
@@ -64,7 +62,5 @@ export class RefreshTokensRepository {
       )
       .returning()
       .prepare("delete_refresh_token");
-
-    return statement;
   }
 }

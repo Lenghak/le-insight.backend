@@ -10,4 +10,4 @@ import { SessionsService } from "./sessions.service";
   providers: [SessionsRepository, SessionsService],
   exports: [SessionsService],
 })
-export class SerssionModule {}
+export class SessionsModule {}
