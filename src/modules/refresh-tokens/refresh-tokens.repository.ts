@@ -1,5 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import { type SignOutDTO } from "@/modules/auth/dto/sign-out.dto";
+
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as refreshTokenSchema from "@/database/models/auth/refresh-tokens.schema";
 import type * as userSchema from "@/database/models/auth/users.schema";
@@ -7,8 +9,8 @@ import type * as userSchema from "@/database/models/auth/users.schema";
 import { and, eq, not } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
-import { type SignOutDTO } from "../auth/dto/sign-out.dto";
-import { type UpdateRefreshTokensDTO } from "./update-refresh-tokens.dto";
+import { type CreateRefreshTokensDTO } from "./dto/create-refresh-tokens.dto";
+import { type UpdateRefreshTokensDTO } from "./dto/update-refresh-tokens.dto";
 
 @Injectable()
 export class RefreshTokensRepository {
@@ -19,6 +21,14 @@ export class RefreshTokensRepository {
     >,
   ) {}
 
+  create(createRefreshTokensDTO: CreateRefreshTokensDTO) {
+    return this.db
+      .insert(refreshTokenSchema.refreshTokens)
+      .values(createRefreshTokensDTO)
+      .returning()
+      .prepare("insert_refresh_token");
+  }
+
   /**
    * The function updates the token value of a refresh token in the database based on the provided user
    * ID.
@@ -27,23 +37,21 @@ export class RefreshTokensRepository {
    * @returns The prepared statement "update_refresh_token" is being returned.
    */
   update(updateRefreshTokensDTO: UpdateRefreshTokensDTO) {
-    const statement = this.db
+    return this.db
       .update(refreshTokenSchema.refreshTokens)
       .set({ token: updateRefreshTokensDTO.token })
       .where(
         eq(
           refreshTokenSchema.refreshTokens.user_id,
-          updateRefreshTokensDTO.userId,
+          updateRefreshTokensDTO.userID,
         ),
       )
       .returning()
       .prepare("update_refresh_token");
-
-    return statement;
   }
 
   delete(signOutDTO: SignOutDTO) {
-    const statement = this.db
+    return this.db
       .update(refreshTokenSchema.refreshTokens)
       .set({ token: null })
       .where(
@@ -54,7 +62,5 @@ export class RefreshTokensRepository {
       )
       .returning()
       .prepare("delete_refresh_token");
-
-    return statement;
   }
 }

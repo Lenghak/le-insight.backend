@@ -1,7 +1,7 @@
 import {
-  Body,
   ConflictException,
   Injectable,
+  Req,
   UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -12,7 +12,9 @@ import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.se
 import { UsersService } from "@/modules/users/users.service";
 
 import bycrypt from "bcrypt";
+import { FastifyRequest } from "fastify";
 
+import { SessionsService } from "../sessions/sessions.service";
 import { type SignInDTO } from "./dto/sign-in.dto";
 import { type SignOutDTO } from "./dto/sign-out.dto";
 import { type SignTokensDTO } from "./dto/sign-token.dto";
@@ -21,15 +23,16 @@ import { SignUpDTO } from "./dto/sign-up.dto";
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UsersService,
-    private readonly profileService: ProfilesService,
+    private readonly usersService: UsersService,
+    private readonly profilesService: ProfilesService,
+    private readonly sessionsService: SessionsService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly refreshTokensService: RefreshTokensService,
   ) {}
 
   async signIn(signInDTO: SignInDTO) {
-    const user = await this.userService.get({
+    const user = await this.usersService.get({
       by: "email",
       values: { email: signInDTO.email },
     });
@@ -47,7 +50,7 @@ export class AuthService {
 
     // assign new refreshTokens to the user's data
     await this.refreshTokensService.update({
-      userId: user.id,
+      userID: user.id,
       token: tokens.refreshToken,
     });
 
@@ -58,52 +61,53 @@ export class AuthService {
    * The signUp function checks if a user already exists, creates a new user account if they don't, signs
    * access and refresh tokens for the user, assigns the refresh token to the user's data, and returns
    * the user data and tokens.
-   * @param {CreateUserDTO} createUserDTO - The `createUserDTO` parameter is an object that contains the
+   * @param {SignUpDTO} signUpDTO - The `signUpDTO` parameter is an object that contains the
    * data needed to create a new user account. It typically includes properties such as `email`,
    * `password`, `name`, etc.
    * @returns an object with two properties: "data" and "tokens". The "data" property contains the user
    * object that was created, and the "tokens" property contains an object with two properties:
    * "accessToken" and "refreshToken".
    */
-  async signUp(@Body() signUpDTO: SignUpDTO) {
-    // check if user is already exist
-    const existingUser = await this.userService.get({
+  async signUp(@Req() req: FastifyRequest, signUpDTO: SignUpDTO) {
+    const existingUser = await this.usersService.get({
       by: "email",
       values: {
         email: signUpDTO.email,
       },
     });
 
-    // if user already exist -> throw conflictException
     if (existingUser) throw new ConflictException();
 
-    // hash the password and get the salt before store in
     const { digest, salt } = await this.hashData(signUpDTO.password);
 
-    // create an profile object
-    const profile = await this.profileService.create({
+    const profile = await this.profilesService.create({
       firstName: signUpDTO.firstName,
       lastName: signUpDTO.lastName,
     });
 
-    // else create another user's account
-    const user = await this.userService.create({
+    const user = await this.usersService.create({
       ...signUpDTO,
       profileID: profile[0].id,
       password: digest,
       salt: salt,
     });
 
-    // sign accessTokens and refreshTokens
+    const session = await this.sessionsService.create({
+      ip: req.ip,
+      not_afer: new Date().toISOString(),
+      userAgent: req.headers["user-agent"],
+      userID: user[0].id,
+    });
+
     const tokens = await this.signTokens({
       id: user[0].id,
       email: signUpDTO.email,
     });
 
-    // assign new refreshTokens to the user's data
     await this.refreshTokensService.update({
-      userId: user[0].id,
+      userID: user[0].id,
       token: tokens.refreshToken,
+      sessionID: session[0].id,
     });
 
     return {

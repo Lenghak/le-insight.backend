@@ -5,8 +5,11 @@ import {
   HttpStatus,
   Param,
   Post,
+  Req,
 } from "@nestjs/common";
 import { ApiParam, ApiTags } from "@nestjs/swagger";
+
+import { FastifyRequest } from "fastify";
 
 import { AuthService } from "./auth.service";
 import { SignInDTO } from "./dto/sign-in.dto";
@@ -20,8 +23,8 @@ export class AuthController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post("/sign-up")
-  async signUp(@Body() signUpDTO: SignUpDTO) {
-    return await this.auth.signUp(signUpDTO);
+  async signUp(@Req() req: FastifyRequest, @Body() signUpDTO: SignUpDTO) {
+    return await this.auth.signUp(req, signUpDTO);
   }
 
   @HttpCode(HttpStatus.OK)

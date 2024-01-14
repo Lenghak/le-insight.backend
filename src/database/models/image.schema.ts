@@ -20,7 +20,7 @@ export const images = pgTable(
     blurhash: varchar("blurhash", { length: 255 }),
 
     created_at: timestamp("created_at", { withTimezone: true }),
-    updated_at: timestamp("udpated_at", { withTimezone: true }),
+    updated_at: timestamp("updated_at", { withTimezone: true }),
   },
   (table) => ({
     images_idx: index("images_idx").onOnly(table.id),
