@@ -13,10 +13,14 @@ export const sessions = pgTable(
   "sessions",
   {
     id: uuid("id").notNull().unique().primaryKey().defaultRandom(),
-    user_id: uuid("user_id").references(() => users.id),
+    user_id: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" })
+      .notNull(),
     factor_id: uuid("factor_id"),
     not_after: timestamp("not_after", { withTimezone: true }),
-    refreshed_at: timestamp("refreshed_at", { withTimezone: false }),
+    refreshed_at: timestamp("refreshed_at", {
+      withTimezone: false,
+    }).defaultNow(),
     user_agent: text("user_agent"),
     ip: inet("ip"),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),

@@ -23,7 +23,10 @@ export const users = pgTable(
     id: uuid("id").unique().primaryKey().defaultRandom(),
     profile_id: uuid("profile_id")
       .unique()
-      .references(() => profiles.id),
+      .references(() => profiles.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
 
     aud: varchar("aud", { length: 255 }),
 

@@ -19,8 +19,8 @@ export const images = pgTable(
     alt_description: varchar("alt_description", { length: 255 }).notNull(),
     blurhash: varchar("blurhash", { length: 255 }),
 
-    created_at: timestamp("created_at", { withTimezone: true }),
-    updated_at: timestamp("updated_at", { withTimezone: true }),
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
   (table) => ({
     images_idx: index("images_idx").onOnly(table.id),
