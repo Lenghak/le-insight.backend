@@ -81,8 +81,10 @@ export class AuthService {
     const { digest, salt } = await this.hashData(signUpDTO.password);
 
     const profile = await this.profilesService.create({
-      firstName: signUpDTO.firstName,
-      lastName: signUpDTO.lastName,
+      createProfilesDTO: {
+        firstName: signUpDTO.firstName,
+        lastName: signUpDTO.lastName,
+      },
     });
 
     const user = await this.usersService.create({
@@ -94,7 +96,7 @@ export class AuthService {
 
     const session = await this.sessionsService.create({
       ip: req.ip,
-      not_afer: new Date().toISOString(),
+      notAfter: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       userAgent: req.headers["user-agent"],
       userID: user[0].id,
     });

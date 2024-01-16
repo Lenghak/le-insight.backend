@@ -15,10 +15,14 @@ export class RefreshTokensService {
   async update(updateRefreshTokensDTO: UpdateRefreshTokensDTO) {
     return await this.refreshTokensRepository
       .update(updateRefreshTokensDTO)
-      .execute();
+      .execute({
+        userID: updateRefreshTokensDTO.userID,
+      });
   }
 
   async delete(signOutDTO: SignOutDTO) {
-    return await this.refreshTokensRepository.delete(signOutDTO).execute();
+    return await this.refreshTokensRepository.delete().execute({
+      userID: signOutDTO.userID,
+    });
   }
 }

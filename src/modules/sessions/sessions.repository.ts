@@ -3,9 +3,12 @@ import { Inject, Injectable } from "@nestjs/common";
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as sessionSchemas from "@/database/models/auth/sessions.schema";
 
-import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
-
-import { type CreateSessionsDTO } from "./dto/create-sessions.dto";
+import { type ExtractTablesWithRelations, sql } from "drizzle-orm";
+import { type PgTransaction } from "drizzle-orm/pg-core";
+import {
+  type PostgresJsDatabase,
+  type PostgresJsQueryResultHKT,
+} from "drizzle-orm/postgres-js";
 
 @Injectable()
 export class SessionsRepository {
@@ -14,10 +17,23 @@ export class SessionsRepository {
     private readonly db: PostgresJsDatabase<typeof sessionSchemas>,
   ) {}
 
-  create(createSessionsDTO: CreateSessionsDTO) {
-    return this.db
+  create(
+    db?:
+      | PostgresJsDatabase
+      | PgTransaction<
+          PostgresJsQueryResultHKT,
+          Record<string, never>,
+          ExtractTablesWithRelations<Record<string, never>>
+        >,
+  ) {
+    return (db ?? this.db)
       .insert(sessionSchemas.sessions)
-      .values(createSessionsDTO)
+      .values({
+        user_id: sql.placeholder("userID"),
+        ip: sql.placeholder("ip"),
+        not_after: sql.placeholder("notAfter"),
+        user_agent: sql.placeholder("userAgent"),
+      })
       .returning()
       .prepare("insert_session");
   }

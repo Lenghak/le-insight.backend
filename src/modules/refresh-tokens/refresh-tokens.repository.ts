@@ -1,15 +1,22 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { type SignOutDTO } from "@/modules/auth/dto/sign-out.dto";
-
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as refreshTokenSchema from "@/database/models/auth/refresh-tokens.schema";
 import type * as userSchema from "@/database/models/auth/users.schema";
 
-import { and, eq, not } from "drizzle-orm";
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import {
+  and,
+  eq,
+  type ExtractTablesWithRelations,
+  not,
+  sql,
+} from "drizzle-orm";
+import { type PgTransaction } from "drizzle-orm/pg-core";
+import {
+  PostgresJsDatabase,
+  type PostgresJsQueryResultHKT,
+} from "drizzle-orm/postgres-js";
 
-import { type CreateRefreshTokensDTO } from "./dto/create-refresh-tokens.dto";
 import { type UpdateRefreshTokensDTO } from "./dto/update-refresh-tokens.dto";
 
 @Injectable()
@@ -21,10 +28,22 @@ export class RefreshTokensRepository {
     >,
   ) {}
 
-  create(createRefreshTokensDTO: CreateRefreshTokensDTO) {
-    return this.db
+  create(
+    db?:
+      | PostgresJsDatabase
+      | PgTransaction<
+          PostgresJsQueryResultHKT,
+          Record<string, never>,
+          ExtractTablesWithRelations<Record<string, never>>
+        >,
+  ) {
+    return (db ?? this.db)
       .insert(refreshTokenSchema.refreshTokens)
-      .values(createRefreshTokensDTO)
+      .values({
+        user_id: sql.placeholder("userID"),
+        session_id: sql.placeholder("sessionID"),
+        token: sql.placeholder("token"),
+      })
       .returning()
       .prepare("insert_refresh_token");
   }
@@ -41,23 +60,23 @@ export class RefreshTokensRepository {
       .update(refreshTokenSchema.refreshTokens)
       .set({ token: updateRefreshTokensDTO.token })
       .where(
-        eq(
-          refreshTokenSchema.refreshTokens.user_id,
-          updateRefreshTokensDTO.userID,
-        ),
+        eq(refreshTokenSchema.refreshTokens.user_id, sql.placeholder("userID")),
       )
       .returning()
       .prepare("update_refresh_token");
   }
 
-  delete(signOutDTO: SignOutDTO) {
+  delete() {
     return this.db
       .update(refreshTokenSchema.refreshTokens)
       .set({ token: null })
       .where(
         and(
           not(eq(refreshTokenSchema.refreshTokens.user_id, null)),
-          eq(refreshTokenSchema.refreshTokens.user_id, signOutDTO.userID),
+          eq(
+            refreshTokenSchema.refreshTokens.user_id,
+            sql.placeholder("userId"),
+          ),
         ),
       )
       .returning()

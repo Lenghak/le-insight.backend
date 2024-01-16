@@ -7,7 +7,7 @@ import { SessionsService } from "./sessions.service";
 
 @Module({
   imports: [DrizzleModule],
-  providers: [SessionsRepository, SessionsService],
+  providers: [SessionsService, SessionsRepository],
   exports: [SessionsService],
 })
 export class SessionsModule {}

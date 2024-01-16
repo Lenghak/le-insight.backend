@@ -27,5 +27,5 @@ export class CreateSessionsDTO {
   @IsDateString()
   @IsNotEmpty()
   @MaxLength(255)
-  not_afer: string;
+  notAfter: Date;
 }

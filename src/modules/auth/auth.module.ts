@@ -10,6 +10,7 @@ import { RefreshTokensModule } from "../refresh-tokens/refresh-tokens.module";
 import { SessionsModule } from "../sessions/sessions.module";
 import { UsersModule } from "../users/users.module";
 import { AuthController } from "./auth.controller";
+import { AuthRepository } from "./auth.repository";
 import { AuthService } from "./auth.service";
 import { AccessTokenStrategy } from "./strategies/access.strategy";
 import { RefreshTokensStrategy } from "./strategies/refresh.strategy";
@@ -35,7 +36,12 @@ import { RefreshTokensStrategy } from "./strategies/refresh.strategy";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AccessTokenStrategy, RefreshTokensStrategy],
+  providers: [
+    AuthService,
+    AuthRepository,
+    AccessTokenStrategy,
+    RefreshTokensStrategy,
+  ],
   exports: [PassportModule, JwtModule],
 })
 export class AuthModule {}
