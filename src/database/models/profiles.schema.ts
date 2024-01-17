@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 import { images } from "./image.schema";
 
@@ -16,6 +16,9 @@ export const profiles = pgTable("profiles", {
   bio: varchar("bio", { length: 1023 }),
   gender: varchar("gender", { length: 255 }),
   sex: sexEnum("sex"),
+
+  created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
 
 export const profileRelations = relations(profiles, ({ one }) => ({

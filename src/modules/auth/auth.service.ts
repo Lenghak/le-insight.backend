@@ -81,8 +81,10 @@ export class AuthService {
     const { digest, salt } = await this.hashData(signUpDTO.password);
 
     const profile = await this.profilesService.create({
-      firstName: signUpDTO.firstName,
-      lastName: signUpDTO.lastName,
+      createProfilesDTO: {
+        firstName: signUpDTO.firstName,
+        lastName: signUpDTO.lastName,
+      },
     });
 
     const user = await this.usersService.create({
@@ -94,7 +96,6 @@ export class AuthService {
 
     const session = await this.sessionsService.create({
       ip: req.ip,
-      not_afer: new Date().toISOString(),
       userAgent: req.headers["user-agent"],
       userID: user[0].id,
     });
@@ -106,7 +107,7 @@ export class AuthService {
 
     await this.refreshTokensService.update({
       userID: user[0].id,
-      token: tokens.refreshToken,
+      token: tokens ? tokens.refreshToken : "",
       sessionID: session[0].id,
     });
 
@@ -118,6 +119,7 @@ export class AuthService {
 
   async signOut(signOutDTO: SignOutDTO) {
     // -> remove sessions & token from request
+    // eslint-disable-next-line drizzle/enforce-delete-with-where
     return await this.refreshTokensService.delete(signOutDTO);
   }
 

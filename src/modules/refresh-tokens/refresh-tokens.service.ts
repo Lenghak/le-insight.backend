@@ -15,10 +15,15 @@ export class RefreshTokensService {
   async update(updateRefreshTokensDTO: UpdateRefreshTokensDTO) {
     return await this.refreshTokensRepository
       .update(updateRefreshTokensDTO)
-      .execute();
+      .execute({
+        userID: updateRefreshTokensDTO.userID,
+      });
   }
 
   async delete(signOutDTO: SignOutDTO) {
-    return await this.refreshTokensRepository.delete(signOutDTO).execute();
+    // eslint-disable-next-line drizzle/enforce-delete-with-where
+    return await this.refreshTokensRepository.delete().execute({
+      userID: signOutDTO.userID,
+    });
   }
 }

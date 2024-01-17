@@ -9,13 +9,20 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { sessions } from "./sessions.schema";
+import { users } from "./users.schema";
 
 export const refreshTokens = pgTable(
   "refresh_tokens",
   {
     id: uuid("id").unique().primaryKey().defaultRandom(),
     token: varchar("token", { length: 255 }),
-    user_id: uuid("user_id").unique(),
+    user_id: uuid("user_id")
+      .unique()
+      .references(() => users.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      })
+      .notNull(),
     revoked: boolean("revoked").default(false),
     // have no idea what is parent
     parent: varchar("parent", { length: 255 }),

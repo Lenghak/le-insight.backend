@@ -1,11 +1,4 @@
-import {
-  IsDateString,
-  IsIP,
-  IsNotEmpty,
-  IsString,
-  IsUUID,
-  MaxLength,
-} from "class-validator";
+import { IsIP, IsNotEmpty, IsString, IsUUID, MaxLength } from "class-validator";
 
 export class CreateSessionsDTO {
   @IsString()
@@ -23,9 +16,4 @@ export class CreateSessionsDTO {
   @IsNotEmpty()
   @MaxLength(255)
   ip: string;
-
-  @IsDateString()
-  @IsNotEmpty()
-  @MaxLength(255)
-  not_afer: string;
 }

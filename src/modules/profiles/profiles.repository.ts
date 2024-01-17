@@ -1,12 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { type CreateProfileDTO } from "@/modules/profiles/dto/create-profile.dto";
-
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as schema from "@/database/models/profiles.schema";
 
-import { eq } from "drizzle-orm";
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { eq, type ExtractTablesWithRelations, sql } from "drizzle-orm";
+import { type PgTransaction } from "drizzle-orm/pg-core";
+import {
+  PostgresJsDatabase,
+  type PostgresJsQueryResultHKT,
+} from "drizzle-orm/postgres-js";
 
 import { type Profiles } from "./types/profiles.type";
 
@@ -17,12 +19,20 @@ export class ProfilesRepository {
     private readonly db: PostgresJsDatabase<typeof schema>,
   ) {}
 
-  create(createProfileDTO: CreateProfileDTO) {
-    return this.db
+  create(
+    db?:
+      | PostgresJsDatabase
+      | PgTransaction<
+          PostgresJsQueryResultHKT,
+          Record<string, never>,
+          ExtractTablesWithRelations<Record<string, never>>
+        >,
+  ) {
+    return (db ?? this.db)
       .insert(schema.profiles)
       .values({
-        first_name: createProfileDTO.firstName,
-        last_name: createProfileDTO.lastName,
+        first_name: sql.placeholder("firstName"),
+        last_name: sql.placeholder("lastName"),
       })
       .returning()
       .prepare("insert_profile");
