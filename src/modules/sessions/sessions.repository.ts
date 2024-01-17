@@ -29,10 +29,10 @@ export class SessionsRepository {
     return (db ?? this.db)
       .insert(sessionSchemas.sessions)
       .values({
-        user_id: sql.placeholder("userID"),
-        ip: sql.placeholder("ip"),
-        not_after: sql.placeholder("notAfter"),
-        user_agent: sql.placeholder("userAgent"),
+        user_id: sql.placeholder<"userID">("userID"),
+        ip: sql.placeholder<"ip">("ip"),
+        not_after: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        user_agent: sql.placeholder<"userAgent">("userAgent"),
       })
       .returning()
       .prepare("insert_session");

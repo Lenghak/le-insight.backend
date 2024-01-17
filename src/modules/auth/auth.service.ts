@@ -96,7 +96,6 @@ export class AuthService {
 
     const session = await this.sessionsService.create({
       ip: req.ip,
-      notAfter: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       userAgent: req.headers["user-agent"],
       userID: user[0].id,
     });
@@ -108,7 +107,7 @@ export class AuthService {
 
     await this.refreshTokensService.update({
       userID: user[0].id,
-      token: tokens.refreshToken,
+      token: tokens ? tokens.refreshToken : "",
       sessionID: session[0].id,
     });
 
@@ -120,6 +119,7 @@ export class AuthService {
 
   async signOut(signOutDTO: SignOutDTO) {
     // -> remove sessions & token from request
+    // eslint-disable-next-line drizzle/enforce-delete-with-where
     return await this.refreshTokensService.delete(signOutDTO);
   }
 

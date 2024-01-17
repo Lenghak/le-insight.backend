@@ -19,7 +19,7 @@ export const sessions = pgTable(
     factor_id: uuid("factor_id"),
     not_after: timestamp("not_after", { withTimezone: true }),
     refreshed_at: timestamp("refreshed_at", {
-      withTimezone: false,
+      withTimezone: true,
     }).defaultNow(),
     user_agent: text("user_agent"),
     ip: inet("ip"),

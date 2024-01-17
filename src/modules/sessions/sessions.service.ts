@@ -8,8 +8,10 @@ export class SessionsService {
   constructor(private readonly sessionsRepository: SessionsRepository) {}
 
   async create(createSesstionDTO: CreateSessionsDTO) {
-    return await this.sessionsRepository
-      .create()
-      .execute({ ...createSesstionDTO });
+    return await this.sessionsRepository.create().execute({
+      userID: createSesstionDTO.userID,
+      ip: createSesstionDTO.ip,
+      userAgent: createSesstionDTO.userAgent,
+    });
   }
 }
