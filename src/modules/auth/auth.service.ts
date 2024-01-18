@@ -41,12 +41,15 @@ export class AuthService {
 
     const isPasswordMatched = await bycrypt.compare(
       signInDTO.password,
-      user.encrypted_password,
+      user.encrypted_password as string,
     );
 
     if (!isPasswordMatched) throw new UnauthorizedException();
 
-    const tokens = await this.signTokens({ id: user.id, email: user.email });
+    const tokens = await this.signTokens({
+      id: user.id,
+      email: user.email as string,
+    });
 
     // assign new refreshTokens to the user's data
     await this.refreshTokensService.update({
@@ -96,7 +99,7 @@ export class AuthService {
 
     const session = await this.sessionsService.create({
       ip: req.ip,
-      userAgent: req.headers["user-agent"],
+      userAgent: req.headers["user-agent"] ?? "",
       userID: user[0].id,
     });
 
@@ -119,7 +122,6 @@ export class AuthService {
 
   async signOut(signOutDTO: SignOutDTO) {
     // -> remove sessions & token from request
-    // eslint-disable-next-line drizzle/enforce-delete-with-where
     return await this.refreshTokensService.delete(signOutDTO);
   }
 
