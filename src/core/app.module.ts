@@ -21,6 +21,7 @@ import { LoggerMiddleware } from "./app.middleware";
       envFilePath: [".env"],
       validationSchema: envSchema,
       validate: envSchema.parse,
+      isGlobal: true,
     }),
     AuthModule,
     DrizzleModule,

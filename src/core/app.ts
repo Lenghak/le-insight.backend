@@ -1,4 +1,5 @@
 import { ValidationPipe } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import {
   FastifyAdapter,
@@ -33,6 +34,8 @@ async function bootstrap() {
     }),
   );
 
+  const configService = app.get(ConfigService);
+
   // swagger
   const swaggerConfig = new DocumentBuilder()
     .setTitle("Le-Insight")
@@ -48,7 +51,7 @@ async function bootstrap() {
 
   SwaggerModule.setup("docs", app, document);
 
-  await app.listen(3000);
+  await app.listen(configService.get("PORT") ?? 8000);
 }
 
 bootstrap();

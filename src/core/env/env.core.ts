@@ -9,6 +9,8 @@ export const envSchema = z.object({
 
   ACCESS_TOKEN_SECRET: z.string().min(1),
   REFRESH_TOKEN_SECRET: z.string().min(1),
+
+  PORT: z.coerce.number().min(1),
 });
 
 export default () => envSchema.parse(process.env);
