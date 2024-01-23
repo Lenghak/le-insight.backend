@@ -12,7 +12,6 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/core/app",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "prepare": "husky install",
     "cruise": "npx depcruise src -p",
     "db:seed": "tsx ./src/core/app.seeder.ts",
     "db:generate": "pnpm drizzle-kit generate:pg",
