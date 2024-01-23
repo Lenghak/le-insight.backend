@@ -1,5 +1,4 @@
 import { ValidationPipe } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import {
   FastifyAdapter,
@@ -23,8 +22,6 @@ async function bootstrap() {
       trustProxy: ["127.0.0.1"],
     }),
   );
-
-  const configService = app.get(ConfigService);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -53,7 +50,7 @@ async function bootstrap() {
 
   // await app.register(fastifyCsrfProtection);
 
-  await app.listen(configService.get("NODE_ENV") === "dev" ? 8000 : 443);
+  await app.listen(8000);
 }
 
 bootstrap()
