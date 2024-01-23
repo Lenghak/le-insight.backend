@@ -19,7 +19,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({
-      trustProxy: ["127.0.0.1"],
+      trustProxy: ["127.0.0.1", "https://le-insight-backend.onrender.com"],
     }),
   );
 
@@ -48,9 +48,7 @@ async function bootstrap() {
 
   SwaggerModule.setup("docs", app, document);
 
-  // await app.register(fastifyCsrfProtection);
-
-  await app.listen(8000);
+  await app.listen(3000);
 }
 
 bootstrap()
