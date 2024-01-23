@@ -12,6 +12,10 @@ export const envSchema = z.object({
 
   HOST: z.string().min(1),
   PORT: z.string().min(1),
+
+  REDIS_HOST: z.string().min(1),
+  REDIS_PORT: z.string().min(1),
+  REDIT_TTL: z.string().min(1),
 });
 
 export default () => envSchema.parse(process.env);
