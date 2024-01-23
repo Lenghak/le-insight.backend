@@ -8,7 +8,7 @@ import {
   and,
   eq,
   type ExtractTablesWithRelations,
-  not,
+  isNotNull,
   sql,
 } from "drizzle-orm";
 import { type PgTransaction } from "drizzle-orm/pg-core";
@@ -72,7 +72,7 @@ export class RefreshTokensRepository {
       .set({ token: null })
       .where(
         and(
-          not(eq(refreshTokenSchema.refreshTokens.user_id, null)),
+          isNotNull(refreshTokenSchema.refreshTokens.user_id),
           eq(
             refreshTokenSchema.refreshTokens.user_id,
             sql.placeholder("userId"),

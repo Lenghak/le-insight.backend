@@ -36,6 +36,7 @@ async function bootstrap() {
     }),
   );
 
+  // swagger
   const swaggerConfig = new DocumentBuilder()
     .setTitle("Le-Insight")
     .setDescription(
@@ -49,6 +50,8 @@ async function bootstrap() {
   });
 
   SwaggerModule.setup("docs", app, document);
+
+  // await app.register(fastifyCsrfProtection);
 
   await app.listen(configService.get("NODE_ENV") === "dev" ? 8000 : 443);
 }

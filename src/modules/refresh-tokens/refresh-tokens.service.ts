@@ -21,7 +21,6 @@ export class RefreshTokensService {
   }
 
   async delete(signOutDTO: SignOutDTO) {
-    // eslint-disable-next-line drizzle/enforce-delete-with-where
     return await this.refreshTokensRepository.delete().execute({
       userID: signOutDTO.userID,
     });
