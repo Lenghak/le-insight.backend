@@ -19,7 +19,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({
-      trustProxy: ["127.0.0.1", "https://le-insight-backend.onrender.com"],
+      trustProxy: ["127.0.0.1"],
     }),
   );
 
@@ -51,6 +51,4 @@ async function bootstrap() {
   await app.listen(3000);
 }
 
-bootstrap()
-  .then((_) => undefined)
-  .catch((_) => undefined);
+bootstrap();
