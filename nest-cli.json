@@ -7,5 +7,6 @@
     "builder": "swc",
     "typeCheck": true
   },
+
   "entryFile": "./core/app"
 }
