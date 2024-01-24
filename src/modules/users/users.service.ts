@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import { type Users } from "@/modules/users/types/users.type";
 
-import type * as userSchema from "@/database/models/auth/users.schema";
+import type * as userSchema from "@/database/models/auth/users.model";
 import { type DatabaseType } from "@/database/types/db.types";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";

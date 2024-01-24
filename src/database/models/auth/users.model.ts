@@ -10,7 +10,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-import { profiles } from "../profiles.schema";
+import { profiles } from "../profiles.model";
 
 export const userRoleEnum = pgEnum("user_role", ["GUEST", "USER", "ADMIN"]);
 

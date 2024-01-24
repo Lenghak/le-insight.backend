@@ -8,8 +8,8 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-import { sessions } from "./sessions.schema";
-import { users } from "./users.schema";
+import { sessions } from "./sessions.model";
+import { users } from "./users.model";
 
 export const refreshTokens = pgTable(
   "refresh_tokens",
