@@ -37,12 +37,7 @@ import { LoggerMiddleware } from "./app.middleware";
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         store: (await redisStore({
-          password: configService.get("REDIS_PASSWORD"),
-          socket: {
-            host: configService.get("REDIS_HOSTNAME"),
-            port: +configService.get("REDIS_PORT"),
-            tls: configService.get("REDIS_TLS"),
-          },
+          url: configService.get("REDIS_URL"),
           ttl: configService.get("REDIS_TTL"),
         })) as unknown as CacheStore,
         isGlobal: true,
