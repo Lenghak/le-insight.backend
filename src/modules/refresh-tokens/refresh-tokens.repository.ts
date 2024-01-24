@@ -3,19 +3,10 @@ import { Inject, Injectable } from "@nestjs/common";
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as refreshTokenSchema from "@/database/models/auth/refresh-tokens.schema";
 import type * as userSchema from "@/database/models/auth/users.schema";
+import { type DatabaseType } from "@/database/types/db.types";
 
-import {
-  and,
-  eq,
-  type ExtractTablesWithRelations,
-  isNotNull,
-  sql,
-} from "drizzle-orm";
-import { type PgTransaction } from "drizzle-orm/pg-core";
-import {
-  PostgresJsDatabase,
-  type PostgresJsQueryResultHKT,
-} from "drizzle-orm/postgres-js";
+import { and, eq, isNotNull, sql } from "drizzle-orm";
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import { type UpdateRefreshTokensDTO } from "./dto/update-refresh-tokens.dto";
 
@@ -28,15 +19,7 @@ export class RefreshTokensRepository {
     >,
   ) {}
 
-  create(
-    db?:
-      | PostgresJsDatabase
-      | PgTransaction<
-          PostgresJsQueryResultHKT,
-          Record<string, never>,
-          ExtractTablesWithRelations<Record<string, never>>
-        >,
-  ) {
+  create(db?: DatabaseType) {
     return (db ?? this.db)
       .insert(refreshTokenSchema.refreshTokens)
       .values({
@@ -55,8 +38,8 @@ export class RefreshTokensRepository {
    * an object that contains the following properties:
    * @returns The prepared statement "update_refresh_token" is being returned.
    */
-  update(updateRefreshTokensDTO: UpdateRefreshTokensDTO) {
-    return this.db
+  update(updateRefreshTokensDTO: UpdateRefreshTokensDTO, db?: DatabaseType) {
+    return (db ?? this.db)
       .update(refreshTokenSchema.refreshTokens)
       .set({ token: updateRefreshTokensDTO.token })
       .where(
@@ -66,8 +49,8 @@ export class RefreshTokensRepository {
       .prepare("update_refresh_token");
   }
 
-  delete() {
-    return this.db
+  delete(db?: DatabaseType) {
+    return (db ?? this.db)
       .update(refreshTokenSchema.refreshTokens)
       .set({ token: null })
       .where(

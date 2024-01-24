@@ -1,14 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
-import * as schema from "@/database/models/profiles.schema";
+import * as profileSchema from "@/database/models/profiles.schema";
+import { type DatabaseType } from "@/database/types/db.types";
 
-import { eq, type ExtractTablesWithRelations, sql } from "drizzle-orm";
-import { type PgTransaction } from "drizzle-orm/pg-core";
-import {
-  PostgresJsDatabase,
-  type PostgresJsQueryResultHKT,
-} from "drizzle-orm/postgres-js";
+import { eq, sql } from "drizzle-orm";
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import { type Profiles } from "./types/profiles.type";
 
@@ -16,20 +13,12 @@ import { type Profiles } from "./types/profiles.type";
 export class ProfilesRepository {
   constructor(
     @Inject(DRIZZLE_ASYNC_PROVIDER)
-    private readonly db: PostgresJsDatabase<typeof schema>,
+    private readonly db: PostgresJsDatabase<typeof profileSchema>,
   ) {}
 
-  create(
-    db?:
-      | PostgresJsDatabase
-      | PgTransaction<
-          PostgresJsQueryResultHKT,
-          Record<string, never>,
-          ExtractTablesWithRelations<Record<string, never>>
-        >,
-  ) {
+  create(db?: DatabaseType) {
     return (db ?? this.db)
-      .insert(schema.profiles)
+      .insert(profileSchema.profiles)
       .values({
         first_name: sql.placeholder("firstName"),
         last_name: sql.placeholder("lastName"),
@@ -38,8 +27,10 @@ export class ProfilesRepository {
       .prepare("insert_profile");
   }
 
-  getAll() {
-    return this.db.query.profiles
+  getAll(db?: DatabaseType) {
+    return (
+      (db as unknown as DatabaseType<typeof profileSchema>) ?? this.db
+    ).query.profiles
       .findMany({
         limit: 50,
       })
@@ -48,7 +39,7 @@ export class ProfilesRepository {
 
   get({ by }: { by: keyof Profiles }) {
     return this.db.query.profiles
-      .findFirst({ where: eq(schema.profiles, by) })
+      .findFirst({ where: eq(profileSchema.profiles, by) })
       .prepare("get_a_profile");
   }
 }

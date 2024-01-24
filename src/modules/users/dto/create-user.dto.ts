@@ -1,28 +1,13 @@
-import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
+import { SignInSchema } from "@/modules/auth/dto/sign-in.dto";
 
-import { SignInDTO } from "@/modules/auth/dto/sign-in.dto";
+import { createZodDto } from "nestjs-zod";
+import { z } from "nestjs-zod/z";
 
-import { IsNotEmpty, IsString, IsUUID } from "class-validator";
+export const CreateUserSchema = SignInSchema.extend({
+  firstName: z.string().max(255).trim(),
+  lastName: z.string().max(255).trim(),
+  salt: z.string().max(255),
+  profileID: z.string().uuid().max(255),
+});
 
-export class CreateUserDTO extends SignInDTO {
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty()
-  firstName: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty()
-  lastName: string;
-
-  @ApiHideProperty()
-  @IsString()
-  @IsNotEmpty()
-  salt: string;
-
-  @ApiHideProperty()
-  @IsUUID()
-  @IsString()
-  @IsNotEmpty()
-  profileID: string;
-}
+export class CreateUserDTO extends createZodDto(CreateUserSchema) {}

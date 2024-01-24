@@ -1,11 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { type ExtractTablesWithRelations } from "drizzle-orm";
-import { type PgTransaction } from "drizzle-orm/pg-core";
-import {
-  type PostgresJsDatabase,
-  type PostgresJsQueryResultHKT,
-} from "drizzle-orm/postgres-js";
+import { type DatabaseType } from "@/database/types/db.types";
 
 import { type CreateProfileDTO } from "./dto/create-profile.dto";
 import { ProfilesRepository } from "./profiles.repository";
@@ -16,23 +11,18 @@ export class ProfilesService {
 
   async create({
     createProfilesDTO,
+    db,
   }: {
     createProfilesDTO: CreateProfileDTO;
-    db?:
-      | PostgresJsDatabase
-      | PgTransaction<
-          PostgresJsQueryResultHKT,
-          Record<string, never>,
-          ExtractTablesWithRelations<Record<string, never>>
-        >;
+    db?: DatabaseType<Record<string, never>>;
   }) {
-    return await this.profileRepository.create().execute({
+    return await this.profileRepository.create(db).execute({
       firstName: createProfilesDTO.firstName,
       lastName: createProfilesDTO.lastName,
     });
   }
 
-  async getAll() {
-    return await this.profileRepository.getAll().execute();
+  async getAll(db?: DatabaseType) {
+    return await this.profileRepository.getAll(db).execute();
   }
 }

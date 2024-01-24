@@ -1,33 +1,22 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
-import * as sessionSchemas from "@/database/models/auth/sessions.schema";
+import * as sessionSchema from "@/database/models/auth/sessions.schema";
+import { type DatabaseType } from "@/database/types/db.types";
 
-import { type ExtractTablesWithRelations, sql } from "drizzle-orm";
-import { type PgTransaction } from "drizzle-orm/pg-core";
-import {
-  type PostgresJsDatabase,
-  type PostgresJsQueryResultHKT,
-} from "drizzle-orm/postgres-js";
+import { sql } from "drizzle-orm";
+import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 @Injectable()
 export class SessionsRepository {
   constructor(
     @Inject(DRIZZLE_ASYNC_PROVIDER)
-    private readonly db: PostgresJsDatabase<typeof sessionSchemas>,
+    private readonly db: PostgresJsDatabase<typeof sessionSchema>,
   ) {}
 
-  create(
-    db?:
-      | PostgresJsDatabase
-      | PgTransaction<
-          PostgresJsQueryResultHKT,
-          Record<string, never>,
-          ExtractTablesWithRelations<Record<string, never>>
-        >,
-  ) {
+  create(db?: DatabaseType) {
     return (db ?? this.db)
-      .insert(sessionSchemas.sessions)
+      .insert(sessionSchema.sessions)
       .values({
         user_id: sql.placeholder<"userID">("userID"),
         ip: sql.placeholder<"ip">("ip"),

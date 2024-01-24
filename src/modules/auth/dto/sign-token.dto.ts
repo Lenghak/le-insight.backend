@@ -1,11 +1,11 @@
-import { IsEmail, IsString, IsUUID } from "class-validator";
+import { createZodDto } from "nestjs-zod";
+import { z } from "nestjs-zod/z";
 
-export class SignTokensDTO {
-  @IsString()
-  @IsUUID()
-  id: string;
+export const SignTokensSchema = z
+  .object({
+    userID: z.string().uuid(),
+    email: z.string().email().max(255),
+  })
+  .required();
 
-  @IsString()
-  @IsEmail()
-  email: string;
-}
+export class SignTokensDTO extends createZodDto(SignTokensSchema) {}

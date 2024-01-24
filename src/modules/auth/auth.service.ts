@@ -47,7 +47,7 @@ export class AuthService {
     if (!isPasswordMatched) throw new UnauthorizedException();
 
     const tokens = await this.signTokens({
-      id: user.id,
+      userID: user.id,
       email: user.email as string,
     });
 
@@ -104,7 +104,7 @@ export class AuthService {
     });
 
     const tokens = await this.signTokens({
-      id: user[0].id,
+      userID: user[0].id,
       email: signUpDTO.email,
     });
 
