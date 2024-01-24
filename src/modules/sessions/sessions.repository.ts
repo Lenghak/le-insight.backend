@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
-import * as sessionSchema from "@/database/models/auth/sessions.schema";
+import * as sessionSchema from "@/database/models/auth/sessions.model";
 import { type DatabaseType } from "@/database/types/db.types";
 
 import { sql } from "drizzle-orm";

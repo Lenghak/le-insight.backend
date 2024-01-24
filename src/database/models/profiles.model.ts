@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
 import { pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
-import { images } from "./image.schema";
+import { images } from "./image.model";
 
 export const sexEnum = pgEnum("sexEnum", ["MALE", "FEMALE", "RNTS"]);
 

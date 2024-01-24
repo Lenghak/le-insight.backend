@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
-import * as refreshTokenSchema from "@/database/models/auth/refresh-tokens.schema";
-import type * as userSchema from "@/database/models/auth/users.schema";
+import * as refreshTokenSchema from "@/database/models/auth/refresh-tokens.model";
+import type * as userSchema from "@/database/models/auth/users.model";
 import { type DatabaseType } from "@/database/types/db.types";
 
 import { and, eq, isNotNull, sql } from "drizzle-orm";
