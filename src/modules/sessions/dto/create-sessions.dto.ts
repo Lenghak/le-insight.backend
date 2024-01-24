@@ -1,19 +1,10 @@
-import { IsIP, IsNotEmpty, IsString, IsUUID, MaxLength } from "class-validator";
+import { createZodDto } from "nestjs-zod";
+import { z } from "nestjs-zod/z";
 
-export class CreateSessionsDTO {
-  @IsString()
-  @IsUUID()
-  @IsNotEmpty()
-  userID: string;
+export const CreateSessionSchema = z.object({
+  userID: z.string().uuid().max(255),
+  userAgent: z.string(),
+  ip: z.string().ip().max(255),
+});
 
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(255)
-  userAgent: string;
-
-  @IsString()
-  @IsIP()
-  @IsNotEmpty()
-  @MaxLength(255)
-  ip: string;
-}
+export class CreateSessionsDTO extends createZodDto(CreateSessionSchema) {}

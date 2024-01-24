@@ -1,3 +1,7 @@
-import { CreateRefreshTokensDTO } from "./create-refresh-tokens.dto";
+import { createZodDto } from "nestjs-zod";
 
-export class UpdateRefreshTokensDTO extends CreateRefreshTokensDTO {}
+import { CreateRefreshTokensSchema } from "./create-refresh-tokens.dto";
+
+export class UpdateRefreshTokensDTO extends createZodDto(
+  CreateRefreshTokensSchema.partial({ sessionID: true }),
+) {}

@@ -1,18 +1,14 @@
-import { IsJWT, IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { createZodDto } from "nestjs-zod";
+import { z } from "nestjs-zod/z";
 
-export class CreateRefreshTokensDTO {
-  @IsString()
-  @IsJWT()
-  @IsNotEmpty()
-  token?: string;
+export const CreateRefreshTokensSchema = z
+  .object({
+    token: z.string(),
+    userID: z.string().uuid().max(255),
+    sessionID: z.string().uuid().max(255),
+  })
+  .required();
 
-  @IsString()
-  @IsUUID()
-  @IsNotEmpty()
-  userID?: string;
-
-  @IsString()
-  @IsUUID()
-  @IsNotEmpty()
-  sessionID?: string;
-}
+export class CreateRefreshTokensDTO extends createZodDto(
+  CreateRefreshTokensSchema,
+) {}

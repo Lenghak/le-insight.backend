@@ -2,6 +2,9 @@ import { Injectable } from "@nestjs/common";
 
 import { type Users } from "@/modules/users/types/users.type";
 
+import type * as userSchema from "@/database/models/auth/users.schema";
+import { type DatabaseType } from "@/database/types/db.types";
+
 import { type CreateUserDTO } from "./dto/create-user.dto";
 import { type UpdateUserDTO } from "./dto/update-user.dto";
 import { UsersRepository } from "./users.repository";
@@ -10,8 +13,8 @@ import { UsersRepository } from "./users.repository";
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  async create(createUserDTO: CreateUserDTO) {
-    return await this.usersRepository.create(createUserDTO).execute();
+  async create(createUserDTO: CreateUserDTO, db?: DatabaseType) {
+    return await this.usersRepository.create(createUserDTO, db).execute();
   }
 
   /**
@@ -19,9 +22,9 @@ export class UsersService {
    * @returns The `findAll()` function is returning the result of the database query, which is a list
    * of all the records from the `users` in the `schema`.
    */
-  async getAll() {
+  async getAll(db?: DatabaseType<typeof userSchema>) {
     // TODO: include pagination
-    return await this.usersRepository.getAll().execute();
+    return await this.usersRepository.getAll(db).execute();
   }
 
   /**
@@ -41,8 +44,8 @@ export class UsersService {
     return await this.usersRepository.get({ by }).execute(values);
   }
 
-  async update(updateUserDTO: UpdateUserDTO, id: string) {
-    return this.usersRepository.update(updateUserDTO).execute({ id });
+  async update(updateUserDTO: UpdateUserDTO, id: string, db?: DatabaseType) {
+    return this.usersRepository.update(updateUserDTO, db).execute({ id });
   }
 
   async seed() {}

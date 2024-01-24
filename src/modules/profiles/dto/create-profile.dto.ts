@@ -1,18 +1,13 @@
-import { IsString } from "class-validator";
+import { createZodDto } from "nestjs-zod";
+import { z } from "nestjs-zod/z";
 
-export class CreateProfileDTO {
-  // id: string;
-  // userID: string;
-  @IsString()
-  firstName: string;
+export const CreateProfileSchema = z.object({
+  firstName: z.string().max(255),
+  lastName: z.string().max(255),
+  imageID: z.string().uuid().max(255).optional(),
+  bio: z.string().uuid().max(1024).optional(),
+  gender: z.string().max(255).optional(),
+  sex: z.enum(["MALE", "FEMALE", "RNTS"]).default("RNTS").optional(),
+});
 
-  @IsString()
-  lastName: string;
-
-  // imageID: string;
-
-  // bio: string;
-  // gender: string;
-
-  // sex: "MALE" | "FEMALE" | "RNTS";
-}
+export class CreateProfileDTO extends createZodDto(CreateProfileSchema) {}

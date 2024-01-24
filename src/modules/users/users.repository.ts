@@ -4,7 +4,8 @@ import { UserRoleEnum } from "@/modules/users/types/users.enum";
 import { type Users } from "@/modules/users/types/users.type";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
-import * as schema from "@/database/models/auth/users.schema";
+import * as userSchema from "@/database/models/auth/users.schema";
+import { type DatabaseType } from "@/database/types/db.types";
 
 import { eq, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -16,7 +17,7 @@ import { type UpdateUserDTO } from "./dto/update-user.dto";
 export class UsersRepository {
   constructor(
     @Inject(DRIZZLE_ASYNC_PROVIDER)
-    private readonly db: PostgresJsDatabase<typeof schema>,
+    private readonly db: PostgresJsDatabase<typeof userSchema>,
   ) {}
 
   /**
@@ -24,8 +25,8 @@ export class UsersRepository {
    * 50 users.
    * @returns a prepared statement for retrieving users from the database.
    */
-  getAll() {
-    return this.db.query.users
+  getAll(db?: DatabaseType<typeof userSchema>) {
+    return (db ?? this.db).query.users
       .findMany({
         columns: {
           id: true,
@@ -52,8 +53,8 @@ export class UsersRepository {
    * @returns The `get` function is returning a prepared statement for retrieving a user from the
    * database based on a specified key.
    */
-  get({ by }: { by: keyof Users }) {
-    return this.db.query.users
+  get({ by, db }: { by: keyof Users; db?: DatabaseType<typeof userSchema> }) {
+    return (db ?? this.db).query.users
       .findFirst({
         with: {
           profile: true,
@@ -70,9 +71,9 @@ export class UsersRepository {
    * @returns The `create` function is returning a prepared statement for inserting a new user into the
    * database.
    */
-  create(createUser: CreateUserDTO) {
-    return this.db
-      .insert(schema.users)
+  create(createUser: CreateUserDTO, db?: DatabaseType) {
+    return (db ?? this.db)
+      .insert(userSchema.users)
       .values({
         email: createUser.email,
         encrypted_password: createUser.password,
@@ -90,14 +91,14 @@ export class UsersRepository {
    * `role`.
    * @returns a prepared statement for updating a user in the database.
    */
-  update(updateUserDTO: UpdateUserDTO) {
-    return this.db
-      .update(schema.users)
+  update(updateUserDTO: UpdateUserDTO, db?: DatabaseType) {
+    return (db ?? this.db)
+      .update(userSchema.users)
       .set({
         ...updateUserDTO,
-        role: UserRoleEnum[updateUserDTO.role] ?? undefined,
+        role: updateUserDTO.role ? UserRoleEnum[updateUserDTO.role] : undefined,
       })
-      .where(eq(schema.users.id, sql.placeholder("id")))
+      .where(eq(userSchema.users.id, sql.placeholder("id")))
       .prepare("update_user");
   }
 
@@ -106,9 +107,9 @@ export class UsersRepository {
    * ID.
    * @returns The `delete()` function is returning a statement that deletes a record from the database.
    */
-  delete() {
-    return this.db
-      .delete(schema.users)
-      .where(eq(schema.users.id, sql.placeholder("id")));
+  delete(db?: DatabaseType) {
+    return (db ?? this.db)
+      .delete(userSchema.users)
+      .where(eq(userSchema.users.id, sql.placeholder("id")));
   }
 }

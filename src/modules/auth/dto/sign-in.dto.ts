@@ -1,25 +1,15 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { createZodDto } from "nestjs-zod";
+import { z } from "nestjs-zod/z";
 
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  IsStrongPassword,
-  MaxLength,
-} from "class-validator";
+export const SignInSchema = z
+  .object({
+    email: z.string().email().max(255).describe("A valid email address"),
+    password: z
+      .password()
+      .min(8)
+      .max(255)
+      .describe("8 characters long password "),
+  })
+  .required();
 
-export class SignInDTO {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @IsEmail()
-  @MaxLength(255)
-  email: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @IsStrongPassword()
-  @MaxLength(255)
-  password: string;
-}
+export class SignInDTO extends createZodDto(SignInSchema) {}

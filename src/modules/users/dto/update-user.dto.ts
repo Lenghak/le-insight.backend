@@ -1,12 +1,9 @@
-import { ApiHideProperty, PartialType } from "@nestjs/swagger";
+import { createZodDto } from "nestjs-zod";
+import { z } from "nestjs-zod/z";
 
-import { type UserRoleEnum } from "../types/users.enum";
-import { UserDTO } from "./user.dto";
+export const UpdateUserSchema = z.object({
+  userID: z.string().uuid().max(255),
+  role: z.enum(["ADMIN", "USER", "GUEST"]).default("USER").optional(),
+});
 
-export class UpdateUserDTO extends PartialType(UserDTO) {
-  @ApiHideProperty()
-  readonly id: string;
-
-  @ApiHideProperty()
-  readonly role: UserRoleEnum;
-}
+export class UpdateUserDTO extends createZodDto(UpdateUserSchema) {}
