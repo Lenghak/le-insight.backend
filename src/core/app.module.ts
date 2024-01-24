@@ -35,15 +35,14 @@ import { LoggerMiddleware } from "./app.middleware";
     CacheModule.registerAsync<RedisClientOptions>({
       imports: [ConfigModule],
       inject: [ConfigService],
-      isGlobal: true,
       useFactory: async (configService: ConfigService) => ({
-        store: redisStore({
-          socket: {
-            host: configService.get("REDIS_HOST"),
-            port: +configService.get("REDIS_PORT"),
-          },
-          ttl: configService.get("REDIS_TTL"),
-        }) as unknown as CacheStore,
+        store: (await redisStore({})) as unknown as CacheStore,
+        socket: {
+          host: configService.get("REDIS_HOST"),
+          port: +configService.get("REDIS_PORT"),
+        },
+        ttl: configService.get("REDIT_TTL"),
+        isGlobal: true,
       }),
     }),
 
