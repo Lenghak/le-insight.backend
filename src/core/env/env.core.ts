@@ -10,12 +10,14 @@ export const envSchema = z.object({
   ACCESS_TOKEN_SECRET: z.string().min(1),
   REFRESH_TOKEN_SECRET: z.string().min(1),
 
-  HOST: z.string().min(1),
+  HOSTNAME: z.string().min(1),
   PORT: z.string().min(1),
 
-  REDIS_HOST: z.string().min(1),
+  REDIS_HOSTNAME: z.string().min(1),
+  REDIS_PASSWORD: z.string().nullable(),
   REDIS_PORT: z.string().min(1),
-  REDIT_TTL: z.string().min(1),
+  REDIS_TTL: z.string().min(1),
+  REDIS_TLS: z.string().nullable(),
 });
 
 export default () => envSchema.parse(process.env);

@@ -53,7 +53,7 @@ async function bootstrap() {
 
   await app.listen(
     configService.get("PORT") ?? 8000,
-    configService.get("HOST") ?? "0.0.0.0",
+    configService.get("HOSTNAME") ?? "0.0.0.0",
     undefined,
   );
 }
