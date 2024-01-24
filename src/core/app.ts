@@ -1,4 +1,4 @@
-import { Logger, ValidationPipe } from "@nestjs/common";
+import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import {
@@ -51,13 +51,11 @@ async function bootstrap() {
 
   SwaggerModule.setup("docs", app, document);
 
-  await app
-    .listen(
-      configService.get("PORT") ?? 8000,
-      configService.get("HOST") ?? "0.0.0.0",
-      undefined,
-    )
-    .then((_) => Logger.debug(`App is listening to`));
+  await app.listen(
+    configService.get("PORT") ?? 8000,
+    configService.get("HOST") ?? "0.0.0.0",
+    undefined,
+  );
 }
 
 bootstrap();
