@@ -38,6 +38,18 @@ async function bootstrap() {
       "Le-Insight is a dynamic knowledge sharing platform that serves as a hub for writers, experts, and enthusiasts to share their insights, experiences, and expertise with a global audience. With its intuitive interface and user-friendly features, Le-Insight empowers individuals to publish, discover, and engage with high-quality articles spanning a wide range of topics. Whether you're passionate about technology, business, arts, or any other subject, Le-Insight provides a vibrant community where users can explore thought-provoking content, connect with like-minded individuals, and foster meaningful discussions. With its emphasis on fostering creativity, collaboration, and knowledge exchange, Le-Insight is the go-to platform for both aspiring and established writers to showcase their talent and make a lasting impact in the world of online publishing.",
     )
     .setVersion("0.1.0")
+    .addBearerAuth(
+      {
+        // I was also testing it without prefix 'Bearer ' before the JWT
+        description: `[just text field] Please enter token in following format: Bearer <JWT>`,
+        name: "Authorization",
+        bearerFormat: "Bearer",
+        scheme: "Bearer",
+        type: "http",
+        in: "Header",
+      },
+      "access-token", // This name here is important for matching up with @ApiBearerAuth() in your controller!
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig, {

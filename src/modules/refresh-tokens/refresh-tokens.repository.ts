@@ -51,14 +51,17 @@ export class RefreshTokensRepository {
 
   delete(db?: DatabaseType) {
     return (db ?? this.db)
-      .update(refreshTokenSchema.refreshTokens)
-      .set({ token: null })
+      .delete(refreshTokenSchema.refreshTokens)
       .where(
         and(
-          isNotNull(refreshTokenSchema.refreshTokens.user_id),
+          isNotNull(refreshTokenSchema.refreshTokens.token),
           eq(
             refreshTokenSchema.refreshTokens.user_id,
-            sql.placeholder("userId"),
+            sql.placeholder("userID"),
+          ),
+          eq(
+            refreshTokenSchema.refreshTokens.session_id,
+            sql.placeholder("sessionID"),
           ),
         ),
       )

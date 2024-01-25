@@ -15,9 +15,8 @@ export const refreshTokens = pgTable(
   "refresh_tokens",
   {
     id: uuid("id").unique().primaryKey().defaultRandom(),
-    token: varchar("token", { length: 255 }),
+    token: varchar("token"),
     user_id: uuid("user_id")
-      .unique()
       .references(() => users.id, {
         onDelete: "cascade",
         onUpdate: "cascade",
@@ -28,7 +27,10 @@ export const refreshTokens = pgTable(
     parent: varchar("parent", { length: 255 }),
     session_id: uuid("session_id")
       .unique()
-      .references(() => sessions.id),
+      .references(() => sessions.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },

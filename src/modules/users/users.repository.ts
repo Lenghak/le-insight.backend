@@ -1,10 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { UserRoleEnum } from "@/modules/users/types/users.enum";
-import { type Users } from "@/modules/users/types/users.type";
-
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as userSchema from "@/database/models/auth/users.model";
+import {
+  UserRoleEnum,
+  type Users,
+} from "@/database/schemas/auth/users/users.type";
 import { type DatabaseType } from "@/database/types/db.types";
 
 import { eq, sql } from "drizzle-orm";

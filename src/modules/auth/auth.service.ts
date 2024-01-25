@@ -4,8 +4,6 @@ import {
   Req,
   UnauthorizedException,
 } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
 
 import { ProfilesService } from "@/modules/profiles/profiles.service";
 import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
@@ -15,9 +13,9 @@ import bycrypt from "bcrypt";
 import { FastifyRequest } from "fastify";
 
 import { SessionsService } from "../sessions/sessions.service";
+import { AuthRepository } from "./auth.repository";
 import { type SignInDTO } from "./dto/sign-in.dto";
 import { type SignOutDTO } from "./dto/sign-out.dto";
-import { type SignTokensDTO } from "./dto/sign-token.dto";
 import { SignUpDTO } from "./dto/sign-up.dto";
 
 @Injectable()
@@ -26,12 +24,11 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly profilesService: ProfilesService,
     private readonly sessionsService: SessionsService,
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
     private readonly refreshTokensService: RefreshTokensService,
+    private readonly authRepository: AuthRepository,
   ) {}
 
-  async signIn(signInDTO: SignInDTO) {
+  async signIn(@Req() req: FastifyRequest, signInDTO: SignInDTO) {
     const user = await this.usersService.get({
       by: "email",
       values: { email: signInDTO.email },
@@ -46,16 +43,8 @@ export class AuthService {
 
     if (!isPasswordMatched) throw new UnauthorizedException();
 
-    const tokens = await this.signTokens({
-      userID: user.id,
-      email: user.email as string,
-    });
-
     // assign new refreshTokens to the user's data
-    await this.refreshTokensService.update({
-      userID: user.id,
-      token: tokens.refreshToken,
-    });
+    const tokens = await this.authRepository.signInTransaction(req, user);
 
     return tokens;
   }
@@ -81,87 +70,22 @@ export class AuthService {
 
     if (existingUser) throw new ConflictException();
 
-    const { digest, salt } = await this.hashData(signUpDTO.password);
-
-    const profile = await this.profilesService.create({
-      createProfilesDTO: {
-        firstName: signUpDTO.firstName,
-        lastName: signUpDTO.lastName,
-      },
-    });
-
-    const user = await this.usersService.create({
-      ...signUpDTO,
-      profileID: profile[0].id,
-      password: digest,
-      salt: salt,
-    });
-
-    const session = await this.sessionsService.create({
-      ip: req.ip,
-      userAgent: req.headers["user-agent"] ?? "",
-      userID: user[0].id,
-    });
-
-    const tokens = await this.signTokens({
-      userID: user[0].id,
+    return await this.authRepository.signUpTransaction(req, {
       email: signUpDTO.email,
+      firstName: signUpDTO.firstName,
+      lastName: signUpDTO.lastName,
+      password: signUpDTO.password,
     });
-
-    await this.refreshTokensService.update({
-      userID: user[0].id,
-      token: tokens ? tokens.refreshToken : "",
-      sessionID: session[0].id,
-    });
-
-    return {
-      data: user,
-      // tokens,
-    };
   }
 
   async signOut(signOutDTO: SignOutDTO) {
     // -> remove sessions & token from request
-    return await this.refreshTokensService.delete(signOutDTO);
+    return (
+      await this.sessionsService.delete({
+        sessionID: signOutDTO.sessionID,
+      })
+    )[0];
   }
 
-  /**
-   * The function `signTokens` asynchronously signs access and refresh tokens using JWT with different
-   * secrets and expiration times.
-   * @param {SignTokensDTO} signTokensDTO - The `signTokensDTO` parameter is an object that contains
-   * the data needed to sign the tokens. It likely includes information such as the user's ID or
-   * username, and any additional data required for token generation.
-   * @returns an array containing the access token and refresh token.
-   */
-  async signTokens(signTokensDTO: SignTokensDTO) {
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(signTokensDTO, {
-        secret: this.configService.get("ACCESS_TOKEN_SECRET"),
-        expiresIn: 15 * 60,
-      }),
-      this.jwtService.signAsync(signTokensDTO, {
-        secret: this.configService.get("REFRESH_TOKEN_SECRET"),
-        expiresIn: 7 * 24 * 60 * 60,
-      }),
-    ]);
-
-    return { accessToken, refreshToken };
-  }
-
-  /**
-   * The function `hashData` takes a string as input, generates a salt and pepper using bcrypt and a
-   * configuration service, and returns the hashed data.
-   * @param {string} data - The `data` parameter is a string that represents the data that you want to
-   * hash.
-   * @returns a promise that resolves to the hashed data.
-   */
-  async hashData(data: string, defaultSalt?: string) {
-    const salt = defaultSalt ?? (await bycrypt.genSalt(12));
-    const pepper = await this.configService.get("PEPPER_SECRET");
-
-    return {
-      digest: await bycrypt.hash(data, salt + pepper),
-      salt,
-    };
-  }
+  async refresh() {}
 }

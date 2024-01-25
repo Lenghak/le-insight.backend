@@ -4,6 +4,7 @@ import { z } from "nestjs-zod/z";
 export const SignTokensSchema = z
   .object({
     userID: z.string().uuid(),
+    sessionID: z.string().uuid(),
     email: z.string().email().max(255),
   })
   .required();

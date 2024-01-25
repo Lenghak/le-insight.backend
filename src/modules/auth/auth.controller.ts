@@ -3,39 +3,52 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
-  Param,
   Post,
   Req,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiParam, ApiTags } from "@nestjs/swagger";
+import { AuthGuard } from "@nestjs/passport";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import { FastifyRequest } from "fastify";
 
 import { AuthService } from "./auth.service";
 import { SignInDTO } from "./dto/sign-in.dto";
-import { SignOutDTO } from "./dto/sign-out.dto";
 import { SignUpDTO } from "./dto/sign-up.dto";
+import { type PayLoadType } from "./types/payload.type";
 
 @ApiTags("Auth")
 @Controller({ path: "/auth" })
 export class AuthController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @HttpCode(HttpStatus.CREATED)
   @Post("/sign-up")
   async signUp(@Req() req: FastifyRequest, @Body() signUpDTO: SignUpDTO) {
-    return await this.auth.signUp(req, signUpDTO);
+    return await this.authService.signUp(req, signUpDTO);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post("/sign-in")
-  async signIn(@Body() signInDTO: SignInDTO) {
-    return this.auth.signIn(signInDTO);
+  async signIn(@Req() req: FastifyRequest, @Body() signInDTO: SignInDTO) {
+    return this.authService.signIn(req, signInDTO);
   }
 
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth("access-token")
+  @UseGuards(AuthGuard("jwt-access"))
   @Post("/sign-out")
-  @ApiParam({ name: "userID" })
-  async signOut(@Param("userID") signOutDTO: SignOutDTO) {
-    return await this.auth.signOut(signOutDTO);
+  async signOut(@Req() req: FastifyRequest) {
+    return this.authService.signOut({
+      userID: (req["user"] as PayLoadType).sub,
+      sessionID: (req["user"] as PayLoadType).sid,
+    });
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard("jwt-refresh"))
+  @Post("/refresh")
+  async refresh() {
+    return await this.authService.refresh();
   }
 }

@@ -1,12 +1,22 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger, Req } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+
+import { ProfilesService } from "@/modules/profiles/profiles.service";
+import { SessionsService } from "@/modules/sessions/sessions.service";
+import { UsersService } from "@/modules/users/users.service";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
+import { Users } from "@/database/schemas/auth/users/users.type";
 
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
-import { ProfilesService } from "../profiles/profiles.service";
-import { UsersService } from "../users/users.service";
-import { type SignUpDTO } from "./dto/sign-up.dto";
+import bycrypt from "bcrypt";
+import { FastifyRequest } from "fastify";
+
+import { RefreshTokensService } from "../refresh-tokens/refresh-tokens.service";
+import { type SignTokensDTO } from "./dto/sign-token.dto";
+import { SignUpDTO } from "./dto/sign-up.dto";
 
 @Injectable()
 export class AuthRepository {
@@ -14,11 +24,17 @@ export class AuthRepository {
     @Inject(DRIZZLE_ASYNC_PROVIDER) private readonly db: PostgresJsDatabase,
     private readonly profilesService: ProfilesService,
     private readonly usersService: UsersService,
+    private readonly sessionsService: SessionsService,
+    private readonly refreshTokensService: RefreshTokensService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async createUserTransaction(signUpDTO: SignUpDTO) {
+  async signUpTransaction(@Req() req: FastifyRequest, signUpDTO: SignUpDTO) {
+    const { digest, salt } = await this.hashData(signUpDTO.password);
+
     return await this.db.transaction(async (tx) => {
-      (
+      const profile = (
         await this.profilesService.create({
           createProfilesDTO: {
             firstName: signUpDTO.firstName,
@@ -27,6 +43,139 @@ export class AuthRepository {
           db: tx,
         })
       )[0];
+
+      const user = (
+        await this.usersService.create(
+          {
+            email: signUpDTO.email,
+            firstName: signUpDTO.firstName,
+            lastName: signUpDTO.lastName,
+            password: digest,
+            salt: salt,
+            profileID: profile.id,
+          },
+          tx,
+        )
+      )[0];
+
+      const session = (
+        await this.sessionsService.create(
+          {
+            ip: req.ip,
+            userAgent: req.headers["user-agent"] ?? "",
+            userID: user.id,
+          },
+          tx,
+        )
+      )[0];
+
+      const tokens = await this.signTokens({
+        userID: user.id,
+        email: user.email as string,
+        sessionID: session.id,
+      });
+
+      await this.refreshTokensService.create(
+        {
+          sessionID: session.id,
+          userID: user.id,
+          token: tokens.refreshToken,
+        },
+        tx,
+      );
+
+      Logger.debug("RefreshToken Created");
+
+      return {
+        user,
+        tokens,
+      };
     });
+  }
+
+  async signInTransaction(@Req() req: FastifyRequest, user: Users) {
+    return await this.db.transaction(async (tx) => {
+      const session = (
+        await this.sessionsService.create(
+          {
+            ip: req.ip,
+            userAgent: req.headers["user-agent"] ?? "",
+            userID: user.id ?? "",
+          },
+          tx,
+        )
+      )[0];
+
+      const tokens = await this.signTokens({
+        userID: user.id ?? "",
+        email: user.email as string,
+        sessionID: session.id,
+      });
+
+      await this.refreshTokensService.create(
+        {
+          sessionID: session.id,
+          token: tokens.refreshToken,
+          userID: user.id ?? "",
+        },
+        tx,
+      );
+
+      return tokens;
+    });
+  }
+
+  /**
+   * The function `signTokens` asynchronously signs access and refresh tokens using JWT with different
+   * secrets and expiration times.
+   * @param {SignTokensDTO} signTokensDTO - The `signTokensDTO` parameter is an object that contains
+   * the data needed to sign the tokens. It likely includes information such as the user's ID or
+   * username, and any additional data required for token generation.
+   * @returns an array containing the access token and refresh token.
+   */
+  async signTokens(signTokensDTO: SignTokensDTO) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(
+        {
+          sub: signTokensDTO.userID,
+          sid: signTokensDTO.sessionID,
+          email: signTokensDTO.email,
+        },
+        {
+          secret: this.configService.get("ACCESS_TOKEN_SECRET"),
+          expiresIn: 15 * 60,
+        },
+      ),
+      this.jwtService.signAsync(
+        {
+          sub: signTokensDTO.userID,
+          sid: signTokensDTO.sessionID,
+          email: signTokensDTO.email,
+        },
+        {
+          secret: this.configService.get("REFRESH_TOKEN_SECRET"),
+          expiresIn: 7 * 24 * 60 * 60,
+        },
+      ),
+    ]);
+
+    return { accessToken, refreshToken };
+  }
+
+  /**
+   * The function `hashData` takes a string as input, generates a salt and pepper using bcrypt and a
+   * configuration service, and returns the hashed data.
+   * @param {string} data - The `data` parameter is a string that represents the data that you want to
+   * hash.
+   * @returns a promise that resolves to the hashed data.
+   */
+  async hashData(data: string, defaultSalt?: string) {
+    const salt = defaultSalt ?? (await bycrypt.genSalt(12));
+    const pepper = await this.configService.get("PEPPER_SECRET");
+
+    return {
+      digest: await bycrypt.hash(data, salt + pepper),
+      salt,
+    };
   }
 }

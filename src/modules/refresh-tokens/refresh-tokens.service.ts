@@ -38,6 +38,7 @@ export class RefreshTokensService {
   async delete(signOutDTO: SignOutDTO, db?: DatabaseType) {
     return await this.refreshTokensRepository.delete(db).execute({
       userID: signOutDTO.userID,
+      sessionID: signOutDTO.sessionID,
     });
   }
 }
