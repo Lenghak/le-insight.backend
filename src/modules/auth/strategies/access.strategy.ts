@@ -4,17 +4,21 @@ import { PassportStrategy } from "@nestjs/passport";
 
 import { ExtractJwt, Strategy } from "passport-jwt";
 
+import { type PayLoadType } from "../types/payload.type";
+
 @Injectable()
-export class AccessTokenStrategy extends PassportStrategy(Strategy, "jwt") {
-  constructor(config: ConfigService) {
+export class AccessTokenStrategy extends PassportStrategy(
+  Strategy,
+  "jwt-access",
+) {
+  constructor(protected readonly config: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: config.get("ACCESS_TOKEN_SECRET"),
-      passReqToCallback: true,
     });
   }
 
-  validate(payload: Record<string, unknown>) {
+  async validate(payload: PayLoadType) {
     return payload;
   }
 }

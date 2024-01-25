@@ -4,7 +4,7 @@ import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as sessionSchema from "@/database/models/auth/sessions.model";
 import { type DatabaseType } from "@/database/types/db.types";
 
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 @Injectable()
@@ -25,5 +25,13 @@ export class SessionsRepository {
       })
       .returning()
       .prepare("insert_session");
+  }
+
+  delete(db?: DatabaseType) {
+    return (db ?? this.db)
+      .delete(sessionSchema.sessions)
+      .where(eq(sessionSchema.sessions.id, sql.placeholder("sessionID")))
+      .returning()
+      .prepare("delete_session");
   }
 }

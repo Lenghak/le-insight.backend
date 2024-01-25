@@ -3,7 +3,8 @@ import { z } from "nestjs-zod/z";
 
 export const SignOutSchema = z
   .object({
-    userID: z.string().uuid().max(255).trim().describe("UUID of the user"),
+    userID: z.string().uuid().max(255),
+    sessionID: z.string().uuid().max(255),
   })
   .required();
 
