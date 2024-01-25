@@ -19,13 +19,12 @@ export class RefreshTokensStrategy extends PassportStrategy(
   }
 
   validate(req: FastifyRequest, payload: Record<string, unknown>) {
-    const refreshToken = req.headers["authorization"]
-      ?.replace("Bearer ", "")
-      .trim();
+    // refreshToken
+    const rt = req.headers["authorization"]?.replace("Bearer ", "").trim();
 
     return {
       ...payload,
-      refreshToken,
+      rt,
     };
   }
 }

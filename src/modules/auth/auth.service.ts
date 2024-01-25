@@ -17,6 +17,7 @@ import { AuthRepository } from "./auth.repository";
 import { type SignInDTO } from "./dto/sign-in.dto";
 import { type SignOutDTO } from "./dto/sign-out.dto";
 import { SignUpDTO } from "./dto/sign-up.dto";
+import { type PayloadWithRefreshTokenType } from "./types/payload.type";
 
 @Injectable()
 export class AuthService {
@@ -87,5 +88,37 @@ export class AuthService {
     )[0];
   }
 
-  async refresh() {}
+  async refresh(@Req() req: FastifyRequest) {
+    const payload = req["user"] as PayloadWithRefreshTokenType;
+
+    if (!payload) throw new UnauthorizedException();
+
+    const user = await this.usersService.get({
+      by: "id",
+      values: {
+        id: payload.sub,
+      },
+    });
+
+    if (!user) throw new UnauthorizedException("User not found");
+
+    const refreshToken = await this.refreshTokensService.get({
+      by: "user_id",
+      values: {
+        user_id: user.id,
+      },
+    });
+
+    if (!refreshToken?.token)
+      return new UnauthorizedException("Session Expired");
+
+    const isRefreshTokenMatch = await bycrypt.compare(
+      payload.rt,
+      refreshToken.token,
+    );
+
+    if (!isRefreshTokenMatch) return new UnauthorizedException();
+
+    //TODO : Retrun new signed tokens
+  }
 }

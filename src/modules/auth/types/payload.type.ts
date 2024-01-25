@@ -1,6 +1,6 @@
 import { z } from "nestjs-zod/z";
 
-export const PayLoadSchema = z
+export const PayloadSchema = z
   .object({
     sub: z.string().uuid(),
     sid: z.string().uuid(),
@@ -10,4 +10,12 @@ export const PayLoadSchema = z
   })
   .required();
 
-export type PayLoadType = z.infer<typeof PayLoadSchema>;
+export const PayloadWithRefreshTokenSchema = PayloadSchema.extend({
+  rt: z.string(),
+}).required();
+
+export type PayloadType = z.infer<typeof PayloadSchema>;
+
+export type PayloadWithRefreshTokenType = z.infer<
+  typeof PayloadWithRefreshTokenSchema
+>;

@@ -15,7 +15,7 @@ import { FastifyRequest } from "fastify";
 import { AuthService } from "./auth.service";
 import { SignInDTO } from "./dto/sign-in.dto";
 import { SignUpDTO } from "./dto/sign-up.dto";
-import { type PayLoadType } from "./types/payload.type";
+import { type PayloadType } from "./types/payload.type";
 
 @ApiTags("Auth")
 @Controller({ path: "/auth" })
@@ -40,15 +40,15 @@ export class AuthController {
   @Post("/sign-out")
   async signOut(@Req() req: FastifyRequest) {
     return this.authService.signOut({
-      userID: (req["user"] as PayLoadType).sub,
-      sessionID: (req["user"] as PayLoadType).sid,
+      userID: (req["user"] as PayloadType).sub,
+      sessionID: (req["user"] as PayloadType).sid,
     });
   }
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard("jwt-refresh"))
   @Post("/refresh")
-  async refresh() {
-    return await this.authService.refresh();
+  async refresh(@Req() req: FastifyRequest) {
+    return await this.authService.refresh(req);
   }
 }

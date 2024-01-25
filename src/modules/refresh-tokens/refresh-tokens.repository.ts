@@ -3,6 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as refreshTokenSchema from "@/database/models/auth/refresh-tokens.model";
 import type * as userSchema from "@/database/models/auth/users.model";
+import { type RefreshTokens } from "@/database/schemas/auth/refresh-tokens/refresh-tokens.type";
 import { type DatabaseType } from "@/database/types/db.types";
 
 import { and, eq, isNotNull, sql } from "drizzle-orm";
@@ -18,6 +19,21 @@ export class RefreshTokensRepository {
       typeof refreshTokenSchema & typeof userSchema
     >,
   ) {}
+
+  get({
+    by,
+    db,
+  }: {
+    by: keyof RefreshTokens;
+    db?: DatabaseType<typeof refreshTokenSchema>;
+  }) {
+    return (db ?? this.db).query.refreshTokens
+      .findFirst({
+        where: (refreshTokens, { eq }) =>
+          eq(refreshTokens[by], sql.placeholder(by)),
+      })
+      .prepare("get_refresh_token");
+  }
 
   create(db?: DatabaseType) {
     return (db ?? this.db)
