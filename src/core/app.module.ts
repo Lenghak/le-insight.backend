@@ -9,7 +9,8 @@ import {
   type NestModule,
 } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { APP_INTERCEPTOR } from "@nestjs/core";
+import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
 import { AuthModule } from "@/modules/auth/auth.module";
 import { ProfilesModule } from "@/modules/profiles/profiles.module";
@@ -31,6 +32,24 @@ import { LoggerMiddleware } from "./app.middleware";
       validate: envSchema.parse,
       isGlobal: true,
     }),
+
+    ThrottlerModule.forRoot([
+      {
+        name: "short",
+        ttl: 1000,
+        limit: 3,
+      },
+      {
+        name: "medium",
+        ttl: 10000,
+        limit: 20,
+      },
+      {
+        name: "long",
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
 
     CacheModule.registerAsync<RedisClientOptions>({
       imports: [ConfigModule],
@@ -54,6 +73,10 @@ import { LoggerMiddleware } from "./app.middleware";
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 })

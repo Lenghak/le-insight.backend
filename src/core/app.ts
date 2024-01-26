@@ -70,6 +70,8 @@ async function bootstrap() {
 
   SwaggerModule.setup("docs", app, document);
 
+  // app.enableCors();
+
   await app.listen(
     configService.get("PORT") ?? 8000,
     configService.get("HOSTNAME") ?? "0.0.0.0",
