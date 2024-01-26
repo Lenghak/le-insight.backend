@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, Req } from "@nestjs/common";
+import { Inject, Injectable, Req } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
@@ -11,7 +11,7 @@ import { Users } from "@/database/schemas/auth/users/users.type";
 
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
-import bycrypt from "bcrypt";
+import bcrypt from "bcrypt";
 import { FastifyRequest } from "fastify";
 
 import { RefreshTokensService } from "../refresh-tokens/refresh-tokens.service";
@@ -30,6 +30,16 @@ export class AuthRepository {
     private readonly configService: ConfigService,
   ) {}
 
+  /**
+   * The `signUpTransaction` function creates a new user account with a profile, session, and tokens, and
+   * returns the user and tokens.
+   * @param {FastifyRequest} req - The `req` parameter is an object that represents the HTTP request made
+   * to the server. It contains information such as the request headers, IP address, and user agent.
+   * @param {SignUpDTO} signUpDTO - The `signUpDTO` parameter is an object that contains the data needed
+   * to sign up a user. It typically includes properties such as `firstName`, `lastName`, `email`, and
+   * `password`.
+   * @returns an object that contains the `user` and `tokens` properties.
+   */
   async signUpTransaction(@Req() req: FastifyRequest, signUpDTO: SignUpDTO) {
     const { digest, salt } = await this.hashData(signUpDTO.password);
 
@@ -84,8 +94,6 @@ export class AuthRepository {
         tx,
       );
 
-      Logger.debug("RefreshToken Created");
-
       return {
         user,
         tokens,
@@ -93,6 +101,15 @@ export class AuthRepository {
     });
   }
 
+  /**
+   * The `signInTransaction` function signs in a user by creating a session, generating tokens, and
+   * creating a refresh token, all within a database transaction.
+   * @param {FastifyRequest} req - The `req` parameter is of type `FastifyRequest`, which represents the
+   * incoming HTTP request object.
+   * @param {Users} user - The `user` parameter is an object of type `Users`. It represents the user who
+   * is signing in.
+   * @returns a Promise that resolves to the tokens generated during the sign-in transaction.
+   */
   async signInTransaction(@Req() req: FastifyRequest, user: Users) {
     return await this.db.transaction(async (tx) => {
       const session = (
@@ -167,14 +184,15 @@ export class AuthRepository {
    * configuration service, and returns the hashed data.
    * @param {string} data - The `data` parameter is a string that represents the data that you want to
    * hash.
+   * @param defaultSalt
    * @returns a promise that resolves to the hashed data.
    */
   async hashData(data: string, defaultSalt?: string) {
-    const salt = defaultSalt ?? (await bycrypt.genSalt(12));
+    const salt = defaultSalt ?? (await bcrypt.genSalt(12));
     const pepper = await this.configService.get("PEPPER_SECRET");
 
     return {
-      digest: await bycrypt.hash(data, salt + pepper),
+      digest: await bcrypt.hash(data, salt + pepper),
       salt,
     };
   }
