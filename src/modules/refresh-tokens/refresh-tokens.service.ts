@@ -31,10 +31,15 @@ export class RefreshTokensService {
     createRefreshTokenDTO: CreateRefreshTokensDTO,
     db?: DatabaseType,
   ) {
+    const hashedRefreshToken =
+      await this.refreshTokensRepository.hashRefreshToken(
+        createRefreshTokenDTO.token,
+      );
+
     return await this.refreshTokensRepository.create(db).execute({
       userID: createRefreshTokenDTO.userID,
       sessionID: createRefreshTokenDTO.sessionID,
-      token: createRefreshTokenDTO.token,
+      token: hashedRefreshToken,
     });
   }
 
@@ -42,10 +47,16 @@ export class RefreshTokensService {
     updateRefreshTokensDTO: UpdateRefreshTokensDTO,
     db?: DatabaseType,
   ) {
+    const hashedRefreshToken =
+      await this.refreshTokensRepository.hashRefreshToken(
+        updateRefreshTokensDTO.token,
+      );
+
     return await this.refreshTokensRepository
-      .update(updateRefreshTokensDTO, db)
+      .update(hashedRefreshToken, db)
       .execute({
         userID: updateRefreshTokensDTO.userID,
+        sessionID: updateRefreshTokensDTO.sessionID,
       });
   }
 

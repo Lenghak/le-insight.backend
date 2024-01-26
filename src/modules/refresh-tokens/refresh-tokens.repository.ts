@@ -9,7 +9,7 @@ import { type DatabaseType } from "@/database/types/db.types";
 import { and, eq, isNotNull, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
-import { type UpdateRefreshTokensDTO } from "./dto/update-refresh-tokens.dto";
+import bcrypt from "bcrypt";
 
 @Injectable()
 export class RefreshTokensRepository {
@@ -54,12 +54,21 @@ export class RefreshTokensRepository {
    * an object that contains the following properties:
    * @returns The prepared statement "update_refresh_token" is being returned.
    */
-  update(updateRefreshTokensDTO: UpdateRefreshTokensDTO, db?: DatabaseType) {
+  update(token: string, db?: DatabaseType) {
     return (db ?? this.db)
       .update(refreshTokenSchema.refreshTokens)
-      .set({ token: updateRefreshTokensDTO.token })
+      .set({ token: token })
       .where(
-        eq(refreshTokenSchema.refreshTokens.user_id, sql.placeholder("userID")),
+        and(
+          eq(
+            refreshTokenSchema.refreshTokens.user_id,
+            sql.placeholder("userID"),
+          ),
+          eq(
+            refreshTokenSchema.refreshTokens.session_id,
+            sql.placeholder("sessionID"),
+          ),
+        ),
       )
       .returning()
       .prepare("update_refresh_token");
@@ -83,5 +92,9 @@ export class RefreshTokensRepository {
       )
       .returning()
       .prepare("delete_refresh_token");
+  }
+
+  async hashRefreshToken(token: string) {
+    return await bcrypt.hash(token, 12);
   }
 }

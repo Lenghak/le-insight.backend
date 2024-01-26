@@ -50,6 +50,18 @@ async function bootstrap() {
       },
       "access-token", // This name here is important for matching up with @ApiBearerAuth() in your controller!
     )
+    .addBearerAuth(
+      {
+        // I was also testing it without prefix 'Bearer ' before the JWT
+        description: `[just text field] Please enter token in following format: Bearer <JWT>`,
+        name: "Authorization",
+        bearerFormat: "Bearer",
+        scheme: "Bearer",
+        type: "http",
+        in: "Header",
+      },
+      "refresh-token", // This name here is important for matching up with @ApiBearerAuth() in your controller!
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig, {

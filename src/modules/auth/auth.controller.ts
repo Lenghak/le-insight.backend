@@ -46,6 +46,7 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth("refresh-token")
   @UseGuards(AuthGuard("jwt-refresh"))
   @Post("/refresh")
   async refresh(@Req() req: FastifyRequest) {

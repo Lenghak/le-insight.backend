@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 
-import { ProfilesService } from "@/modules/profiles/profiles.service";
 import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
 import { UsersService } from "@/modules/users/users.service";
 
@@ -23,7 +22,6 @@ import { type PayloadWithRefreshTokenType } from "./types/payload.type";
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly profilesService: ProfilesService,
     private readonly sessionsService: SessionsService,
     private readonly refreshTokensService: RefreshTokensService,
     private readonly authRepository: AuthRepository,
@@ -47,7 +45,9 @@ export class AuthService {
     // assign new refreshTokens to the user's data
     const tokens = await this.authRepository.signInTransaction(req, user);
 
-    return tokens;
+    return {
+      data: tokens,
+    };
   }
 
   /**
@@ -71,27 +71,33 @@ export class AuthService {
 
     if (existingUser) throw new ConflictException();
 
-    return await this.authRepository.signUpTransaction(req, {
+    const user = await this.authRepository.signUpTransaction(req, {
       email: signUpDTO.email,
       firstName: signUpDTO.firstName,
       lastName: signUpDTO.lastName,
       password: signUpDTO.password,
     });
+
+    return {
+      data: user,
+    };
   }
 
   async signOut(signOutDTO: SignOutDTO) {
     // -> remove sessions & token from request
-    return (
-      await this.sessionsService.delete({
-        sessionID: signOutDTO.sessionID,
-      })
-    )[0];
+    return {
+      data: (
+        await this.sessionsService.delete({
+          sessionID: signOutDTO.sessionID,
+        })
+      )[0],
+    };
   }
 
   async refresh(@Req() req: FastifyRequest) {
     const payload = req["user"] as PayloadWithRefreshTokenType;
 
-    if (!payload) throw new UnauthorizedException();
+    if (!payload?.rt) throw new UnauthorizedException();
 
     const user = await this.usersService.get({
       by: "id",
@@ -103,9 +109,9 @@ export class AuthService {
     if (!user) throw new UnauthorizedException("User not found");
 
     const refreshToken = await this.refreshTokensService.get({
-      by: "user_id",
+      by: "session_id",
       values: {
-        user_id: user.id,
+        session_id: payload.sid,
       },
     });
 
@@ -119,6 +125,20 @@ export class AuthService {
 
     if (!isRefreshTokenMatch) return new UnauthorizedException();
 
-    //TODO : Retrun new signed tokens
+    const tokens = await this.authRepository.signTokens({
+      email: user.email ?? "",
+      userID: user.id,
+      sessionID: refreshToken.session_id ?? "",
+    });
+
+    await this.refreshTokensService.update({
+      token: tokens.refreshToken,
+      userID: user.id,
+      sessionID: refreshToken.session_id ?? "",
+    });
+
+    return {
+      data: tokens,
+    };
   }
 }
