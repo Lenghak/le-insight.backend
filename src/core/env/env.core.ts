@@ -10,6 +10,9 @@ export const envSchema = z.object({
   ACCESS_TOKEN_SECRET: z.string().min(1),
   REFRESH_TOKEN_SECRET: z.string().min(1),
 
+  SESSION_SECRET: z.string().min(1),
+  SESSION_SALT: z.string().min(1),
+
   HOSTNAME: z.string().min(1),
   PORT: z.string().min(1),
 
