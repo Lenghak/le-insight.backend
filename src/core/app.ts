@@ -9,6 +9,8 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AuthModule } from "@/modules/auth/auth.module";
 import { UsersModule } from "@/modules/users/users.module";
 
+import fastifyCompress from "@fastify/compress";
+import secureSession from "@fastify/secure-session";
 import { patchNestJsSwagger, ZodValidationPipe } from "nestjs-zod";
 
 import { AppModule } from "./app.module";
@@ -25,9 +27,21 @@ async function bootstrap() {
     }),
   );
 
-  patchNestJsSwagger();
+  await app.register(fastifyCompress, {
+    global: true,
+    encodings: ["gzip", "deflate"],
+  });
 
+  await app.register(secureSession, {
+    secret: "averylogphrasebiggerthanthirtytwochars",
+    salt: "mq9hDxBVDbspDR6n",
+  });
+
+  app.enableCors();
   app.useGlobalPipes(new ZodValidationPipe());
+  app.setGlobalPrefix("/v1/api");
+
+  patchNestJsSwagger();
 
   const configService = app.get(ConfigService);
 
@@ -69,8 +83,6 @@ async function bootstrap() {
   });
 
   SwaggerModule.setup("docs", app, document);
-
-  // app.enableCors();
 
   await app.listen(
     configService.get("PORT") ?? 8000,
