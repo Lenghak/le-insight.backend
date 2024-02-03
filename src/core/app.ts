@@ -54,7 +54,11 @@ async function bootstrap() {
 
   // @ts-expect-error typeof csrf does not assignable to type FastifyPluginCallback
   await app.register(fastifyCsrfProtection, {
-    sessionPlugin: fastifySecureSession,
+    sessionPlugin: "@fastify/secure-session",
+  });
+
+  app.enableCors({
+    origin: ["192.168.100.5", "https://le-insight.vercel.app"],
   });
 
   app.useGlobalPipes(new ZodValidationPipe());
