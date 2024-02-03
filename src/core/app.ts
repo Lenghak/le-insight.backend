@@ -58,7 +58,13 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: ["192.168.100.5", "https://le-insight.vercel.app"],
+    origin: [
+      (await configService.get("HOSTNAME")) ?? "0.0.0.0",
+      (await configService.get("CLIENT_HOSTNAME")) ?? "http://localhost:4321",
+      "http://localhost:3000",
+    ],
+    allowedHeaders: "*",
+    credentials: true,
   });
 
   app.useGlobalPipes(new ZodValidationPipe());
