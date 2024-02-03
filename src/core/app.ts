@@ -9,8 +9,11 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AuthModule } from "@/modules/auth/auth.module";
 import { UsersModule } from "@/modules/users/users.module";
 
-import fastifyCompress from "@fastify/compress";
-import secureSession from "@fastify/secure-session";
+import { fastifyCompress } from "@fastify/compress";
+import { fastifyCookie } from "@fastify/cookie";
+import { fastifyCsrfProtection } from "@fastify/csrf-protection";
+import { fastifyHelmet } from "@fastify/helmet";
+import { fastifySecureSession } from "@fastify/secure-session";
 import { patchNestJsSwagger, ZodValidationPipe } from "nestjs-zod";
 
 import { AppModule } from "./app.module";
@@ -35,23 +38,30 @@ async function bootstrap() {
     encodings: ["gzip", "deflate"],
   });
 
+  // @ts-expect-error typeof cookie does not assignable to type FastifyPluginCallback
+  await app.register(fastifyCookie, {
+    secret: await configService.get("COOKIE_SECRET"),
+  });
+
   // @ts-expect-error typeof secreSession does not assignable to type FastifyPluginCallback
-  await app.register(secureSession, {
+  await app.register(fastifySecureSession, {
     secret: await configService.get("SESSION_SECRET"),
     salt: await configService.get("SESSION_SALT"),
   });
 
-  // enable cors
-  app.enableCors({ origin: ["0.0.0.0"] });
+  // @ts-expect-error typeof helmet does not assignable to type FastifyPluginCallback
+  await app.register(fastifyHelmet, { global: true });
 
-  //
+  // @ts-expect-error typeof csrf does not assignable to type FastifyPluginCallback
+  await app.register(fastifyCsrfProtection, {
+    sessionPlugin: fastifySecureSession,
+  });
+
   app.useGlobalPipes(new ZodValidationPipe());
   app.setGlobalPrefix("/v1/api");
 
   // patch the version of swagger to match the nestjs-zod
   patchNestJsSwagger();
-
-  // get the config service for env
 
   // swagger document builder
   const swaggerConfig = new DocumentBuilder()
