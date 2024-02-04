@@ -55,6 +55,11 @@ async function bootstrap() {
   // @ts-expect-error typeof csrf does not assignable to type FastifyPluginCallback
   await app.register(fastifyCsrfProtection, {
     sessionPlugin: "@fastify/secure-session",
+    cookieOpts: {
+      signed: true,
+      httpOnly: true,
+      secure: (await configService.get("NODE_ENV")) === "Production",
+    },
   });
 
   app.enableCors({

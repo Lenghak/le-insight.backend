@@ -37,12 +37,12 @@ import { LoggerMiddleware } from "./app.middleware";
       {
         name: "short",
         ttl: 1000,
-        limit: 3,
+        limit: 5,
       },
       {
         name: "medium",
         ttl: 10000,
-        limit: 20,
+        limit: 25,
       },
       {
         name: "long",
@@ -59,7 +59,6 @@ import { LoggerMiddleware } from "./app.middleware";
           url: configService.get("REDIS_URL"),
           ttl: configService.get("REDIS_TTL"),
         })) as unknown as CacheStore,
-        isGlobal: true,
       }),
     }),
 
