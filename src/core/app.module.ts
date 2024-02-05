@@ -12,6 +12,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
+import { AccessTokenGuard } from "@/common/guards/access-token.guard";
+
 import { AuthModule } from "@/modules/auth/auth.module";
 import { ProfilesModule } from "@/modules/profiles/profiles.module";
 import { UsersModule } from "@/modules/users/users.module";
@@ -26,6 +28,7 @@ import { LoggerMiddleware } from "./app.middleware";
 
 @Module({
   imports: [
+    // Config configuration modules
     ConfigModule.forRoot({
       envFilePath: [".env"],
       validationSchema: envSchema,
@@ -33,6 +36,7 @@ import { LoggerMiddleware } from "./app.middleware";
       isGlobal: true,
     }),
 
+    // Config Rate Limiting
     ThrottlerModule.forRoot([
       {
         name: "short",
@@ -51,6 +55,7 @@ import { LoggerMiddleware } from "./app.middleware";
       },
     ]),
 
+    // Config caching mechanism
     CacheModule.registerAsync<RedisClientOptions>({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -62,16 +67,20 @@ import { LoggerMiddleware } from "./app.middleware";
       }),
     }),
 
+    // app modules
     AuthModule,
     DrizzleModule,
     UsersModule,
     ProfilesModule,
   ],
-  controllers: [],
   providers: [
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AccessTokenGuard,
     },
     {
       provide: APP_GUARD,
