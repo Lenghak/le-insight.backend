@@ -2,7 +2,7 @@
   "a-file-icon-vscode.activeIconPacks": [
     "nest"
   ],
-  "workbench.iconTheme": "bearded-icons",
+  "workbench.iconTheme": "symbols",
   "a-file-icon-vscode.saturation": 1,
   "a-file-icon-vscode.opacity": 1,
   "a-file-icon-vscode.folderColor": "#727272",
