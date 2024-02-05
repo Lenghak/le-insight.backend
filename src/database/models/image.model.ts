@@ -11,9 +11,6 @@ export const images = pgTable(
   "images",
   {
     id: uuid("id").notNull().unique().primaryKey().defaultRandom(),
-
-    height: integer("image_height").notNull(),
-    width: integer("image_width").notNull(),
     url: integer("image_url").notNull(),
 
     alt_description: varchar("alt_description", { length: 255 }).notNull(),
