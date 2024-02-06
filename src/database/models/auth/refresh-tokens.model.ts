@@ -23,8 +23,6 @@ export const refreshTokens = pgTable(
       })
       .notNull(),
     revoked: boolean("revoked").default(false),
-    // have no idea what is parent
-    parent: varchar("parent", { length: 255 }),
     session_id: uuid("session_id")
       .unique()
       .references(() => sessions.id, {

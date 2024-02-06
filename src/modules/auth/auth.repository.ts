@@ -171,7 +171,7 @@ export class AuthRepository {
         },
         {
           secret: this.configService.get("REFRESH_TOKEN_SECRET"),
-          expiresIn: 7 * 24 * 60 * 60,
+          expiresIn: 3 * 24 * 60 * 60,
         },
       ),
     ]);

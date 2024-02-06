@@ -16,7 +16,6 @@ export const sessions = pgTable(
     user_id: uuid("user_id")
       .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" })
       .notNull(),
-    factor_id: uuid("factor_id"),
     not_after: timestamp("not_after", { withTimezone: true }),
     refreshed_at: timestamp("refreshed_at", {
       withTimezone: true,

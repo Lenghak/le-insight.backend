@@ -1,7 +1,6 @@
 import {
   ConflictException,
   Injectable,
-  Req,
   UnauthorizedException,
 } from "@nestjs/common";
 
@@ -9,13 +8,13 @@ import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.se
 import { UsersService } from "@/modules/users/users.service";
 
 import bycrypt from "bcrypt";
-import { FastifyRequest } from "fastify";
+import { type FastifyRequest } from "fastify";
 
 import { SessionsService } from "../sessions/sessions.service";
 import { AuthRepository } from "./auth.repository";
 import { type SignInDTO } from "./dto/sign-in.dto";
 import { type SignOutDTO } from "./dto/sign-out.dto";
-import { SignUpDTO } from "./dto/sign-up.dto";
+import { type SignUpDTO } from "./dto/sign-up.dto";
 import { type PayloadWithRefreshTokenType } from "./types/payload.type";
 
 @Injectable()
@@ -27,7 +26,7 @@ export class AuthService {
     private readonly authRepository: AuthRepository,
   ) {}
 
-  async signIn(@Req() req: FastifyRequest, signInDTO: SignInDTO) {
+  async signIn(req: FastifyRequest, signInDTO: SignInDTO) {
     const user = await this.usersService.get({
       by: "email",
       values: { email: signInDTO.email },
@@ -61,7 +60,7 @@ export class AuthService {
    * object that was created, and the "tokens" property contains an object with two properties:
    * "accessToken" and "refreshToken".
    */
-  async signUp(@Req() req: FastifyRequest, signUpDTO: SignUpDTO) {
+  async signUp(req: FastifyRequest, signUpDTO: SignUpDTO) {
     const existingUser = await this.usersService.get({
       by: "email",
       values: {
@@ -94,9 +93,7 @@ export class AuthService {
     };
   }
 
-  async refresh(@Req() req: FastifyRequest) {
-    const payload = req["user"] as PayloadWithRefreshTokenType;
-
+  async refresh(payload: PayloadWithRefreshTokenType) {
     if (!payload?.rt) throw new UnauthorizedException();
 
     const user = await this.usersService.get({
