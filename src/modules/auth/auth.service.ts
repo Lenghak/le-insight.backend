@@ -5,12 +5,12 @@ import {
 } from "@nestjs/common";
 
 import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
+import { SessionsService } from "@/modules/sessions/sessions.service";
 import { UsersService } from "@/modules/users/users.service";
 
 import bycrypt from "bcrypt";
 import { type FastifyRequest } from "fastify";
 
-import { SessionsService } from "../sessions/sessions.service";
 import { AuthRepository } from "./auth.repository";
 import { type SignInDTO } from "./dto/sign-in.dto";
 import { type SignOutDTO } from "./dto/sign-out.dto";

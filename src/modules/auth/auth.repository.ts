@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
 import { ProfilesService } from "@/modules/profiles/profiles.service";
+import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
 import { SessionsService } from "@/modules/sessions/sessions.service";
 import { UsersService } from "@/modules/users/users.service";
 
@@ -14,7 +15,6 @@ import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import bcrypt from "bcrypt";
 import { FastifyRequest } from "fastify";
 
-import { RefreshTokensService } from "../refresh-tokens/refresh-tokens.service";
 import { type SignTokensDTO } from "./dto/sign-token.dto";
 import { SignUpDTO } from "./dto/sign-up.dto";
 
