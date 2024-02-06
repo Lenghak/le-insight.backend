@@ -15,6 +15,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { AccessTokenGuard } from "@/common/guards/access-token.guard";
 
 import { AuthModule } from "@/modules/auth/auth.module";
+import { MailModule } from "@/modules/mail/mail.module";
 import { ProfilesModule } from "@/modules/profiles/profiles.module";
 import { UsersModule } from "@/modules/users/users.module";
 
@@ -70,6 +71,7 @@ import { LoggerMiddleware } from "./app.middleware";
     // app modules
     AuthModule,
     DrizzleModule,
+    MailModule,
     UsersModule,
     ProfilesModule,
   ],

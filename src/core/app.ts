@@ -7,6 +7,7 @@ import {
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AuthModule } from "@/modules/auth/auth.module";
+import { MailModule } from "@/modules/mail/mail.module";
 import { UsersModule } from "@/modules/users/users.module";
 
 import { fastifyCompress } from "@fastify/compress";
@@ -113,7 +114,7 @@ async function bootstrap() {
 
   // init docs from controllers
   const document = SwaggerModule.createDocument(app, swaggerConfig, {
-    include: [AppModule, AuthModule, UsersModule], //the modules that you want to include in your swagger docs
+    include: [AppModule, AuthModule, MailModule, UsersModule], //the modules that you want to include in your swagger docs
   });
 
   // setup swagger
