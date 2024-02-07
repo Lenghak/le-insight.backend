@@ -21,7 +21,14 @@ export class MailService {
         },
         to: mailerDTO.to,
         subject: mailerDTO.subject,
-        template: "forgot-password.template.hbs",
+        template: "mail.template.hbs",
+        context: {
+          title: "Le_Insight | Reset Password",
+          description:
+            "Thank you for signing up for Le-Insight. You can reset your password by follow the link below.",
+          link: "https://le-insight.vercel.app",
+          label: "Reset Password",
+        },
       });
     } catch (err) {
       Logger.error(err);

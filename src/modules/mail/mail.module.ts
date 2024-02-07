@@ -26,7 +26,7 @@ import { MailService } from "./mail.service";
           from: configService.get("MAILER_FROM"),
         },
         template: {
-          dir: join(__dirname + "/templates"),
+          dir: join(__dirname),
           adapter: new HandlebarsAdapter({}, { inlineCssEnabled: false }),
           options: {
             strict: true,
