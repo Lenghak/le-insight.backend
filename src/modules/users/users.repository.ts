@@ -77,9 +77,11 @@ export class UsersRepository {
       .insert(userSchema.users)
       .values({
         email: createUser.email,
-        encrypted_password: createUser.password,
+        encrypted_password: createUser.encrypted_password,
         salt: createUser.salt,
-        profile_id: createUser.profileID,
+        profile_id: createUser.profile_id,
+        confirmation_sent_at: createUser.confirmation_sent_at,
+        confirmation_token: createUser.confirmation_token,
       })
       .returning()
       .prepare("insert_user");
@@ -100,6 +102,7 @@ export class UsersRepository {
         role: updateUserDTO.role ? UserRoleEnum[updateUserDTO.role] : undefined,
       })
       .where(eq(userSchema.users.id, sql.placeholder("id")))
+      .returning()
       .prepare("update_user");
   }
 

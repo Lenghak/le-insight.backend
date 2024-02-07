@@ -10,7 +10,10 @@ export const MailSchema = z.object({
   from: MailAddress.or(z.undefined()),
   to: z.array(MailAddress),
   subject: z.string(),
-  template: z.string(),
+  title: z.string(),
+  description: z.string(),
+  label: z.string(),
+  link: z.string().url(),
 });
 
 export class MailerDTO extends createZodDto(MailSchema) {}

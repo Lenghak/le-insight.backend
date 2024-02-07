@@ -43,8 +43,10 @@ export class UsersService {
     return await this.usersRepository.get({ by }).execute(values);
   }
 
-  async update(updateUserDTO: UpdateUserDTO, id: string, db?: DatabaseType) {
-    return this.usersRepository.update(updateUserDTO, db).execute({ id });
+  async update(updateUserDTO: UpdateUserDTO, db?: DatabaseType) {
+    return await this.usersRepository
+      .update(updateUserDTO, db)
+      .execute({ id: updateUserDTO.id });
   }
 
   async seed() {}

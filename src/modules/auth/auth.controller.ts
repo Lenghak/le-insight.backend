@@ -16,6 +16,7 @@ import { User } from "@/common/decorators/user.decorator";
 import { FastifyRequest } from "fastify";
 
 import { AuthService } from "./auth.service";
+import { ConfirmEmailDTO } from "./dto/confirm-email.dto";
 import { SignInDTO } from "./dto/sign-in.dto";
 import { SignUpDTO } from "./dto/sign-up.dto";
 import {
@@ -59,5 +60,12 @@ export class AuthController {
   @Post("/refresh")
   async refresh(@User() payload: PayloadWithRefreshTokenType) {
     return await this.authService.refresh(payload);
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post("/confirm")
+  async confirm(@Body() confirmEmailDTO: ConfirmEmailDTO) {
+    return await this.authService.confirm(confirmEmailDTO);
   }
 }

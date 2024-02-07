@@ -79,7 +79,6 @@ export const users = pgTable(
     }),
 
     banned_until: timestamp("banned_until", { withTimezone: true }),
-    last_sign_in_at: timestamp("last_sign_in_at", { withTimezone: true }),
     invited_at: timestamp("invited_at", { withTimezone: true }),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),

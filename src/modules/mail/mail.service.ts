@@ -23,11 +23,10 @@ export class MailService {
         subject: mailerDTO.subject,
         template: "mail.template.hbs",
         context: {
-          title: "Le_Insight | Reset Password",
-          description:
-            "Thank you for signing up for Le-Insight. You can reset your password by follow the link below.",
-          link: "https://le-insight.vercel.app",
-          label: "Reset Password",
+          title: mailerDTO.title,
+          description: mailerDTO.description,
+          link: mailerDTO.link,
+          label: mailerDTO.label,
         },
       });
     } catch (err) {

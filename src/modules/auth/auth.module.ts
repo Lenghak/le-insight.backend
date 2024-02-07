@@ -10,6 +10,7 @@ import { UsersModule } from "@/modules/users/users.module";
 
 import { DrizzleModule } from "@/database/drizzle.module";
 
+import { MailModule } from "../mail/mail.module";
 import { AuthController } from "./auth.controller";
 import { AuthRepository } from "./auth.repository";
 import { AuthService } from "./auth.service";
@@ -19,6 +20,7 @@ import { RefreshTokensStrategy } from "./strategies/refresh.strategy";
 @Module({
   imports: [
     DrizzleModule,
+    MailModule,
     UsersModule,
     ProfilesModule,
     RefreshTokensModule,
