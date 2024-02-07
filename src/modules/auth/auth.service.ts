@@ -1,7 +1,6 @@
 import {
   ConflictException,
   Injectable,
-  Logger,
   UnauthorizedException,
   UnprocessableEntityException,
 } from "@nestjs/common";
@@ -94,7 +93,7 @@ export class AuthService {
     });
 
     this.mailService.sendMail({
-      title: "Le-Insight | Email Verification",
+      title: "Email Verification",
       subject: "Le-Insight - Email Verification",
       description:
         "Thank you for signing up for Le-Insight. We're excited to have you on board! Before you can start exploring all the features and benefits, we need to verify your email address to ensure the security of your account.",
@@ -216,8 +215,6 @@ export class AuthService {
     // 3 -> Check the expiration date from the database (token created date + 15min < or > now)
     if (Date.now() - user.confirmation_sent_at?.getTime() > 15 * 60 * 1000)
       throw new UnauthorizedException("Invalid Credentials");
-
-    Logger.debug("Updating Data...");
 
     // 4 -> If all passed, update user's email verification
     return {

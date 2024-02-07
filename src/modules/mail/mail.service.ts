@@ -23,6 +23,7 @@ export class MailService {
         subject: mailerDTO.subject,
         template: "mail.template.hbs",
         context: {
+          subject: mailerDTO.subject,
           title: mailerDTO.title,
           description: mailerDTO.description,
           link: mailerDTO.link,
