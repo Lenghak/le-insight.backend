@@ -1,3 +1,4 @@
+import { BullModule } from "@nestjs/bull";
 import {
   CacheInterceptor,
   CacheModule,
@@ -58,13 +59,30 @@ import { LoggerMiddleware } from "./app.middleware";
 
     // Config caching mechanism
     CacheModule.registerAsync<RedisClientOptions>({
-      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         store: (await redisStore({
           url: configService.get("REDIS_URL"),
           ttl: configService.get("REDIS_TTL"),
         })) as unknown as CacheStore,
+      }),
+    }),
+
+    // Config queue mechanism
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get("QUEUE_HOST"),
+          username: configService.get("QUEUE_USERNAME"),
+          password: configService.get("QUEUE_PASSWORD"),
+          port: configService.get("QUEUE_PORT"),
+        },
+        limiter: {
+          bounceBack: true,
+          duration: 60 * 60 * 1000,
+          max: 100,
+        },
       }),
     }),
 

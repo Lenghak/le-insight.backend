@@ -92,7 +92,7 @@ export class AuthService {
       password: signUpDTO.password,
     });
 
-    this.mailService.sendMail({
+    this.mailService.send({
       title: "Email Verification",
       subject: "Le-Insight - Email Verification",
       description:

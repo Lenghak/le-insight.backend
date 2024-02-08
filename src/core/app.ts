@@ -32,27 +32,22 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  // @ts-expect-error typeof fastifyCompress does not assignable to type FastifyPluginCallback
   await app.register(fastifyCompress, {
     global: true,
     encodings: ["gzip", "deflate"],
   });
 
-  // @ts-expect-error typeof cookie does not assignable to type FastifyPluginCallback
   await app.register(fastifyCookie, {
     secret: await configService.get("COOKIE_SECRET"),
   });
 
-  // @ts-expect-error typeof secreSession does not assignable to type FastifyPluginCallback
   await app.register(fastifySecureSession, {
     secret: await configService.get("SESSION_SECRET"),
     salt: await configService.get("SESSION_SALT"),
   });
 
-  // @ts-expect-error typeof helmet does not assignable to type FastifyPluginCallback
   await app.register(fastifyHelmet, { global: true });
 
-  // @ts-expect-error typeof csrf does not assignable to type FastifyPluginCallback
   await app.register(fastifyCsrfProtection, {
     sessionPlugin: "@fastify/secure-session",
     cookieOpts: {
