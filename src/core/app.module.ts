@@ -1,3 +1,4 @@
+import { BullModule } from "@nestjs/bull";
 import {
   CacheInterceptor,
   CacheModule,
@@ -15,6 +16,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { AccessTokenGuard } from "@/common/guards/access-token.guard";
 
 import { AuthModule } from "@/modules/auth/auth.module";
+import { MailModule } from "@/modules/mail/mail.module";
 import { ProfilesModule } from "@/modules/profiles/profiles.module";
 import { UsersModule } from "@/modules/users/users.module";
 
@@ -57,7 +59,6 @@ import { LoggerMiddleware } from "./app.middleware";
 
     // Config caching mechanism
     CacheModule.registerAsync<RedisClientOptions>({
-      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         store: (await redisStore({
@@ -67,9 +68,28 @@ import { LoggerMiddleware } from "./app.middleware";
       }),
     }),
 
+    // Config queue mechanism
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get("QUEUE_HOST"),
+          username: configService.get("QUEUE_USERNAME"),
+          password: configService.get("QUEUE_PASSWORD"),
+          port: configService.get("QUEUE_PORT"),
+        },
+        limiter: {
+          bounceBack: true,
+          duration: 60 * 60 * 1000,
+          max: 100,
+        },
+      }),
+    }),
+
     // app modules
     AuthModule,
     DrizzleModule,
+    MailModule,
     UsersModule,
     ProfilesModule,
   ],

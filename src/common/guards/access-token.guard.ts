@@ -18,8 +18,6 @@ export class AccessTokenGuard extends AuthGuard("jwt-access") {
       context.getHandler(),
     ]);
 
-    console.log(isPublic, typeof isPublic);
-
     return isPublic ?? super.canActivate(context);
   }
 }

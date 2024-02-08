@@ -18,6 +18,17 @@ export const envSchema = z.object({
 
   REDIS_URL: z.string().url(),
   REDIS_TTL: z.string().min(1),
+
+  MAILER_HOST: z.string().min(1),
+  MAILER_PORT: z.string().min(1),
+  MAILER_USERNAME: z.string().min(1),
+  MAILER_PASSWORD: z.string().min(1),
+  MAILER_FROM: z.string().min(1),
+
+  QUEUE_HOST: z.string().min(1),
+  QUEUE_USERNAME: z.string().optional(),
+  QUEUE_PASSWORD: z.string().optional(),
+  QUEUE_PORT: z.string().min(1),
 });
 
 export default () => envSchema.parse(process.env);

@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
 import { ProfilesService } from "@/modules/profiles/profiles.service";
+import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
 import { SessionsService } from "@/modules/sessions/sessions.service";
 import { UsersService } from "@/modules/users/users.service";
 
@@ -12,9 +13,9 @@ import { Users } from "@/database/schemas/auth/users/users.type";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { FastifyRequest } from "fastify";
 
-import { RefreshTokensService } from "../refresh-tokens/refresh-tokens.service";
 import { type SignTokensDTO } from "./dto/sign-token.dto";
 import { SignUpDTO } from "./dto/sign-up.dto";
 
@@ -54,15 +55,22 @@ export class AuthRepository {
         })
       )[0];
 
+      const confirmationToken = crypto
+        .randomBytes(32)
+        .toString("base64")
+        .slice(0, 32);
+
       const user = (
         await this.usersService.create(
           {
             email: signUpDTO.email,
             firstName: signUpDTO.firstName,
             lastName: signUpDTO.lastName,
-            password: digest,
+            encrypted_password: digest,
             salt: salt,
-            profileID: profile.id,
+            profile_id: profile.id,
+            confirmation_sent_at: new Date(),
+            confirmation_token: await bcrypt.hash(confirmationToken, 12),
           },
           tx,
         )
@@ -96,7 +104,10 @@ export class AuthRepository {
 
       return {
         user,
-        tokens,
+        tokens: {
+          ...tokens,
+          confirmationToken,
+        },
       };
     });
   }
