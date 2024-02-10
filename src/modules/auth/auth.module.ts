@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 
+import { MailModule } from "@/modules/mail/mail.module";
 import { ProfilesModule } from "@/modules/profiles/profiles.module";
 import { RefreshTokensModule } from "@/modules/refresh-tokens/refresh-tokens.module";
 import { SessionsModule } from "@/modules/sessions/sessions.module";
@@ -10,7 +11,6 @@ import { UsersModule } from "@/modules/users/users.module";
 
 import { DrizzleModule } from "@/database/drizzle.module";
 
-import { MailModule } from "../mail/mail.module";
 import { AuthController } from "./auth.controller";
 import { AuthRepository } from "./auth.repository";
 import { AuthService } from "./auth.service";

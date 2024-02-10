@@ -4,17 +4,20 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
 import { SessionsService } from "@/modules/sessions/sessions.service";
 import { UsersService } from "@/modules/users/users.service";
 
 import bycrypt from "bcrypt";
+import crypto from "crypto";
 import { type FastifyRequest } from "fastify";
 
 import { MailService } from "../mail/mail.service";
 import { AuthRepository } from "./auth.repository";
 import { type ConfirmEmailDTO } from "./dto/confirm-email.dto";
+import { type RequestConfirmDTO } from "./dto/request-confirm";
 import { type SignInDTO } from "./dto/sign-in.dto";
 import { type SignOutDTO } from "./dto/sign-out.dto";
 import { type SignUpDTO } from "./dto/sign-up.dto";
@@ -23,6 +26,7 @@ import { type PayloadWithRefreshTokenType } from "./types/payload.type";
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly configService: ConfigService,
     private readonly usersService: UsersService,
     private readonly sessionsService: SessionsService,
     private readonly refreshTokensService: RefreshTokensService,
@@ -92,20 +96,11 @@ export class AuthService {
       password: signUpDTO.password,
     });
 
-    this.mailService.send({
-      title: "Email Verification",
-      subject: "Le-Insight - Email Verification",
-      description:
-        "Thank you for signing up for Le-Insight. We're excited to have you on board! Before you can start exploring all the features and benefits, we need to verify your email address to ensure the security of your account.",
-      label: "Verify Email",
-      link: `https://le-insight.vercel.app/auth/reset-password?token="${tokens.confirmationToken}"`,
-      from: undefined,
-      to: [
-        {
-          address: `<${user.email}>`,
-          name: `${signUpDTO.firstName} ${signUpDTO.lastName}`,
-        },
-      ],
+    await this.requestConfirm({
+      email: signUpDTO.email,
+      firstName: signUpDTO.firstName,
+      lastName: signUpDTO.lastName,
+      token: tokens.confirmationToken,
     });
 
     return {
@@ -191,6 +186,17 @@ export class AuthService {
     };
   }
 
+  async resetPassword() {}
+
+  /**
+   * The function confirms a user's email by checking if the provided token matches the one stored in
+   * the database and if the token is still valid. If all checks pass, the user's email verification is
+   * updated.
+   * @param {ConfirmEmailDTO} confirmEmailDTO - The `confirmEmailDTO` is an object that contains the
+   * following properties:
+   * @returns an object with a "data" property. The "data" property contains the result of calling the
+   * "update" method on the "usersService" object.
+   */
   async confirm(confirmEmailDTO: ConfirmEmailDTO) {
     // 1 -> Get the user's email & check if the user's exists
     const user = await this.usersService.get({
@@ -220,10 +226,47 @@ export class AuthService {
     return {
       data: await this.usersService.update({
         id: user.id,
-        confirmation_sent_at: null,
         confirmation_token: null,
         confirmed_at: new Date(),
       }),
     };
+  }
+
+  async requestConfirm(requestConfirmDTO: RequestConfirmDTO) {
+    const user = await this.usersService.get({
+      by: "email",
+      values: { email: requestConfirmDTO.email },
+    });
+
+    if (user?.confirmed_at) throw new ConflictException();
+
+    if (!requestConfirmDTO.token) {
+      requestConfirmDTO.token = crypto
+        .randomBytes(32)
+        .toString("base64")
+        .slice(0, 32);
+
+      await this.usersService.update({
+        id: user?.id ?? "",
+        confirmation_sent_at: new Date(),
+        confirmation_token: await bycrypt.hash(requestConfirmDTO.token, 12),
+      });
+    }
+
+    return await this.mailService.send({
+      title: "Email Verification",
+      subject: "Le-Insight - Email Verification",
+      description:
+        "Thank you for signing up for Le-Insight. We're excited to have you on board! Before you can start exploring all the features and benefits, we need to verify your email address to ensure the security of your account.",
+      label: "Verify Email",
+      link: `${this.configService.get("CLIENT_HOSTNAME")}/auth/reset-password?token="${requestConfirmDTO.token}"`,
+      from: undefined,
+      to: [
+        {
+          address: `<${requestConfirmDTO.email}>`,
+          name: `${requestConfirmDTO.firstName} ${requestConfirmDTO.lastName}`,
+        },
+      ],
+    });
   }
 }

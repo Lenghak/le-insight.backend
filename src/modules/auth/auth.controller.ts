@@ -17,6 +17,7 @@ import { FastifyRequest } from "fastify";
 
 import { AuthService } from "./auth.service";
 import { ConfirmEmailDTO } from "./dto/confirm-email.dto";
+import { RequestConfirmDTO } from "./dto/request-confirm";
 import { SignInDTO } from "./dto/sign-in.dto";
 import { SignUpDTO } from "./dto/sign-up.dto";
 import {
@@ -67,5 +68,12 @@ export class AuthController {
   @Post("/confirm")
   async confirm(@Body() confirmEmailDTO: ConfirmEmailDTO) {
     return await this.authService.confirm(confirmEmailDTO);
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post("/request-confirm")
+  async requestConfirm(@Body() requestConfirmDTO: RequestConfirmDTO) {
+    return await this.authService.requestConfirm(requestConfirmDTO);
   }
 }
