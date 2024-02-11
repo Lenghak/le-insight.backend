@@ -3,7 +3,7 @@ import { z } from "nestjs-zod/z";
 
 export const ResetPasswordSchema = z
   .object({
-    userID: z.string().uuid(),
+    email: z.string().email(),
     password: z.string().min(8),
     confirmPassword: z.string().min(8),
     token: z.string(),

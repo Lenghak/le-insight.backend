@@ -22,6 +22,5 @@ export const InsertUserSchema = createInsertSchema(users)
 export const UpdateUserSchema = SelectUserSchema.partial()
   .omit({
     created_at: true,
-    salt: true,
   })
   .required({ id: true });
