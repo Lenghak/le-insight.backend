@@ -1,20 +1,27 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
   UnprocessableEntityException,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
 import { SessionsService } from "@/modules/sessions/sessions.service";
 import { UsersService } from "@/modules/users/users.service";
 
 import bycrypt from "bcrypt";
+import crypto from "crypto";
 import { type FastifyRequest } from "fastify";
 
 import { MailService } from "../mail/mail.service";
 import { AuthRepository } from "./auth.repository";
 import { type ConfirmEmailDTO } from "./dto/confirm-email.dto";
+import { type ConfirmResetDTO } from "./dto/confirm-reset.dto";
+import { type RequestConfirmDTO } from "./dto/request-confirm.dto";
+import { type RequestRecoveryDTO } from "./dto/request-recovery.dto";
+import { type ResetPasswordDTO } from "./dto/reset-password.dto";
 import { type SignInDTO } from "./dto/sign-in.dto";
 import { type SignOutDTO } from "./dto/sign-out.dto";
 import { type SignUpDTO } from "./dto/sign-up.dto";
@@ -23,6 +30,7 @@ import { type PayloadWithRefreshTokenType } from "./types/payload.type";
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly configService: ConfigService,
     private readonly usersService: UsersService,
     private readonly sessionsService: SessionsService,
     private readonly refreshTokensService: RefreshTokensService,
@@ -92,20 +100,11 @@ export class AuthService {
       password: signUpDTO.password,
     });
 
-    this.mailService.send({
-      title: "Email Verification",
-      subject: "Le-Insight - Email Verification",
-      description:
-        "Thank you for signing up for Le-Insight. We're excited to have you on board! Before you can start exploring all the features and benefits, we need to verify your email address to ensure the security of your account.",
-      label: "Verify Email",
-      link: `https://le-insight.vercel.app/auth/reset-password?token="${tokens.confirmationToken}"`,
-      from: undefined,
-      to: [
-        {
-          address: `<${user.email}>`,
-          name: `${signUpDTO.firstName} ${signUpDTO.lastName}`,
-        },
-      ],
+    await this.requestConfirm({
+      email: signUpDTO.email,
+      firstName: signUpDTO.firstName,
+      lastName: signUpDTO.lastName,
+      token: tokens.confirmationToken,
     });
 
     return {
@@ -191,7 +190,98 @@ export class AuthService {
     };
   }
 
-  async confirm(confirmEmailDTO: ConfirmEmailDTO) {
+  /**
+   * The function confirms a password reset by checking the user's email, recovery token, and
+   * reauthentication time, and then generates a new recovery token.
+   * @param {ConfirmResetDTO} confirmResetDTO - The `confirmResetDTO` parameter is an object that
+   * contains the following properties:
+   * @returns an object with a "data" property, which contains the newToken value.
+   */
+  async confirmReset(confirmResetDTO: ConfirmResetDTO) {
+    const user = await this.usersService.get({
+      by: "email",
+      values: { email: confirmResetDTO.email },
+    });
+
+    if (!user?.id) throw new UnauthorizedException();
+
+    if (!user.recovery_token || !user.recovery_sent_at)
+      throw new BadRequestException();
+
+    if (Date.now() - user.recovery_sent_at?.getTime() > 15 * 60 * 1000)
+      throw new UnauthorizedException("Invalid Credentials");
+
+    const isTokenMatch = await bycrypt.compare(
+      confirmResetDTO.token,
+      user.recovery_token,
+    );
+
+    if (!isTokenMatch) throw new BadRequestException("Invalid Credential");
+
+    const newToken = crypto.randomBytes(32).toString("base64").slice(0, 32);
+
+    await this.usersService.update({
+      id: user.id,
+      recovery_token: await bycrypt.hash(newToken, 12),
+      reauthentication_sent_at: new Date(),
+    });
+
+    return {
+      data: newToken,
+    };
+  }
+
+  /**
+   * The function resets a user's password by checking the validity of the reset token and updating the
+   * user's encrypted password and salt.
+   * @param {ResetPasswordDTO} resetPassword - The `resetPassword` parameter is an object of type
+   * `ResetPasswordDTO`. It contains the following properties:
+   * @returns the result of the `update` method of the `usersService` object.
+   */
+  async resetPassword(resetPassword: ResetPasswordDTO) {
+    const user = await this.usersService.get({
+      by: "email",
+      values: {
+        email: resetPassword.email,
+      },
+    });
+
+    if (!user?.id) return new UnauthorizedException();
+
+    if (!user.recovery_token || !user.recovery_sent_at)
+      throw new BadRequestException();
+
+    if (Date.now() - user.recovery_sent_at?.getTime() > 15 * 60 * 1000)
+      throw new UnauthorizedException("Invalid Credentials");
+
+    const isTokenMatch = await bycrypt.compare(
+      resetPassword.token,
+      user.recovery_token,
+    );
+
+    if (!isTokenMatch) return new BadRequestException("Token unmatched");
+
+    const { digest, salt } = await this.authRepository.hashData(
+      resetPassword.password,
+    );
+
+    return await this.usersService.update({
+      id: user.id,
+      encrypted_password: digest,
+      salt: salt,
+    });
+  }
+
+  /**
+   * The function confirms a user's email by checking if the provided token matches the one stored in
+   * the database and if the token is still valid. If all checks pass, the user's email verification is
+   * updated.
+   * @param {ConfirmEmailDTO} confirmEmailDTO - The `confirmEmailDTO` is an object that contains the
+   * following properties:
+   * @returns an object with a "data" property. The "data" property contains the result of calling the
+   * "update" method on the "usersService" object.
+   */
+  async confirmEmail(confirmEmailDTO: ConfirmEmailDTO) {
     // 1 -> Get the user's email & check if the user's exists
     const user = await this.usersService.get({
       by: "email",
@@ -212,18 +302,106 @@ export class AuthService {
     );
 
     if (!isTokenMatch) throw new UnauthorizedException();
+
     // 3 -> Check the expiration date from the database (token created date + 15min < or > now)
     if (Date.now() - user.confirmation_sent_at?.getTime() > 15 * 60 * 1000)
-      throw new UnauthorizedException("Invalid Credentials");
+      throw new UnauthorizedException("Token Expired");
 
     // 4 -> If all passed, update user's email verification
     return {
       data: await this.usersService.update({
         id: user.id,
-        confirmation_sent_at: null,
         confirmation_token: null,
         confirmed_at: new Date(),
       }),
+    };
+  }
+
+  /**
+   * The `requestConfirm` function is used to send an email verification link to a user and update
+   * their confirmation token and confirmation sent time in the database.
+   * @param {RequestConfirmDTO} requestConfirmDTO - The `requestConfirmDTO` parameter is an object that
+   * contains the following properties:
+   * @returns the result of the `this.mailService.send()` method.
+   */
+  async requestConfirm(requestConfirmDTO: RequestConfirmDTO) {
+    const user = await this.usersService.get({
+      by: "email",
+      values: { email: requestConfirmDTO.email },
+    });
+
+    if (user?.confirmed_at) throw new ConflictException();
+
+    if (!requestConfirmDTO.token) {
+      requestConfirmDTO.token = crypto
+        .randomBytes(32)
+        .toString("base64")
+        .slice(0, 32);
+
+      await this.usersService.update({
+        id: user?.id ?? "",
+        confirmation_sent_at: new Date(),
+        confirmation_token: await bycrypt.hash(requestConfirmDTO.token, 12),
+      });
+    }
+
+    await this.mailService.send({
+      title: "Email Verification",
+      subject: "Le-Insight - Email Verification",
+      description:
+        "Thank you for signing up for Le-Insight. We're excited to have you on board! Before you can start exploring all the features and benefits, we need to verify your email address to ensure the security of your account.",
+      label: "Verify Email",
+      link: `${this.configService.get("CLIENT_HOSTNAME")}/auth/confirm?token="${requestConfirmDTO.token}"`,
+      from: undefined,
+      to: [
+        {
+          address: `<${requestConfirmDTO.email}>`,
+          name: `${requestConfirmDTO.firstName} ${requestConfirmDTO.lastName}`,
+        },
+      ],
+    });
+
+    return {
+      message: "Email confirmation has been sent",
+      data: {},
+    };
+  }
+
+  async requestRecovery(requestRecoveryDTO: RequestRecoveryDTO) {
+    const user = await this.usersService.get({
+      by: "email",
+      values: { email: requestRecoveryDTO.email },
+    });
+
+    if (!user?.id) throw new UnauthorizedException();
+
+    const token = crypto.randomBytes(32).toString("base64").slice(0, 32);
+
+    await this.usersService.update({
+      id: user.id,
+      recovery_sent_at: new Date(),
+      recovery_token: await bycrypt.hash(token, 12),
+    });
+
+    await this.mailService.send({
+      title: "Password Reset",
+      subject: "Le-Insight - Password Reset",
+      description:
+        "We received a request to reset the password for your account. To proceed with resetting your password, please click the button below:",
+      label: "Reset Password",
+      link: `${this.configService.get("CLIENT_HOSTNAME")}/auth/reset-password?token="${token}"`,
+      from: undefined,
+      to: [
+        {
+          address: `<${requestRecoveryDTO.email}>`,
+          name: `${user?.profile?.firstName} ${user?.profile?.lastName}`,
+        },
+      ],
+    });
+
+    return {
+      message: "Reset password token has been sent",
+      data: {},
     };
   }
 }

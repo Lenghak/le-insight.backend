@@ -17,6 +17,10 @@ import { FastifyRequest } from "fastify";
 
 import { AuthService } from "./auth.service";
 import { ConfirmEmailDTO } from "./dto/confirm-email.dto";
+import { ConfirmResetDTO } from "./dto/confirm-reset.dto";
+import { RequestConfirmDTO } from "./dto/request-confirm.dto";
+import { RequestRecoveryDTO } from "./dto/request-recovery.dto";
+import { ResetPasswordDTO } from "./dto/reset-password.dto";
 import { SignInDTO } from "./dto/sign-in.dto";
 import { SignUpDTO } from "./dto/sign-up.dto";
 import {
@@ -66,6 +70,34 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post("/confirm")
   async confirm(@Body() confirmEmailDTO: ConfirmEmailDTO) {
-    return await this.authService.confirm(confirmEmailDTO);
+    return await this.authService.confirmEmail(confirmEmailDTO);
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post("/request-confirm")
+  async requestConfirm(@Body() requestConfirmDTO: RequestConfirmDTO) {
+    return await this.authService.requestConfirm(requestConfirmDTO);
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post("/recovery-password")
+  async recoveryPassword(@Body() resetPasswordDTO: ResetPasswordDTO) {
+    return await this.authService.resetPassword(resetPasswordDTO);
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post("/request-recovery")
+  async requestRecovery(@Body() requestRecoveryDTO: RequestRecoveryDTO) {
+    return await this.authService.requestRecovery(requestRecoveryDTO);
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post("/confirm-reset")
+  async confirmReset(@Body() confirmResetDTO: ConfirmResetDTO) {
+    return await this.authService.confirmReset(confirmResetDTO);
   }
 }
