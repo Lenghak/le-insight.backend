@@ -22,7 +22,7 @@ export const db: PostgresJsDatabase<typeof schemas> = drizzle(queryClient, {
   schema: schemas,
 });
 
-export async function withPaginate<
+export function withPaginate<
   T extends PgSelect | PgSelectQueryBuilder = PgSelectQueryBuilder,
 >(
   qb: T,

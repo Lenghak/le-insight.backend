@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 
-import type * as userSchema from "@/database/models/auth/users.model";
 import { type Users } from "@/database/schemas/auth/users/users.type";
 import { type DatabaseType } from "@/database/types/db.types";
 
@@ -13,7 +12,7 @@ import { UsersRepository } from "./users.repository";
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  async create(createUserDTO: CreateUserDTO, db?: DatabaseType) {
+  async create(createUserDTO: CreateUserDTO, db: DatabaseType) {
     return await this.usersRepository.create(createUserDTO, db).execute();
   }
 
@@ -26,17 +25,14 @@ export class UsersService {
    * @returns The `findAll()` function is returning the result of the database query, which is a list
    * of all the records from the `users` in the `schema`.
    */
-  async getAll(
-    { limit, page }: UsersListDTO,
-    db?: DatabaseType<typeof userSchema>,
-  ) {
+  async getAll({ limit, page, q }: UsersListDTO, db?: DatabaseType) {
     const count = (await this.total())[0].value;
     const offset = (page - 1) * limit;
     const totalPages = Math.ceil(count / limit);
     const hasPreviousPage = page > 1;
     const hasNextPage = page < totalPages;
 
-    const users = await this.usersRepository.list(limit, offset, db);
+    const users = await this.usersRepository.list(limit, offset, q, db);
     return {
       data: users,
       meta: {

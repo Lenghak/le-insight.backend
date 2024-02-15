@@ -12,7 +12,7 @@ import {
 } from "@/database/schemas/auth/users/users.type";
 import { type DatabaseType } from "@/database/types/db.types";
 
-import { countDistinct, eq, sql } from "drizzle-orm";
+import { countDistinct, eq, ilike, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";
@@ -32,8 +32,11 @@ export class UsersRepository {
    * @returns The `create` function is returning a prepared statement for inserting a new user into the
    * database.
    */
-  create(createUser: CreateUserDTO, db?: DatabaseType) {
-    return (db ?? this.db)
+  create(
+    createUser: CreateUserDTO,
+    db: DatabaseType | DatabaseType<typeof userSchema> = this.db,
+  ) {
+    return db
       .insert(userSchema.users)
       .values({
         email: createUser.email,
@@ -46,8 +49,8 @@ export class UsersRepository {
       .returning();
   }
 
-  async total(db?: DatabaseType<typeof userSchema>) {
-    return await (db ?? this.db)
+  async total(db: DatabaseType<typeof userSchema> = this.db) {
+    return await db
       .select({ value: countDistinct(userSchema.users.id) })
       .from(userSchema.users);
   }
@@ -60,10 +63,11 @@ export class UsersRepository {
   async list(
     limit: number,
     offset: number,
-    db?: DatabaseType<typeof userSchema>,
+    query?: string,
+    db: DatabaseType | DatabaseType<typeof userSchema> = this.db,
   ) {
     return await withPaginate(
-      (db ?? this.db)
+      db
         .select({
           id: userSchema.users.id,
           profile_id: userSchema.users.profile_id,
@@ -87,7 +91,7 @@ export class UsersRepository {
         .$dynamic(),
       limit,
       offset,
-    );
+    ).where(query ? ilike(userSchema.users.email, `${query}`) : undefined);
   }
 
   /**
@@ -134,8 +138,11 @@ export class UsersRepository {
    * `role`.
    * @returns a prepared statement for updating a user in the database.
    */
-  update(updateUserDTO: UpdateUserDTO, db?: DatabaseType) {
-    return (db ?? this.db)
+  update(
+    updateUserDTO: UpdateUserDTO,
+    db: DatabaseType | DatabaseType<typeof userSchema> = this.db,
+  ) {
+    return db
       .update(userSchema.users)
       .set({
         ...updateUserDTO,
@@ -150,8 +157,8 @@ export class UsersRepository {
    * ID.
    * @returns The `delete()` function is returning a statement that deletes a record from the database.
    */
-  delete(db?: DatabaseType) {
-    return (db ?? this.db)
+  delete(db: DatabaseType<typeof userSchema> = this.db) {
+    return db
       .delete(userSchema.users)
       .where(eq(userSchema.users.id, sql.placeholder("id")));
   }
