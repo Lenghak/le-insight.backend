@@ -1,9 +1,9 @@
-import { CacheKey } from "@nestjs/cache-manager";
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller, Get, Param, Query } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 
 import { Public } from "@/common/decorators/public.decorator";
 
+import { UsersListDTO } from "./dto/users-list.dto";
 import { UsersService } from "./users.service";
 
 @ApiTags("Users")
@@ -12,16 +12,12 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Public()
-  @CacheKey("users")
   @Get("/")
-  async lists() {
-    return {
-      data: await this.userService.getAll(),
-    };
+  async lists(@Query() usersListDTO: UsersListDTO) {
+    return await this.userService.getAll(usersListDTO);
   }
 
   @Public()
-  @CacheKey("user")
   @Get("/:id")
   async getByID(@Param("id") id: string) {
     return {
@@ -31,6 +27,14 @@ export class UsersController {
           id,
         },
       }),
+    };
+  }
+
+  @Public()
+  @Get("/total")
+  async total() {
+    return {
+      data: await this.userService.total(),
     };
   }
 }

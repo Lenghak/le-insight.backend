@@ -1,19 +1,23 @@
 import { Injectable } from "@nestjs/common";
 
-import type * as userSchema from "@/database/models/auth/users.model";
 import { type Users } from "@/database/schemas/auth/users/users.type";
 import { type DatabaseType } from "@/database/types/db.types";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";
 import { type UpdateUserDTO } from "./dto/update-user.dto";
+import { type UsersListDTO } from "./dto/users-list.dto";
 import { UsersRepository } from "./users.repository";
 
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  async create(createUserDTO: CreateUserDTO, db?: DatabaseType) {
+  async create(createUserDTO: CreateUserDTO, db: DatabaseType) {
     return await this.usersRepository.create(createUserDTO, db).execute();
+  }
+
+  async total() {
+    return await this.usersRepository.total();
   }
 
   /**
@@ -21,9 +25,24 @@ export class UsersService {
    * @returns The `findAll()` function is returning the result of the database query, which is a list
    * of all the records from the `users` in the `schema`.
    */
-  async getAll(db?: DatabaseType<typeof userSchema>) {
-    // TODO: include pagination
-    return await this.usersRepository.getAll(db).execute();
+  async getAll({ limit, page, q }: UsersListDTO, db?: DatabaseType) {
+    const count = (await this.total())[0].value;
+    const offset = (page - 1) * limit;
+    const totalPages = Math.ceil(count / limit);
+    const hasPreviousPage = page > 1;
+    const hasNextPage = page < totalPages;
+
+    const users = await this.usersRepository.list(limit, offset, q, db);
+    return {
+      data: users,
+      meta: {
+        count,
+        page,
+        totalPages,
+        hasNextPage,
+        hasPreviousPage,
+      },
+    };
   }
 
   /**
@@ -44,10 +63,6 @@ export class UsersService {
   }
 
   async update(updateUserDTO: UpdateUserDTO, db?: DatabaseType) {
-    return await this.usersRepository
-      .update(updateUserDTO, db)
-      .execute({ id: updateUserDTO.id });
+    return await this.usersRepository.update(updateUserDTO, db);
   }
-
-  async seed() {}
 }
