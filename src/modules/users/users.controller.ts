@@ -14,9 +14,7 @@ export class UsersController {
   @Public()
   @Get("/")
   async lists(@Query() usersListDTO: UsersListDTO) {
-    return {
-      data: await this.userService.getAll(usersListDTO),
-    };
+    return await this.userService.getAll(usersListDTO);
   }
 
   @Public()

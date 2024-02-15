@@ -27,15 +27,26 @@ export class UsersService {
    * of all the records from the `users` in the `schema`.
    */
   async getAll(
-    usersListDTO: UsersListDTO,
+    { limit, page }: UsersListDTO,
     db?: DatabaseType<typeof userSchema>,
   ) {
-    // TODO: include pagination
-    return await this.usersRepository.list(
-      usersListDTO.limit,
-      usersListDTO.offset,
-      db,
-    );
+    const count = (await this.total())[0].value;
+    const offset = (page - 1) * limit;
+    const totalPages = Math.ceil(count / limit);
+    const hasPreviousPage = page > 1;
+    const hasNextPage = page < totalPages;
+
+    const users = await this.usersRepository.list(limit, offset, db);
+    return {
+      data: users,
+      meta: {
+        count,
+        page,
+        totalPages,
+        hasNextPage,
+        hasPreviousPage,
+      },
+    };
   }
 
   /**
