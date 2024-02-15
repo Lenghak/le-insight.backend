@@ -1,5 +1,11 @@
 import * as schemas from "@/database/models";
 
+import { type SQL } from "drizzle-orm";
+import {
+  type PgColumn,
+  type PgSelect,
+  type PgSelectQueryBuilder,
+} from "drizzle-orm/pg-core";
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import env from "@/core/env";
@@ -15,6 +21,20 @@ export const queryClient = postgres(env().DATABASE_URL);
 export const db: PostgresJsDatabase<typeof schemas> = drizzle(queryClient, {
   schema: schemas,
 });
+
+export async function withPaginate<
+  T extends PgSelect | PgSelectQueryBuilder = PgSelectQueryBuilder,
+>(
+  qb: T,
+  limit: number,
+  offset: number,
+  ...column: (PgColumn | SQL | SQL.Aliased)[]
+) {
+  return qb
+    .limit(limit)
+    .offset(offset)
+    .groupBy(...column);
+}
 
 export const drizzleProvider = {
   provide: DRIZZLE_ASYNC_PROVIDER,

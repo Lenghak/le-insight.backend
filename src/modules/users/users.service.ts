@@ -6,6 +6,7 @@ import { type DatabaseType } from "@/database/types/db.types";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";
 import { type UpdateUserDTO } from "./dto/update-user.dto";
+import { type UsersListDTO } from "./dto/users-list.dto";
 import { UsersRepository } from "./users.repository";
 
 @Injectable()
@@ -16,14 +17,25 @@ export class UsersService {
     return await this.usersRepository.create(createUserDTO, db).execute();
   }
 
+  async total() {
+    return await this.usersRepository.total();
+  }
+
   /**
    * The `findAll` function retrieves all records from the `users` in the database.
    * @returns The `findAll()` function is returning the result of the database query, which is a list
    * of all the records from the `users` in the `schema`.
    */
-  async getAll(db?: DatabaseType<typeof userSchema>) {
+  async getAll(
+    usersListDTO: UsersListDTO,
+    db?: DatabaseType<typeof userSchema>,
+  ) {
     // TODO: include pagination
-    return await this.usersRepository.getAll(db).execute();
+    return await this.usersRepository.list(
+      usersListDTO.limit,
+      usersListDTO.offset,
+      db,
+    );
   }
 
   /**
@@ -44,10 +56,6 @@ export class UsersService {
   }
 
   async update(updateUserDTO: UpdateUserDTO, db?: DatabaseType) {
-    return await this.usersRepository
-      .update(updateUserDTO, db)
-      .execute({ id: updateUserDTO.id });
+    return await this.usersRepository.update(updateUserDTO, db);
   }
-
-  async seed() {}
 }
