@@ -8,7 +8,7 @@ import { SessionsService } from "@/modules/sessions/sessions.service";
 import { UsersService } from "@/modules/users/users.service";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
-import { Users } from "@/database/schemas/auth/users/users.type";
+import { type Users } from "@/database/schemas/auth/users/users.type";
 
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
@@ -121,7 +121,7 @@ export class AuthRepository {
    * is signing in.
    * @returns a Promise that resolves to the tokens generated during the sign-in transaction.
    */
-  async signInTransaction(@Req() req: FastifyRequest, user: Users) {
+  async signInTransaction(@Req() req: FastifyRequest, user: Partial<Users>) {
     return await this.db.transaction(async (tx) => {
       const session = (
         await this.sessionsService.create(
