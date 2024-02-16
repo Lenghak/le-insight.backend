@@ -8,7 +8,6 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import { Public } from "@/common/decorators/public.decorator";
 import { User } from "@/common/decorators/user.decorator";
@@ -28,7 +27,6 @@ import {
   PayloadWithRefreshTokenType,
 } from "./types/payload.type";
 
-@ApiTags("Auth")
 @Controller({ path: "/auth" })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -48,7 +46,6 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @ApiBearerAuth("access-token")
   @Post("/sign-out")
   async signOut(@User() payload: PayloadType) {
     return this.authService.signOut({
@@ -59,7 +56,6 @@ export class AuthController {
 
   @Public()
   @HttpCode(HttpStatus.OK)
-  @ApiBearerAuth("refresh-token")
   @UseGuards(AuthGuard("jwt-refresh"))
   @Post("/refresh")
   async refresh(@User() payload: PayloadWithRefreshTokenType) {

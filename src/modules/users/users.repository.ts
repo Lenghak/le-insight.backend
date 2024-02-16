@@ -49,10 +49,11 @@ export class UsersRepository {
       .returning();
   }
 
-  async total(db: DatabaseType<typeof userSchema> = this.db) {
+  async count(query?: string, db: DatabaseType<typeof userSchema> = this.db) {
     return await db
       .select({ value: countDistinct(userSchema.users.id) })
-      .from(userSchema.users);
+      .from(userSchema.users)
+      .where(query ? ilike(userSchema.users.email, `%${query}%`) : undefined);
   }
 
   /**
@@ -91,7 +92,9 @@ export class UsersRepository {
         .$dynamic(),
       limit,
       offset,
-    ).where(query ? ilike(userSchema.users.email, `${query}`) : undefined);
+      userSchema.users.id,
+      profileSchema.profiles.id,
+    ).where(query ? ilike(userSchema.users.email, `%${query}%`) : undefined);
   }
 
   /**

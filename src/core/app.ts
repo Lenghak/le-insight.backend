@@ -4,17 +4,13 @@ import {
   FastifyAdapter,
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-
-import { AuthModule } from "@/modules/auth/auth.module";
-import { UsersModule } from "@/modules/users/users.module";
 
 import { fastifyCompress } from "@fastify/compress";
 import { fastifyCookie } from "@fastify/cookie";
 import { fastifyCsrfProtection } from "@fastify/csrf-protection";
 import { fastifyHelmet } from "@fastify/helmet";
 import { fastifySecureSession } from "@fastify/secure-session";
-import { patchNestJsSwagger, ZodValidationPipe } from "nestjs-zod";
+import { ZodValidationPipe } from "nestjs-zod";
 
 import { AppModule } from "./app.module";
 
@@ -74,50 +70,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ZodValidationPipe());
   app.setGlobalPrefix("/v1/api");
-
-  // patch the version of swagger to match the nestjs-zod
-  patchNestJsSwagger();
-
-  // swagger document builder
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle("Le-Insight")
-    .setDescription(
-      "Le-Insight is a dynamic knowledge sharing platform that serves as a hub for writers, experts, and enthusiasts to share their insights, experiences, and expertise with a global audience. With its intuitive interface and user-friendly features, Le-Insight empowers individuals to publish, discover, and engage with high-quality articles spanning a wide range of topics. Whether you're passionate about technology, business, arts, or any other subject, Le-Insight provides a vibrant community where users can explore thought-provoking content, connect with like-minded individuals, and foster meaningful discussions. With its emphasis on fostering creativity, collaboration, and knowledge exchange, Le-Insight is the go-to platform for both aspiring and established writers to showcase their talent and make a lasting impact in the world of online publishing.",
-    )
-    .setVersion("0.1.0")
-    // add access-token auth for swagger
-    .addBearerAuth(
-      {
-        description: `[just text field] Please enter token in following format: Bearer <JWT>`,
-        name: "Authorization",
-        bearerFormat: "Bearer",
-        scheme: "Bearer",
-        type: "http",
-        in: "Header",
-      },
-      "access-token",
-    )
-    // add refresh-token auth for swagger
-    .addBearerAuth(
-      {
-        description: `[just text field] Please enter token in following format: Bearer <JWT>`,
-        name: "Authorization",
-        bearerFormat: "Bearer",
-        scheme: "Bearer",
-        type: "http",
-        in: "Header",
-      },
-      "refresh-token",
-    )
-    .build();
-
-  // init docs from controllers
-  const document = SwaggerModule.createDocument(app, swaggerConfig, {
-    include: [AppModule, AuthModule, UsersModule], //the modules that you want to include in your swagger docs
-  });
-
-  // setup swagger
-  SwaggerModule.setup("docs", app, document);
 
   // listening to port 8000 or default from prod
   await app.listen(
