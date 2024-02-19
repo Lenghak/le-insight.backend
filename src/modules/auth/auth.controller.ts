@@ -12,8 +12,14 @@ import { AuthGuard } from "@nestjs/passport";
 import { Public } from "@/common/decorators/public.decorator";
 import { User } from "@/common/decorators/user.decorator";
 
+import { MailSerializer } from "@/modules/mail/mail.serializer";
+import { RefrehsTokensSerializer } from "@/modules/refresh-tokens/refresh-tokens.serializer";
+import { SessionsSerializer } from "@/modules/sessions/sessions.serializer";
+import { UsersSerializer } from "@/modules/users/users.serializer";
+
 import { FastifyRequest } from "fastify";
 
+import { AuthSerializer } from "./auth.serializer";
 import { AuthService } from "./auth.service";
 import { ConfirmEmailDTO } from "./dto/confirm-email.dto";
 import { ConfirmResetDTO } from "./dto/confirm-reset.dto";
@@ -29,29 +35,40 @@ import {
 
 @Controller({ path: "/auth" })
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authSerializer: AuthSerializer,
+    private readonly refreshTokensSerializer: RefrehsTokensSerializer,
+    private readonly mailSerializer: MailSerializer,
+    private readonly sessionsSerializer: SessionsSerializer,
+    private readonly usersSerializer: UsersSerializer,
+    private readonly authService: AuthService,
+  ) {}
 
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @Post("/sign-up")
   async signUp(@Req() req: FastifyRequest, @Body() signUpDTO: SignUpDTO) {
-    return await this.authService.signUp(req, signUpDTO);
+    const data = await this.authService.signUp(req, signUpDTO);
+    return this.usersSerializer.serialize(data.user, data.tokens);
   }
 
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post("/sign-in")
   async signIn(@Req() req: FastifyRequest, @Body() signInDTO: SignInDTO) {
-    return this.authService.signIn(req, signInDTO);
+    const data = await this.authService.signIn(req, signInDTO);
+    return this.usersSerializer.serialize(data.user, data.tokens);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post("/sign-out")
   async signOut(@User() payload: PayloadType) {
-    return this.authService.signOut({
-      userID: payload.sub,
-      sessionID: payload.sid,
-    });
+    return this.sessionsSerializer.serialize(
+      await this.authService.signOut({
+        userID: payload.sub,
+        sessionID: payload.sid,
+      }),
+    );
   }
 
   @Public()
@@ -59,41 +76,53 @@ export class AuthController {
   @UseGuards(AuthGuard("jwt-refresh"))
   @Post("/refresh")
   async refresh(@User() payload: PayloadWithRefreshTokenType) {
-    return await this.authService.refresh(payload);
+    return this.authSerializer.serialize(
+      await this.authService.refresh(payload),
+    );
   }
 
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post("/confirm")
   async confirm(@Body() confirmEmailDTO: ConfirmEmailDTO) {
-    return await this.authService.confirmEmail(confirmEmailDTO);
+    return this.usersSerializer.serialize(
+      await this.authService.confirmEmail(confirmEmailDTO),
+    );
   }
 
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post("/request-confirm")
   async requestConfirm(@Body() requestConfirmDTO: RequestConfirmDTO) {
-    return await this.authService.requestConfirm(requestConfirmDTO);
+    return this.mailSerializer.serialize(
+      await this.authService.requestConfirm(requestConfirmDTO),
+    );
   }
 
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post("/recovery-password")
   async recoveryPassword(@Body() resetPasswordDTO: ResetPasswordDTO) {
-    return await this.authService.resetPassword(resetPasswordDTO);
+    return this.usersSerializer.serialize(
+      await this.authService.resetPassword(resetPasswordDTO),
+    );
   }
 
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post("/request-recovery")
   async requestRecovery(@Body() requestRecoveryDTO: RequestRecoveryDTO) {
-    return await this.authService.requestRecovery(requestRecoveryDTO);
+    return this.mailSerializer.serialize(
+      await this.authService.requestRecovery(requestRecoveryDTO),
+    );
   }
 
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post("/confirm-reset")
   async confirmReset(@Body() confirmResetDTO: ConfirmResetDTO) {
-    return await this.authService.confirmReset(confirmResetDTO);
+    return this.authSerializer.serialize(
+      await this.authService.confirmReset(confirmResetDTO),
+    );
   }
 }

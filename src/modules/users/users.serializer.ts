@@ -11,6 +11,21 @@ export class UsersSerializer implements Serializer {
     @Inject(JSON_API_SERIALIZER) private readonly serializer: JSONAPISerializer,
   ) {
     this.serializer.register("user", {
+      whitelist: [
+        "id",
+        "profile_id",
+        "phone",
+        "email",
+        "role",
+        "banned_until",
+        "deleted_at",
+        "invited_at",
+        "confirmed_at",
+        "confirmation_sent_at",
+        "created_at",
+        "updated_at",
+        "profile",
+      ],
       relationships: {
         profile: {
           type: "profile",

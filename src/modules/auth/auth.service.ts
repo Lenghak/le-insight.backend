@@ -7,6 +7,7 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
+import { MailService } from "@/modules/mail/mail.service";
 import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
 import { SessionsService } from "@/modules/sessions/sessions.service";
 import { UsersService } from "@/modules/users/users.service";
@@ -15,7 +16,6 @@ import bycrypt from "bcrypt";
 import crypto from "crypto";
 import { type FastifyRequest } from "fastify";
 
-import { MailService } from "../mail/mail.service";
 import { AuthRepository } from "./auth.repository";
 import { type ConfirmEmailDTO } from "./dto/confirm-email.dto";
 import { type ConfirmResetDTO } from "./dto/confirm-reset.dto";
@@ -67,7 +67,8 @@ export class AuthService {
     const tokens = await this.authRepository.signInTransaction(req, user);
 
     return {
-      data: tokens,
+      user,
+      tokens,
     };
   }
 
@@ -108,13 +109,8 @@ export class AuthService {
     });
 
     return {
-      data: {
-        user,
-        tokens: {
-          accessToken: tokens.accessToken,
-          refreshToken: tokens.refreshToken,
-        },
-      },
+      user,
+      tokens,
     };
   }
 
@@ -128,13 +124,11 @@ export class AuthService {
    */
   async signOut(signOutDTO: SignOutDTO) {
     // -> remove sessions & token from request
-    return {
-      data: (
-        await this.sessionsService.delete({
-          sessionID: signOutDTO.sessionID,
-        })
-      )[0],
-    };
+    return (
+      await this.sessionsService.delete({
+        sessionID: signOutDTO.sessionID,
+      })
+    )[0];
   }
 
   /**
@@ -185,9 +179,7 @@ export class AuthService {
       sessionID: refreshToken.session_id ?? "",
     });
 
-    return {
-      data: tokens,
-    };
+    return tokens;
   }
 
   /**
@@ -223,7 +215,7 @@ export class AuthService {
     await this.usersService.update({
       id: user.id,
       recovery_token: await bycrypt.hash(newToken, 12),
-      reauthentication_sent_at: new Date(),
+      recovery_sent_at: new Date(),
     });
 
     return {
@@ -308,13 +300,11 @@ export class AuthService {
       throw new UnauthorizedException("Token Expired");
 
     // 4 -> If all passed, update user's email verification
-    return {
-      data: await this.usersService.update({
-        id: user.id,
-        confirmation_token: null,
-        confirmed_at: new Date(),
-      }),
-    };
+    return await this.usersService.update({
+      id: user.id,
+      confirmation_token: null,
+      confirmed_at: new Date(),
+    });
   }
 
   /**
@@ -363,7 +353,6 @@ export class AuthService {
 
     return {
       message: "Email confirmation has been sent",
-      data: {},
     };
   }
 
@@ -401,7 +390,6 @@ export class AuthService {
 
     return {
       message: "Reset password token has been sent",
-      data: {},
     };
   }
 }

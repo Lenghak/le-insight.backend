@@ -2,11 +2,14 @@ import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 
+import { jsonAPISerializerProvider } from "@/common/serializers/json-api-serializer.provider";
+
 import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import { join } from "path";
 
 import { MailProcessor } from "./mail.processor";
+import { MailSerializer } from "./mail.serializer";
 import { MailService } from "./mail.service";
 
 @Module({
@@ -40,7 +43,12 @@ import { MailService } from "./mail.service";
       name: "mail",
     }),
   ],
-  providers: [MailService, MailProcessor],
+  providers: [
+    MailService,
+    MailProcessor,
+    jsonAPISerializerProvider,
+    MailSerializer,
+  ],
   exports: [MailService],
 })
 export class MailModule {}
