@@ -10,7 +10,7 @@ import {
   UserRoleEnum,
   type Users,
 } from "@/database/schemas/auth/users/users.type";
-import { type DatabaseType } from "@/database/types/db.types";
+import { type DatabaseType } from "@/database/types/db.type";
 
 import { countDistinct, eq, ilike, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";

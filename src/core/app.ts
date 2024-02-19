@@ -5,6 +5,9 @@ import {
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 
+import { SerializedHTTPExceptionFilter } from "@/common/filters/serialized-http.filter";
+import { JSON_API_SERIALIZER } from "@/common/serializer/json-api-serializer.provider";
+
 import { fastifyCompress } from "@fastify/compress";
 import { fastifyCookie } from "@fastify/cookie";
 import { fastifyCsrfProtection } from "@fastify/csrf-protection";
@@ -24,6 +27,11 @@ async function bootstrap() {
     new FastifyAdapter({
       trustProxy: ["0.0.0.0"],
     }),
+  );
+
+  app.useGlobalPipes(new ZodValidationPipe());
+  app.useGlobalFilters(
+    new SerializedHTTPExceptionFilter(app.get(JSON_API_SERIALIZER)),
   );
 
   const configService = app.get(ConfigService);
@@ -68,7 +76,6 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.useGlobalPipes(new ZodValidationPipe());
   app.setGlobalPrefix("/v1/api");
 
   // listening to port 8000 or default from prod

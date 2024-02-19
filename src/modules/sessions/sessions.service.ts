@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { type DatabaseType } from "@/database/types/db.types";
+import { type DatabaseType } from "@/database/types/db.type";
 
 import { type CreateSessionsDTO } from "./dto/create-sessions.dto";
 import { type DeleteSessionDTO } from "./dto/delete-sessions.dto";

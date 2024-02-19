@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { type Users } from "@/database/schemas/auth/users/users.type";
-import { type DatabaseType } from "@/database/types/db.types";
+import { type DatabaseType } from "@/database/types/db.type";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";
 import { type UpdateUserDTO } from "./dto/update-user.dto";

@@ -166,6 +166,9 @@ devDependencies:
   '@types/jest':
     specifier: ^29.5.12
     version: 29.5.12
+  '@types/json-api-serializer':
+    specifier: ^2.6.6
+    version: 2.6.6
   '@types/node':
     specifier: ^20.11.19
     version: 20.11.19
@@ -2371,6 +2374,10 @@ packages:
     dependencies:
       expect: 29.7.0
       pretty-format: 29.7.0
+    dev: true
+
+  /@types/json-api-serializer@2.6.6:
+    resolution: {integrity: sha512-8XVIVyMNoFMz3pfR3tPHnJ9YlgUQDEWvTxajVakmOjSxWekJvmi2GRFbtaREQiOGtffnHImD0jbR80NQtpib9g==}
     dev: true
 
   /@types/json-schema@7.0.15:

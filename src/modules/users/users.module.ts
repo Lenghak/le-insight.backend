@@ -1,6 +1,8 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
+import { jsonAPISerializerProvider } from "@/common/serializer/json-api-serializer.provider";
+
 import { DrizzleModule } from "@/database/drizzle.module";
 
 import { UsersController } from "./users.controller";
@@ -10,7 +12,7 @@ import { UsersService } from "./users.service";
 @Module({
   imports: [DrizzleModule, ConfigModule],
   controllers: [UsersController],
-  providers: [UsersService, UsersRepository],
+  providers: [UsersService, UsersRepository, jsonAPISerializerProvider],
   exports: [UsersService],
 })
 export class UsersModule {}

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { type DatabaseType } from "@/database/types/db.types";
+import { type DatabaseType } from "@/database/types/db.type";
 
 import { type CreateProfileDTO } from "./dto/create-profile.dto";
 import { ProfilesRepository } from "./profiles.repository";

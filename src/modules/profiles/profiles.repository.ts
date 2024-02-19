@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as profileSchema from "@/database/models/profiles.model";
-import { type DatabaseType } from "@/database/types/db.types";
+import { type DatabaseType } from "@/database/types/db.type";
 
 import { eq, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";

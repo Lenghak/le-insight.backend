@@ -4,7 +4,7 @@ import { type SignOutDTO } from "@/modules/auth/dto/sign-out.dto";
 
 import type * as refreshTokenSchema from "@/database/models/auth/refresh-tokens.model";
 import { type RefreshTokens } from "@/database/schemas/auth/refresh-tokens/refresh-tokens.type";
-import { type DatabaseType } from "@/database/types/db.types";
+import { type DatabaseType } from "@/database/types/db.type";
 
 import { type CreateRefreshTokensDTO } from "./dto/create-refresh-tokens.dto";
 import { type UpdateRefreshTokensDTO } from "./dto/update-refresh-tokens.dto";

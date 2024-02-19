@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from "@nestjs/common";
+import { Controller, Get, Param, ParseUUIDPipe, Query } from "@nestjs/common";
 
 import { Public } from "@/common/decorators/public.decorator";
 
@@ -17,7 +17,7 @@ export class UsersController {
 
   @Public()
   @Get("/:id")
-  async getByID(@Param("id") id: string) {
+  async getByID(@Param("id") id: ParseUUIDPipe) {
     return {
       data: await this.userService.get({
         by: "id",
