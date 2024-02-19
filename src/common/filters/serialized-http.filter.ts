@@ -7,11 +7,11 @@ import {
   Logger,
 } from "@nestjs/common";
 
+import { JSON_API_SERIALIZER } from "@/common/serializers/json-api-serializer.provider";
+
 import { type FastifyRequest } from "fastify";
 import { type FastifyReply } from "fastify/types/reply";
 import JSONAPISerializer from "json-api-serializer";
-
-import { JSON_API_SERIALIZER } from "../serializer/json-api-serializer.provider";
 
 @Catch(Error)
 export class SerializedHTTPExceptionFilter implements ExceptionFilter {

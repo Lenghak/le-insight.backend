@@ -6,7 +6,7 @@ import {
 } from "@nestjs/platform-fastify";
 
 import { SerializedHTTPExceptionFilter } from "@/common/filters/serialized-http.filter";
-import { JSON_API_SERIALIZER } from "@/common/serializer/json-api-serializer.provider";
+import { JSON_API_SERIALIZER } from "@/common/serializers/json-api-serializer.provider";
 
 import { fastifyCompress } from "@fastify/compress";
 import { fastifyCookie } from "@fastify/cookie";

@@ -13,8 +13,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
-import { AccessTokenGuard } from "@/common/guard/access-token.guard";
-import { jsonAPISerializerProvider } from "@/common/serializer/json-api-serializer.provider";
+import { AccessTokenGuard } from "@/common/guards/access-token.guard";
+import { jsonAPISerializerProvider } from "@/common/serializers/json-api-serializer.provider";
 
 import { AuthModule } from "@/modules/auth/auth.module";
 import { MailModule } from "@/modules/mail/mail.module";

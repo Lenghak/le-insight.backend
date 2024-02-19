@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
-import { jsonAPISerializerProvider } from "@/common/serializer/json-api-serializer.provider";
+import { jsonAPISerializerProvider } from "@/common/serializers/json-api-serializer.provider";
 
 import { DrizzleModule } from "@/database/drizzle.module";
 
