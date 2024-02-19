@@ -7,12 +7,18 @@ import { DrizzleModule } from "@/database/drizzle.module";
 
 import { UsersController } from "./users.controller";
 import { UsersRepository } from "./users.repository";
+import { UsersSerializer } from "./users.serializer";
 import { UsersService } from "./users.service";
 
 @Module({
   imports: [DrizzleModule, ConfigModule],
   controllers: [UsersController],
-  providers: [UsersService, UsersRepository, jsonAPISerializerProvider],
+  providers: [
+    UsersService,
+    UsersRepository,
+    jsonAPISerializerProvider,
+    UsersSerializer,
+  ],
   exports: [UsersService],
 })
 export class UsersModule {}
