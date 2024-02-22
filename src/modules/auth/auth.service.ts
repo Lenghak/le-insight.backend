@@ -341,7 +341,7 @@ export class AuthService {
       description:
         "Thank you for signing up for Le-Insight. We're excited to have you on board! Before you can start exploring all the features and benefits, we need to verify your email address to ensure the security of your account.",
       label: "Verify Email",
-      link: `${this.configService.get("CLIENT_HOSTNAME")}/auth/confirm?token="${requestConfirmDTO.token}"`,
+      link: `${this.configService.get("CLIENT_HOSTNAME")}/auth/confirm-email?token=${requestConfirmDTO.token}`,
       from: undefined,
       to: [
         {

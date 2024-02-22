@@ -28,7 +28,11 @@ export class SerializedHTTPExceptionFilter implements ExceptionFilter {
       Logger.error(exception.message, exception.stack);
     }
 
-    rep.send(
+    rep.status(
+      exception instanceof HttpException ? exception.getStatus() : 500,
+    );
+
+    return rep.send(
       this.serializer.serializeError({
         ...exception,
         title: exception.name,
@@ -36,10 +40,7 @@ export class SerializedHTTPExceptionFilter implements ExceptionFilter {
           exception instanceof HttpException
             ? exception.message
             : exception.name,
-        status:
-          exception instanceof HttpException
-            ? exception.getStatus().toString() ?? "500"
-            : "500",
+        status: rep.statusCode.toString(),
         detail: exception.message,
         meta: {
           time: new Date().toISOString(),
