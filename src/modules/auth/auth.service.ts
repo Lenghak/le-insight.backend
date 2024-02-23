@@ -3,7 +3,6 @@ import {
   ConflictException,
   Injectable,
   UnauthorizedException,
-  UnprocessableEntityException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
@@ -286,18 +285,18 @@ export class AuthService {
 
     // 2 -> Get the hashed token from client's request and verify if the token is valid or not with the db
     if (!user.confirmation_token || !user.confirmation_sent_at)
-      throw new UnprocessableEntityException("Invalid Credentials");
+      throw new BadRequestException("Invalid Credentials");
 
     const isTokenMatch = await bycrypt.compare(
       confirmEmailDTO.token,
       user.confirmation_token,
     );
 
-    if (!isTokenMatch) throw new UnauthorizedException();
+    if (!isTokenMatch) throw new BadRequestException();
 
     // 3 -> Check the expiration date from the database (token created date + 15min < or > now)
     if (Date.now() - user.confirmation_sent_at?.getTime() > 15 * 60 * 1000)
-      throw new UnauthorizedException("Token Expired");
+      throw new BadRequestException("Token Expired");
 
     // 4 -> If all passed, update user's email verification
     return await this.usersService.update({
@@ -326,7 +325,8 @@ export class AuthService {
       requestConfirmDTO.token = crypto
         .randomBytes(32)
         .toString("base64")
-        .slice(0, 32);
+        .slice(0, 32)
+        .replace(/[\\\/\+\-]/g, "_");
 
       await this.usersService.update({
         id: user?.id ?? "",
@@ -364,7 +364,11 @@ export class AuthService {
 
     if (!user?.id) throw new UnauthorizedException();
 
-    const token = crypto.randomBytes(32).toString("base64").slice(0, 32);
+    const token = crypto
+      .randomBytes(32)
+      .toString("base64")
+      .slice(0, 32)
+      .replace(/[\\\/\+\-]/g, "_");
 
     await this.usersService.update({
       id: user.id,

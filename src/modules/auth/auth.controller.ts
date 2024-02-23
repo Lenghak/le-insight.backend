@@ -13,7 +13,6 @@ import { Public } from "@/common/decorators/public.decorator";
 import { User } from "@/common/decorators/user.decorator";
 
 import { MailSerializer } from "@/modules/mail/mail.serializer";
-import { RefrehsTokensSerializer } from "@/modules/refresh-tokens/refresh-tokens.serializer";
 import { SessionsSerializer } from "@/modules/sessions/sessions.serializer";
 import { UsersSerializer } from "@/modules/users/users.serializer";
 
@@ -37,7 +36,6 @@ import {
 export class AuthController {
   constructor(
     private readonly authSerializer: AuthSerializer,
-    private readonly refreshTokensSerializer: RefrehsTokensSerializer,
     private readonly mailSerializer: MailSerializer,
     private readonly sessionsSerializer: SessionsSerializer,
     private readonly usersSerializer: UsersSerializer,
