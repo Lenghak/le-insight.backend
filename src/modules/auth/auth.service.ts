@@ -17,7 +17,6 @@ import { type FastifyRequest } from "fastify";
 
 import { AuthRepository } from "./auth.repository";
 import { type ConfirmEmailDTO } from "./dto/confirm-email.dto";
-import { type ConfirmResetDTO } from "./dto/confirm-reset.dto";
 import { type RequestConfirmDTO } from "./dto/request-confirm.dto";
 import { type RequestRecoveryDTO } from "./dto/request-recovery.dto";
 import { type ResetPasswordDTO } from "./dto/reset-password.dto";
@@ -182,47 +181,6 @@ export class AuthService {
   }
 
   /**
-   * The function confirms a password reset by checking the user's email, recovery token, and
-   * reauthentication time, and then generates a new recovery token.
-   * @param {ConfirmResetDTO} confirmResetDTO - The `confirmResetDTO` parameter is an object that
-   * contains the following properties:
-   * @returns an object with a "data" property, which contains the newToken value.
-   */
-  async confirmReset(confirmResetDTO: ConfirmResetDTO) {
-    const user = await this.usersService.get({
-      by: "email",
-      values: { email: confirmResetDTO.email },
-    });
-
-    if (!user?.id) throw new UnauthorizedException();
-
-    if (!user.recovery_token || !user.recovery_sent_at)
-      throw new BadRequestException();
-
-    if (Date.now() - user.recovery_sent_at?.getTime() > 15 * 60 * 1000)
-      throw new UnauthorizedException("Invalid Credentials");
-
-    const isTokenMatch = await bycrypt.compare(
-      confirmResetDTO.token,
-      user.recovery_token,
-    );
-
-    if (!isTokenMatch) throw new BadRequestException("Invalid Credential");
-
-    const newToken = crypto.randomBytes(32).toString("base64").slice(0, 32);
-
-    await this.usersService.update({
-      id: user.id,
-      recovery_token: await bycrypt.hash(newToken, 12),
-      recovery_sent_at: new Date(),
-    });
-
-    return {
-      data: newToken,
-    };
-  }
-
-  /**
    * The function resets a user's password by checking the validity of the reset token and updating the
    * user's encrypted password and salt.
    * @param {ResetPasswordDTO} resetPassword - The `resetPassword` parameter is an object of type
@@ -243,7 +201,7 @@ export class AuthService {
       throw new BadRequestException();
 
     if (Date.now() - user.recovery_sent_at?.getTime() > 15 * 60 * 1000)
-      throw new UnauthorizedException("Invalid Credentials");
+      throw new BadRequestException("Invalid Credentials");
 
     const isTokenMatch = await bycrypt.compare(
       resetPassword.token,

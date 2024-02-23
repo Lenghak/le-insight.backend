@@ -21,7 +21,6 @@ import { FastifyRequest } from "fastify";
 import { AuthSerializer } from "./auth.serializer";
 import { AuthService } from "./auth.service";
 import { ConfirmEmailDTO } from "./dto/confirm-email.dto";
-import { ConfirmResetDTO } from "./dto/confirm-reset.dto";
 import { RequestConfirmDTO } from "./dto/request-confirm.dto";
 import { RequestRecoveryDTO } from "./dto/request-recovery.dto";
 import { ResetPasswordDTO } from "./dto/reset-password.dto";
@@ -112,15 +111,6 @@ export class AuthController {
   async requestRecovery(@Body() requestRecoveryDTO: RequestRecoveryDTO) {
     return this.mailSerializer.serialize(
       await this.authService.requestRecovery(requestRecoveryDTO),
-    );
-  }
-
-  @Public()
-  @HttpCode(HttpStatus.OK)
-  @Post("/confirm-reset")
-  async confirmReset(@Body() confirmResetDTO: ConfirmResetDTO) {
-    return this.authSerializer.serialize(
-      await this.authService.confirmReset(confirmResetDTO),
     );
   }
 }
