@@ -378,7 +378,7 @@ export class AuthService {
       description:
         "We received a request to reset the password for your account. To proceed with resetting your password, please click the button below:",
       label: "Reset Password",
-      link: `${this.configService.get("CLIENT_HOSTNAME")}/auth/reset-password?token="${token}"`,
+      link: `${this.configService.get("CLIENT_HOSTNAME")}/auth/reset-password?token=${token}`,
       from: undefined,
       to: [
         {
