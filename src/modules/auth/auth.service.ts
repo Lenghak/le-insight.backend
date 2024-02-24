@@ -3,7 +3,6 @@ import {
   ConflictException,
   Injectable,
   UnauthorizedException,
-  UnprocessableEntityException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
@@ -18,7 +17,6 @@ import { type FastifyRequest } from "fastify";
 
 import { AuthRepository } from "./auth.repository";
 import { type ConfirmEmailDTO } from "./dto/confirm-email.dto";
-import { type ConfirmResetDTO } from "./dto/confirm-reset.dto";
 import { type RequestConfirmDTO } from "./dto/request-confirm.dto";
 import { type RequestRecoveryDTO } from "./dto/request-recovery.dto";
 import { type ResetPasswordDTO } from "./dto/reset-password.dto";
@@ -183,47 +181,6 @@ export class AuthService {
   }
 
   /**
-   * The function confirms a password reset by checking the user's email, recovery token, and
-   * reauthentication time, and then generates a new recovery token.
-   * @param {ConfirmResetDTO} confirmResetDTO - The `confirmResetDTO` parameter is an object that
-   * contains the following properties:
-   * @returns an object with a "data" property, which contains the newToken value.
-   */
-  async confirmReset(confirmResetDTO: ConfirmResetDTO) {
-    const user = await this.usersService.get({
-      by: "email",
-      values: { email: confirmResetDTO.email },
-    });
-
-    if (!user?.id) throw new UnauthorizedException();
-
-    if (!user.recovery_token || !user.recovery_sent_at)
-      throw new BadRequestException();
-
-    if (Date.now() - user.recovery_sent_at?.getTime() > 15 * 60 * 1000)
-      throw new UnauthorizedException("Invalid Credentials");
-
-    const isTokenMatch = await bycrypt.compare(
-      confirmResetDTO.token,
-      user.recovery_token,
-    );
-
-    if (!isTokenMatch) throw new BadRequestException("Invalid Credential");
-
-    const newToken = crypto.randomBytes(32).toString("base64").slice(0, 32);
-
-    await this.usersService.update({
-      id: user.id,
-      recovery_token: await bycrypt.hash(newToken, 12),
-      recovery_sent_at: new Date(),
-    });
-
-    return {
-      data: newToken,
-    };
-  }
-
-  /**
    * The function resets a user's password by checking the validity of the reset token and updating the
    * user's encrypted password and salt.
    * @param {ResetPasswordDTO} resetPassword - The `resetPassword` parameter is an object of type
@@ -244,7 +201,7 @@ export class AuthService {
       throw new BadRequestException();
 
     if (Date.now() - user.recovery_sent_at?.getTime() > 15 * 60 * 1000)
-      throw new UnauthorizedException("Invalid Credentials");
+      throw new BadRequestException("Invalid Credentials");
 
     const isTokenMatch = await bycrypt.compare(
       resetPassword.token,
@@ -286,18 +243,18 @@ export class AuthService {
 
     // 2 -> Get the hashed token from client's request and verify if the token is valid or not with the db
     if (!user.confirmation_token || !user.confirmation_sent_at)
-      throw new UnprocessableEntityException("Invalid Credentials");
+      throw new BadRequestException("Invalid Credentials");
 
     const isTokenMatch = await bycrypt.compare(
       confirmEmailDTO.token,
       user.confirmation_token,
     );
 
-    if (!isTokenMatch) throw new UnauthorizedException();
+    if (!isTokenMatch) throw new BadRequestException();
 
     // 3 -> Check the expiration date from the database (token created date + 15min < or > now)
     if (Date.now() - user.confirmation_sent_at?.getTime() > 15 * 60 * 1000)
-      throw new UnauthorizedException("Token Expired");
+      throw new BadRequestException("Token Expired");
 
     // 4 -> If all passed, update user's email verification
     return await this.usersService.update({
@@ -326,7 +283,8 @@ export class AuthService {
       requestConfirmDTO.token = crypto
         .randomBytes(32)
         .toString("base64")
-        .slice(0, 32);
+        .slice(0, 32)
+        .replace(/[\\\/\+\-]/g, "_");
 
       await this.usersService.update({
         id: user?.id ?? "",
@@ -364,7 +322,11 @@ export class AuthService {
 
     if (!user?.id) throw new UnauthorizedException();
 
-    const token = crypto.randomBytes(32).toString("base64").slice(0, 32);
+    const token = crypto
+      .randomBytes(32)
+      .toString("base64")
+      .slice(0, 32)
+      .replace(/[\\\/\+\-]/g, "_");
 
     await this.usersService.update({
       id: user.id,
@@ -378,7 +340,7 @@ export class AuthService {
       description:
         "We received a request to reset the password for your account. To proceed with resetting your password, please click the button below:",
       label: "Reset Password",
-      link: `${this.configService.get("CLIENT_HOSTNAME")}/auth/reset-password?token="${token}"`,
+      link: `${this.configService.get("CLIENT_HOSTNAME")}/auth/reset-password?token=${token}`,
       from: undefined,
       to: [
         {

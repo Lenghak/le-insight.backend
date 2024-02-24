@@ -13,7 +13,6 @@ import { Public } from "@/common/decorators/public.decorator";
 import { User } from "@/common/decorators/user.decorator";
 
 import { MailSerializer } from "@/modules/mail/mail.serializer";
-import { RefrehsTokensSerializer } from "@/modules/refresh-tokens/refresh-tokens.serializer";
 import { SessionsSerializer } from "@/modules/sessions/sessions.serializer";
 import { UsersSerializer } from "@/modules/users/users.serializer";
 
@@ -22,7 +21,6 @@ import { FastifyRequest } from "fastify";
 import { AuthSerializer } from "./auth.serializer";
 import { AuthService } from "./auth.service";
 import { ConfirmEmailDTO } from "./dto/confirm-email.dto";
-import { ConfirmResetDTO } from "./dto/confirm-reset.dto";
 import { RequestConfirmDTO } from "./dto/request-confirm.dto";
 import { RequestRecoveryDTO } from "./dto/request-recovery.dto";
 import { ResetPasswordDTO } from "./dto/reset-password.dto";
@@ -37,7 +35,6 @@ import {
 export class AuthController {
   constructor(
     private readonly authSerializer: AuthSerializer,
-    private readonly refreshTokensSerializer: RefrehsTokensSerializer,
     private readonly mailSerializer: MailSerializer,
     private readonly sessionsSerializer: SessionsSerializer,
     private readonly usersSerializer: UsersSerializer,
@@ -114,15 +111,6 @@ export class AuthController {
   async requestRecovery(@Body() requestRecoveryDTO: RequestRecoveryDTO) {
     return this.mailSerializer.serialize(
       await this.authService.requestRecovery(requestRecoveryDTO),
-    );
-  }
-
-  @Public()
-  @HttpCode(HttpStatus.OK)
-  @Post("/confirm-reset")
-  async confirmReset(@Body() confirmResetDTO: ConfirmResetDTO) {
-    return this.authSerializer.serialize(
-      await this.authService.confirmReset(confirmResetDTO),
     );
   }
 }
