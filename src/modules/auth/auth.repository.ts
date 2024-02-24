@@ -58,7 +58,8 @@ export class AuthRepository {
       const confirmationToken = crypto
         .randomBytes(32)
         .toString("base64")
-        .slice(0, 32);
+        .slice(0, 32)
+        .replace(/[\\\/\+\-]/g, "_");
 
       const user = (
         await this.usersService.create(
