@@ -170,7 +170,7 @@ devDependencies:
     specifier: ^2.6.6
     version: 2.6.6
   '@types/node':
-    specifier: ^20.11.19
+    specifier: ^20.11.20
     version: 20.11.20
   '@types/nodemailer':
     specifier: ^6.4.14

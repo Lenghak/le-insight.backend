@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
 
 import { MailService } from "@/modules/mail/mail.service";
 import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
@@ -12,7 +13,6 @@ import { SessionsService } from "@/modules/sessions/sessions.service";
 import { UsersService } from "@/modules/users/users.service";
 
 import bycrypt from "bcrypt";
-import crypto from "crypto";
 import { type FastifyRequest } from "fastify";
 
 import { AuthRepository } from "./auth.repository";
@@ -34,6 +34,7 @@ export class AuthService {
     private readonly refreshTokensService: RefreshTokensService,
     private readonly mailService: MailService,
     private readonly authRepository: AuthRepository,
+    private readonly jwtService: JwtService,
   ) {}
 
   /**
@@ -188,10 +189,14 @@ export class AuthService {
    * @returns the result of the `update` method of the `usersService` object.
    */
   async resetPassword(resetPassword: ResetPasswordDTO) {
+    const decode = await this.jwtService.verifyAsync(resetPassword.token, {
+      secret: await this.configService.get("JWT_SECRET"),
+    });
+
     const user = await this.usersService.get({
-      by: "email",
+      by: "id",
       values: {
-        email: resetPassword.email,
+        id: decode.uid,
       },
     });
 
@@ -231,11 +236,15 @@ export class AuthService {
    * "update" method on the "usersService" object.
    */
   async confirmEmail(confirmEmailDTO: ConfirmEmailDTO) {
+    const decode = await this.jwtService.verifyAsync(confirmEmailDTO.token, {
+      secret: await this.configService.get("JWT_SECRET"),
+    });
+
     // 1 -> Get the user's email & check if the user's exists
     const user = await this.usersService.get({
-      by: "email",
+      by: "id",
       values: {
-        email: confirmEmailDTO.email,
+        id: decode.uid,
       },
     });
 
@@ -277,14 +286,21 @@ export class AuthService {
       values: { email: requestConfirmDTO.email },
     });
 
+    // If there is no user found, don't send any email
+    if (!user?.id) throw new UnauthorizedException();
+
     if (user?.confirmed_at) throw new ConflictException();
 
     if (!requestConfirmDTO.token) {
-      requestConfirmDTO.token = crypto
-        .randomBytes(32)
-        .toString("base64")
-        .slice(0, 32)
-        .replace(/[\\\/\+\-]/g, "_");
+      requestConfirmDTO.token = await this.jwtService.signAsync(
+        {
+          uid: user.id,
+        },
+        {
+          secret: this.configService.get("JWT_SECRET"),
+          expiresIn: 15 * 60 * 60,
+        },
+      );
 
       await this.usersService.update({
         id: user?.id ?? "",
@@ -322,11 +338,15 @@ export class AuthService {
 
     if (!user?.id) throw new UnauthorizedException();
 
-    const token = crypto
-      .randomBytes(32)
-      .toString("base64")
-      .slice(0, 32)
-      .replace(/[\\\/\+\-]/g, "_");
+    const token = await this.jwtService.signAsync(
+      {
+        uid: user.id,
+      },
+      {
+        secret: this.configService.get("JWT_SECRET"),
+        expiresIn: 15 * 60 * 60,
+      },
+    );
 
     await this.usersService.update({
       id: user.id,
