@@ -13,7 +13,6 @@ import { type Users } from "@/database/schemas/auth/users/users.type";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import bcrypt from "bcrypt";
-import crypto from "crypto";
 import { FastifyRequest } from "fastify";
 
 import { type SignTokensDTO } from "./dto/sign-token.dto";
@@ -55,12 +54,6 @@ export class AuthRepository {
         })
       )[0];
 
-      const confirmationToken = crypto
-        .randomBytes(32)
-        .toString("base64")
-        .slice(0, 32)
-        .replace(/[\\\/\+\-]/g, "_");
-
       const user = (
         await this.usersService.create(
           {
@@ -70,8 +63,6 @@ export class AuthRepository {
             encrypted_password: digest,
             salt: salt,
             profile_id: profile.id,
-            confirmation_sent_at: new Date(),
-            confirmation_token: await bcrypt.hash(confirmationToken, 12),
           },
           tx,
         )
@@ -107,7 +98,6 @@ export class AuthRepository {
         user,
         tokens: {
           ...tokens,
-          confirmationToken,
         },
       };
     });

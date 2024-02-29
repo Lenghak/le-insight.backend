@@ -104,7 +104,6 @@ export class AuthService {
       email: signUpDTO.email,
       firstName: signUpDTO.firstName,
       lastName: signUpDTO.lastName,
-      token: tokens.confirmationToken,
     });
 
     return {
