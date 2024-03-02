@@ -20,7 +20,7 @@ export class LoggerMiddleware implements NestMiddleware {
       const diff = process.hrtime(startAt);
       const responseTime = diff[0] * 1e3 + diff[1] * 1e-6;
 
-      const stringFormat = `"${method} - ${
+      const stringFormat = `"${method} - ${req["originalUrl"]} - ${
         headers.host
       } - ${statusCode} - ${responseTime.toFixed(2)}ms" - ${
         headers["user-agent"]

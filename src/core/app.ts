@@ -69,7 +69,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       (await configService.get("HOSTNAME")) ?? "0.0.0.0",
-      (await configService.get("CLIENT_HOSTNAME")) ?? "http://localhost:4321",
+      (await configService.get("CLIENT_HOSTNAME")) ?? "http://localhost:3000",
       (await configService.get("ADMIN_HOSTNAME")) ?? "http://localhost:3000",
     ],
     allowedHeaders: "*",

@@ -222,6 +222,7 @@ export class AuthService {
       id: user.id,
       encrypted_password: digest,
       salt: salt,
+      recovery_token: null,
     });
   }
 
