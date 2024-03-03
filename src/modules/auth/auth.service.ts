@@ -188,6 +188,9 @@ export class AuthService {
    * @returns the result of the `update` method of the `usersService` object.
    */
   async resetPassword(resetPassword: ResetPasswordDTO) {
+    if (!resetPassword.token)
+      throw new BadRequestException("No valid token provided");
+
     const decode = await this.jwtService.verifyAsync(resetPassword.token, {
       secret: await this.configService.get("JWT_SECRET"),
     });
@@ -236,6 +239,9 @@ export class AuthService {
    * "update" method on the "usersService" object.
    */
   async confirmEmail(confirmEmailDTO: ConfirmEmailDTO) {
+    if (!confirmEmailDTO.token)
+      throw new BadRequestException("No valid token provided");
+
     const decode = await this.jwtService.verifyAsync(confirmEmailDTO.token, {
       secret: await this.configService.get("JWT_SECRET"),
     });
