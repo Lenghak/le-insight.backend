@@ -36,27 +36,27 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  // @ts-expect-error ~ the app instance is missing a couple of property
+  // @ts-expect-error ~ the app instance is missing a couple of properties
   await app.register(fastifyCompress, {
     global: true,
     encodings: ["gzip", "deflate"],
   });
 
-  // @ts-expect-error ~ the app instance is missing a couple of property
+  // @ts-expect-error ~ the app instance is missing a couple of properties
   await app.register(fastifyCookie, {
     secret: await configService.get("COOKIE_SECRET"),
   });
 
-  // @ts-expect-error ~ the app instance is missing a couple of property
+  // @ts-expect-error ~ the app instance is missing a couple of properties
   await app.register(fastifySecureSession, {
     secret: await configService.get("SESSION_SECRET"),
     salt: await configService.get("SESSION_SALT"),
   });
 
-  // @ts-expect-error ~ the app instance is missing a couple of property
+  // @ts-expect-error ~ the app instance is missing a couple of properties
   await app.register(fastifyHelmet, { global: true });
 
-  // @ts-expect-error ~ the app instance is missing a couple of property
+  // @ts-expect-error ~ the app instance is missing a couple of properties
   await app.register(fastifyCsrfProtection, {
     sessionPlugin: "@fastify/secure-session",
     cookieOpts: {
