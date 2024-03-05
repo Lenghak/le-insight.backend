@@ -28,13 +28,15 @@ async function bootstrap() {
       trustProxy: ["0.0.0.0"],
     }),
   );
+  const configService = app.get(ConfigService);
 
   app.useGlobalPipes(new ZodValidationPipe());
   app.useGlobalFilters(
-    new SerializedHTTPExceptionFilter(app.get(JSON_API_SERIALIZER)),
+    new SerializedHTTPExceptionFilter(
+      app.get(JSON_API_SERIALIZER),
+      configService,
+    ),
   );
-
-  const configService = app.get(ConfigService);
 
   // @ts-expect-error ~ the app instance is missing a couple of properties
   await app.register(fastifyCompress, {

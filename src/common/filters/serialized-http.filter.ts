@@ -6,10 +6,10 @@ import {
   Inject,
   Logger,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 import { JSON_API_SERIALIZER } from "@/common/serializers/json-api-serializer.provider";
 
-import { type FastifyRequest } from "fastify";
 import { type FastifyReply } from "fastify/types/reply";
 import JSONAPISerializer from "json-api-serializer";
 
@@ -17,16 +17,15 @@ import JSONAPISerializer from "json-api-serializer";
 export class SerializedHTTPExceptionFilter implements ExceptionFilter {
   constructor(
     @Inject(JSON_API_SERIALIZER) private readonly serializer: JSONAPISerializer,
+    private readonly configService: ConfigService,
   ) {}
 
   catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const req = ctx.getRequest<FastifyRequest>();
     const rep = ctx.getResponse<FastifyReply>();
 
-    if (!req.is404) {
+    this.configService.get("NODE_ENV") === "development" &&
       Logger.error(exception.message, exception.stack);
-    }
 
     rep.status(
       exception instanceof HttpException ? exception.getStatus() : 500,
