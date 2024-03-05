@@ -1,16 +1,37 @@
-import { Controller, Post, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  HttpCode,
+  HttpStatus,
+  InternalServerErrorException,
+  Post,
+} from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
-import { Roles } from "@/common/decorators/roles.decorator";
-import { RolesGuard } from "@/common/guards/roles.guard";
+import { AuthSerializer } from "@/modules/auth/auth.serializer";
 
-import { UserRoleEnum } from "@/database/schemas/auth/users/users.type";
+import { createAuthToken } from "@portive/auth";
 
 @Controller({ path: "/articles" })
 export class ArticlesController {
-  @Roles(UserRoleEnum.ADMIN)
-  @UseGuards(RolesGuard)
-  @Post("/")
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly authSerializer: AuthSerializer,
+  ) {}
+
+  @HttpCode(HttpStatus.OK)
+  @Post("/cloud")
   async getCloudAuthToken() {
-    return "This is visible in admin";
+    if (!this.configService.get("PORTIVE_API_KEY"))
+      throw new InternalServerErrorException("Cannot Connect to Portive Cloud");
+
+    const token = createAuthToken(
+      this.configService.get("PORTIVE_API_KEY") ?? "",
+      {
+        expiresIn: "24h",
+        maxFileBytes: 5 * 1000 * 1000,
+      },
+    );
+
+    return this.authSerializer.serialize(token);
   }
 }

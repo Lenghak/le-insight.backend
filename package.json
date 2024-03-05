@@ -39,6 +39,7 @@
     "@nestjs/platform-express": "^10.3.3",
     "@nestjs/platform-fastify": "^10.3.3",
     "@nestjs/throttler": "^5.1.2",
+    "@portive/auth": "^9.0.0",
     "bcrypt": "^5.1.1",
     "bull": "^4.12.2",
     "cache-manager": "^5.4.0",
