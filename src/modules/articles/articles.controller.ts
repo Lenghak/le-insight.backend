@@ -1,9 +1,9 @@
 import {
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
-  Post,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
@@ -19,7 +19,7 @@ export class ArticlesController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
-  @Post("/cloud")
+  @Get("/cloud")
   async getCloudAuthToken() {
     if (!this.configService.get("PORTIVE_API_KEY"))
       throw new InternalServerErrorException("Cannot Connect to Portive Cloud");
@@ -28,10 +28,9 @@ export class ArticlesController {
       this.configService.get("PORTIVE_API_KEY") ?? "",
       {
         expiresIn: "24h",
-        maxFileBytes: 5 * 1000 * 1000,
       },
     );
 
-    return this.authSerializer.serialize(token);
+    return this.authSerializer.serialize({ token });
   }
 }
