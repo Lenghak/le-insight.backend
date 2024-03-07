@@ -1,6 +1,11 @@
-export { refreshTokens } from "./auth/refresh-tokens.model";
-export { sessions } from "./auth/sessions.model";
-export { userRelations, userRoleEnum, users } from "./auth/users.model";
+export { refreshTokenRelations, refreshTokens } from "./refresh-tokens";
+export { sessionRelations, sessions } from "./sessions";
+export { userRelations, userRoleEnum, users } from "./users";
 
-export { images } from "./image.model";
-export { profileRelations, profiles, sexEnum } from "./profiles.model";
+export { articles, articlesRelations } from "./articles";
+export {
+  articlesCategories,
+  articlesCategoriesRelations,
+} from "./articles-categories";
+export { categories, categoriesRelations } from "./categories";
+export { profiles, sexEnum } from "./profiles";

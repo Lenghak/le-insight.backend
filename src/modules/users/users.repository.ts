@@ -4,8 +4,8 @@ import {
   DRIZZLE_ASYNC_PROVIDER,
   withPaginate,
 } from "@/database/drizzle.service";
-import * as userSchema from "@/database/models/auth/users.model";
-import * as profileSchema from "@/database/models/profiles.model";
+import * as profileSchema from "@/database/models/profiles";
+import * as userSchema from "@/database/models/users";
 import {
   UserRoleEnum,
   type Users,
