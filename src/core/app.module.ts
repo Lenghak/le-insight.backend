@@ -14,8 +14,10 @@ import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
 import { AccessTokenGuard } from "@/common/guards/access-token.guard";
+import { RolesGuard } from "@/common/guards/roles.guard";
 import { jsonAPISerializerProvider } from "@/common/serializers/json-api-serializer.provider";
 
+import { ArticlesModules } from "@/modules/articles/articles.module";
 import { AuthModule } from "@/modules/auth/auth.module";
 import { MailModule } from "@/modules/mail/mail.module";
 import { ProfilesModule } from "@/modules/profiles/profiles.module";
@@ -88,6 +90,7 @@ import { LoggerMiddleware } from "./app.middleware";
     }),
 
     // app modules
+    ArticlesModules,
     AuthModule,
     DrizzleModule,
     MailModule,
@@ -102,6 +105,10 @@ import { LoggerMiddleware } from "./app.middleware";
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
     {
       provide: APP_GUARD,
