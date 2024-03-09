@@ -6,10 +6,7 @@ import {
 } from "@/database/drizzle.service";
 import * as profileSchema from "@/database/models/profiles";
 import * as userSchema from "@/database/models/users";
-import {
-  UserRoleEnum,
-  type Users,
-} from "@/database/schemas/auth/users/users.type";
+import { UserRoleEnum, type Users } from "@/database/schemas/users/users.type";
 import { type DatabaseType } from "@/database/types/db.type";
 
 import { countDistinct, eq, ilike, sql } from "drizzle-orm";

@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { type SignOutDTO } from "@/modules/auth/dto/sign-out.dto";
 
 import type * as refreshTokenSchema from "@/database/models/refresh-tokens/refresh-tokens.model";
-import { type RefreshTokens } from "@/database/schemas/auth/refresh-tokens/refresh-tokens.type";
+import { type RefreshTokens } from "@/database/schemas/refresh-tokens/refresh-tokens.type";
 import { type DatabaseType } from "@/database/types/db.type";
 
 import { type CreateRefreshTokensDTO } from "./dto/create-refresh-tokens.dto";

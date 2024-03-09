@@ -8,7 +8,7 @@ import { SessionsService } from "@/modules/sessions/sessions.service";
 import { UsersService } from "@/modules/users/users.service";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
-import { type Users } from "@/database/schemas/auth/users/users.type";
+import { type Users } from "@/database/schemas/users/users.type";
 
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 

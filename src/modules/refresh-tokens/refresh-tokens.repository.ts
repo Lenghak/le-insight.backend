@@ -3,7 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as refreshTokenSchema from "@/database/models/refresh-tokens/refresh-tokens.model";
 import type * as userSchema from "@/database/models/users";
-import { type RefreshTokens } from "@/database/schemas/auth/refresh-tokens/refresh-tokens.type";
+import { type RefreshTokens } from "@/database/schemas/refresh-tokens/refresh-tokens.type";
 import { type DatabaseType } from "@/database/types/db.type";
 
 import { and, eq, isNotNull, sql } from "drizzle-orm";
