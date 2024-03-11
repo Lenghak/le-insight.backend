@@ -29,7 +29,7 @@ export class UsersRepository {
    * @returns The `create` function is returning a prepared statement for inserting a new user into the
    * database.
    */
-  create(
+  async create(
     createUser: CreateUserDTO,
     db: DatabaseType | DatabaseType<typeof userSchema> = this.db,
   ) {
@@ -138,7 +138,7 @@ export class UsersRepository {
    * `role`.
    * @returns a prepared statement for updating a user in the database.
    */
-  update(
+  async update(
     updateUserDTO: UpdateUserDTO,
     db: DatabaseType | DatabaseType<typeof userSchema> = this.db,
   ) {
@@ -157,7 +157,7 @@ export class UsersRepository {
    * ID.
    * @returns The `delete()` function is returning a statement that deletes a record from the database.
    */
-  delete(db: DatabaseType<typeof userSchema> = this.db) {
+  async delete(db: DatabaseType<typeof userSchema> = this.db) {
     return db
       .delete(userSchema.users)
       .where(eq(userSchema.users.id, sql.placeholder("id")));

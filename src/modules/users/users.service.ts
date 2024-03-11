@@ -13,7 +13,7 @@ export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   async create(createUserDTO: CreateUserDTO, db: DatabaseType) {
-    return await this.usersRepository.create(createUserDTO, db).execute();
+    return await this.usersRepository.create(createUserDTO, db);
   }
 
   async count(q?: string) {

@@ -10,7 +10,10 @@ export const InsertArticleSchema = createInsertSchema(articles).pick({
   visibility: true,
 });
 
-export const UpdateArticleSchema = SelectArticleSchema.partial();
+export const UpdateArticleSchema = SelectArticleSchema.omit({
+  user_id: true,
+  created_at: true,
+}).partial();
 
 export const DeleteArticleSchema = SelectArticleSchema.pick({
   id: true,
