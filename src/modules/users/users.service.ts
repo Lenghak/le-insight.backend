@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { type Users } from "@/database/schemas/auth/users/users.type";
+import { type Users } from "@/database/schemas/users/users.type";
 import { type DatabaseType } from "@/database/types/db.type";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";
@@ -13,7 +13,7 @@ export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   async create(createUserDTO: CreateUserDTO, db: DatabaseType) {
-    return await this.usersRepository.create(createUserDTO, db).execute();
+    return await this.usersRepository.create(createUserDTO, db);
   }
 
   async count(q?: string) {

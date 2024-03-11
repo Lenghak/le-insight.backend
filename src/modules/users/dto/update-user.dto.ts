@@ -1,4 +1,4 @@
-import { UpdateUserSchema } from "@/database/schemas/auth/users/users.schema";
+import { UpdateUserSchema } from "@/database/schemas/users/users.schema";
 
 import { createZodDto } from "nestjs-zod";
 

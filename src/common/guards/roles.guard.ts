@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 
-import { type UserRoleEnum } from "@/database/schemas/auth/users/users.type";
+import { type UserRoleEnum } from "@/database/schemas/users/users.type";
 
 import { type FastifyRequest } from "fastify/types/request";
 import { type Observable } from "rxjs";
