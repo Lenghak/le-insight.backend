@@ -38,27 +38,22 @@ async function bootstrap() {
     ),
   );
 
-  // @ts-expect-error ~ the app instance is missing a couple of properties
   await app.register(fastifyCompress, {
     global: true,
     encodings: ["gzip", "deflate"],
   });
 
-  // @ts-expect-error ~ the app instance is missing a couple of properties
   await app.register(fastifyCookie, {
     secret: await configService.get("COOKIE_SECRET"),
   });
 
-  // @ts-expect-error ~ the app instance is missing a couple of properties
   await app.register(fastifySecureSession, {
     secret: await configService.get("SESSION_SECRET"),
     salt: await configService.get("SESSION_SALT"),
   });
 
-  // @ts-expect-error ~ the app instance is missing a couple of properties
   await app.register(fastifyHelmet, { global: true });
 
-  // @ts-expect-error ~ the app instance is missing a couple of properties
   await app.register(fastifyCsrfProtection, {
     sessionPlugin: "@fastify/secure-session",
     cookieOpts: {
@@ -71,7 +66,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       (await configService.get("HOSTNAME")) ?? "0.0.0.0",
-      (await configService.get("CLIENT_HOSTNAME")) ?? "http://localhost:3000",
+      (await configService.get("CLIENT_HOSTNAME")) ?? "http://localhost:4000",
       (await configService.get("ADMIN_HOSTNAME")) ?? "http://localhost:3000",
     ],
     allowedHeaders: "*",

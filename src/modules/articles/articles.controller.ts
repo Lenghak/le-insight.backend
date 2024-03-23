@@ -4,6 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
+  Post,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
@@ -33,4 +34,8 @@ export class ArticlesController {
 
     return this.authSerializer.serialize({ token });
   }
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post("/")
+  async create() {}
 }
