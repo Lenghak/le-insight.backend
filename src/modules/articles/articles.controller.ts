@@ -1,13 +1,22 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
+  Param,
+  Patch,
   Post,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
+import { ArticlesRepository } from "@/modules/articles/articles.repository";
+import { ArticlesSerializer } from "@/modules/articles/articles.serializer";
+import { CreateArticlesDTO } from "@/modules/articles/dto/create-articles.dto";
+import { DeleteArticlesDTO } from "@/modules/articles/dto/delete-articles.dto";
+import { UpdateArticlesDTO } from "@/modules/articles/dto/update-articles.dto";
 import { AuthSerializer } from "@/modules/auth/auth.serializer";
 
 import { createAuthToken } from "@portive/auth";
@@ -16,6 +25,8 @@ import { createAuthToken } from "@portive/auth";
 export class ArticlesController {
   constructor(
     private readonly configService: ConfigService,
+    private readonly articleSerialzer: ArticlesSerializer,
+    private readonly articleRepository: ArticlesRepository,
     private readonly authSerializer: AuthSerializer,
   ) {}
 
@@ -37,5 +48,22 @@ export class ArticlesController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post("/")
-  async create() {}
+  async create(@Body() createArticleDTO: CreateArticlesDTO) {
+    const article = await this.articleRepository.create(createArticleDTO);
+    return this.articleSerialzer.serialize(article);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Patch("/:id")
+  async update(@Body() updateArticleDTO: UpdateArticlesDTO) {
+    const article = await this.articleRepository.update(updateArticleDTO);
+    return this.articleSerialzer.serialize(article);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Delete("/:id")
+  async delete(@Param() deleteArticleDTO: DeleteArticlesDTO) {
+    const article = await this.articleRepository.delete(deleteArticleDTO);
+    return this.articleSerialzer.serialize(article);
+  }
 }
