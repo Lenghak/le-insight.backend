@@ -2,9 +2,9 @@ import { users } from "@/database/models/users/users.model";
 
 import {
   integer,
-  jsonb,
   pgEnum,
   pgTable,
+  text,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
@@ -19,7 +19,7 @@ export const articles = pgTable("articles", {
   id: uuid("id").primaryKey().defaultRandom(),
   user_id: uuid("user_id").references(() => users.id),
 
-  content: jsonb("content").$type<string[]>().notNull(),
+  content: text("content"),
   visibility: articlesVisibilityEnum("visibility").default("DRAFT"),
 
   visit_count: integer("visit_count").notNull().default(0),

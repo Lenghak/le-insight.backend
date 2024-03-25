@@ -30,7 +30,7 @@ export class ArticlesRepository {
     return db
       .insert(articleSchema.articles)
       .values({
-        content: createArticlesDTP.content as string[],
+        content: createArticlesDTP.content,
         visibility: createArticlesDTP.visibility,
         user_id: createArticlesDTP.user_id,
       })
@@ -87,7 +87,7 @@ export class ArticlesRepository {
       .update(articleSchema.articles)
       .set({
         ...updateArticleDTO,
-        content: updateArticleDTO.content as string[],
+        content: updateArticleDTO.content,
       })
       .where(eq(articleSchema.articles.id, updateArticleDTO.id ?? ""))
       .returning();
