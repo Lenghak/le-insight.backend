@@ -43,8 +43,8 @@ export class ArticlesRepository {
     query?: string,
     db: DatabaseType | DatabaseType<typeof articleSchema> = this.db,
   ) {
-    return await withPaginate(
-      db
+    return await withPaginate({
+      qb: db
         .select()
         .from(articleSchema.articles)
         .leftJoin(
@@ -54,9 +54,8 @@ export class ArticlesRepository {
         .$dynamic(),
       limit,
       offset,
-      articleSchema.articles.id,
-      userSchema.users.id,
-    ).where(
+      columns: [articleSchema.articles.id, userSchema.users.id],
+    }).where(
       query ? ilike(articleSchema.articles.content, `%${query}%`) : undefined,
     );
   }

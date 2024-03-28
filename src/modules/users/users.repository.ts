@@ -6,10 +6,14 @@ import {
 } from "@/database/drizzle.service";
 import * as profileSchema from "@/database/models/profiles";
 import * as userSchema from "@/database/models/users";
-import { UserRoleEnum, type Users } from "@/database/schemas/users/users.type";
+import {
+  UserRoleEnum,
+  type UserRoleType,
+  type Users,
+} from "@/database/schemas/users/users.type";
 import { type DatabaseType } from "@/database/types/db.type";
 
-import { countDistinct, eq, ilike, sql } from "drizzle-orm";
+import { and, countDistinct, eq, ilike, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";
@@ -58,14 +62,21 @@ export class UsersRepository {
    * 50 users.
    * @returns a prepared statement for retrieving users from the database.
    */
-  async list(
-    limit: number,
-    offset: number,
-    query?: string,
-    db: DatabaseType | DatabaseType<typeof userSchema> = this.db,
-  ) {
-    return await withPaginate(
-      db
+  async list({
+    limit,
+    offset,
+    query,
+    role,
+    db = this.db,
+  }: {
+    limit: number;
+    offset: number;
+    query?: string;
+    role?: UserRoleType;
+    db?: DatabaseType | DatabaseType<typeof userSchema>;
+  }) {
+    return await withPaginate({
+      qb: db
         .select({
           id: userSchema.users.id,
           profile_id: userSchema.users.profile_id,
@@ -87,11 +98,15 @@ export class UsersRepository {
           eq(userSchema.users.profile_id, profileSchema.profiles.id),
         )
         .$dynamic(),
-      limit,
-      offset,
-      userSchema.users.id,
-      profileSchema.profiles.id,
-    ).where(query ? ilike(userSchema.users.email, `%${query}%`) : undefined);
+      limit: limit,
+      offset: offset,
+      columns: [userSchema.users.id, profileSchema.profiles.id],
+    }).where(
+      and(
+        query ? ilike(userSchema.users.email, `%${query}%`) : undefined,
+        role ? eq(userSchema.users.role, role) : undefined,
+      ),
+    );
   }
 
   /**
