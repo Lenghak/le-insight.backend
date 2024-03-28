@@ -17,9 +17,12 @@ export class UsersController {
   @Get("/")
   async lists(@Query() usersListDTO: UsersListDTO) {
     const users = await this.usersService.list(usersListDTO);
-    return this.usersSerializer.serialize(users.data, {
-      pagination: users.meta,
-    });
+    return {
+      data: users.data,
+      meta: {
+        pagination: users.meta,
+      },
+    };
   }
 
   @Public()

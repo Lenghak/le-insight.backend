@@ -25,14 +25,20 @@ export class UsersService {
    * @returns The `findAll()` function is returning the result of the database query, which is a list
    * of all the records from the `users` in the `schema`.
    */
-  async list({ limit, page, q }: UsersListDTO, db?: DatabaseType) {
+  async list({ limit, page, q, role }: UsersListDTO, db?: DatabaseType) {
     const count = (await this.count(q))[0].value;
     const offset = (page - 1) * limit;
     const totalPages = Math.ceil(count / limit);
     const hasPreviousPage = page > 1;
     const hasNextPage = page < totalPages;
 
-    const users = await this.usersRepository.list(limit, offset, q, db);
+    const users = await this.usersRepository.list({
+      limit,
+      offset,
+      query: q,
+      role,
+      db,
+    });
 
     return {
       data: users,

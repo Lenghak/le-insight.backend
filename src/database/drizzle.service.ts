@@ -24,16 +24,21 @@ export const db: PostgresJsDatabase<typeof schemas> = drizzle(queryClient, {
 
 export function withPaginate<
   T extends PgSelect | PgSelectQueryBuilder = PgSelectQueryBuilder,
->(
-  qb: T,
-  limit: number,
-  offset: number,
-  ...column: (PgColumn | SQL | SQL.Aliased)[]
-) {
+>({
+  qb,
+  limit,
+  offset,
+  columns,
+}: {
+  qb: T;
+  limit: number;
+  offset: number;
+  columns: (PgColumn | SQL | SQL.Aliased)[];
+}) {
   return qb
     .limit(limit)
     .offset(offset)
-    .groupBy(...column);
+    .groupBy(...columns);
 }
 
 export const drizzleProvider = {
