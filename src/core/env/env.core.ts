@@ -10,9 +10,14 @@ export const envSchema = z.object({
   ACCESS_TOKEN_SECRET: z.string().min(1),
   REFRESH_TOKEN_SECRET: z.string().min(1),
 
+  COOKIE_SECRET: z.string().min(1),
+
   SESSION_SECRET: z.string().min(1),
   SESSION_SALT: z.string().min(1),
 
+  ADMIN_HOSTNAME: z.string().url(),
+  CLIENT_HOSTNAME: z.string().url(),
+  AI_HOSTNAME: z.string().url(),
   HOSTNAME: z.string().min(1),
   PORT: z.string().min(1),
 
@@ -29,6 +34,8 @@ export const envSchema = z.object({
   QUEUE_USERNAME: z.string().optional(),
   QUEUE_PASSWORD: z.string().optional(),
   QUEUE_PORT: z.string().min(1),
+
+  PORTIVE_API_KEY: z.string().min(1),
 });
 
-export default () => envSchema.parse(process.env);
+export default (() => envSchema.parse(process.env))();

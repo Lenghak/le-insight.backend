@@ -8,16 +8,16 @@ import {
 } from "drizzle-orm/pg-core";
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
-import env from "@/core/env";
+import { env } from "@/core/env";
 import postgres from "postgres";
 
 export const DRIZZLE_ASYNC_PROVIDER = "DRIZZLE_ASYNC_PROVIDER";
 
 // for migrations
-export const migrationClient = postgres(env().DATABASE_URL, { max: 1 });
+export const migrationClient = postgres(env.DATABASE_URL, { max: 1 });
 
 // for query purposes
-export const queryClient = postgres(env().DATABASE_URL);
+export const queryClient = postgres(env.DATABASE_URL);
 export const db: PostgresJsDatabase<typeof schemas> = drizzle(queryClient, {
   schema: schemas,
 });

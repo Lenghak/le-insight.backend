@@ -1,3 +1,4 @@
+import { HttpModule } from "@nestjs/axios";
 import { BullModule } from "@nestjs/bull";
 import {
   CacheInterceptor,
@@ -19,13 +20,14 @@ import { jsonAPISerializerProvider } from "@/common/serializers/json-api-seriali
 
 import { ArticlesModules } from "@/modules/articles/articles.module";
 import { AuthModule } from "@/modules/auth/auth.module";
+import { CategoriesModule } from "@/modules/categories/categories.module";
 import { MailModule } from "@/modules/mail/mail.module";
 import { ProfilesModule } from "@/modules/profiles/profiles.module";
 import { UsersModule } from "@/modules/users/users.module";
 
 import { DrizzleModule } from "@/database/drizzle.module";
 
-import { envSchema } from "@/core/env";
+import envConf from "@/core/env";
 import { redisStore } from "cache-manager-redis-store";
 import { type RedisClientOptions } from "redis";
 
@@ -36,9 +38,9 @@ import { LoggerMiddleware } from "./app.middleware";
     // Config configuration modules
     ConfigModule.forRoot({
       envFilePath: [".env"],
-      validationSchema: envSchema,
-      validate: envSchema.parse,
+      load: [envConf],
       isGlobal: true,
+      cache: true,
     }),
 
     // Config Rate Limiting
@@ -89,9 +91,17 @@ import { LoggerMiddleware } from "./app.middleware";
       }),
     }),
 
-    // app modules
+    HttpModule.registerAsync({
+      useFactory: async () => ({
+        timeout: 5000,
+        maxRedirects: 3,
+      }),
+    }),
+
+    // modules
     ArticlesModules,
     AuthModule,
+    CategoriesModule,
     DrizzleModule,
     MailModule,
     ProfilesModule,
