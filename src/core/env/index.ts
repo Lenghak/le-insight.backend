@@ -1,1 +1,2 @@
-export { default, envSchema } from "./env.core";
+export { default } from "./env.config";
+export { default as env, envSchema } from "./env.core";
