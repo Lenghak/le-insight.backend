@@ -14,6 +14,11 @@ export const profiles = pgTable("profiles", {
   gender: varchar("gender", { length: 255 }),
   sex: sexEnum("sex").default("RNTS"),
 
-  created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
-  updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });

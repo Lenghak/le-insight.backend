@@ -41,6 +41,10 @@ export class SerializedHTTPExceptionFilter implements ExceptionFilter {
             : exception.name,
         status: rep.statusCode.toString(),
         detail: exception.message,
+        stack:
+          this.configService.get("NODE_ENV") !== "production"
+            ? exception.stack
+            : undefined,
         meta: {
           time: new Date().toISOString(),
         },

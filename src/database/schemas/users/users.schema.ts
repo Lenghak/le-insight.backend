@@ -26,3 +26,4 @@ export const UpdateUserSchema = SelectUserSchema.partial()
   .required({ id: true });
 
 export const UserRoleSchema = z.enum(["ADMIN", "GUEST", "USER"]);
+export const UserSexSchema = z.enum(["MALE", "FEMALE", "RNTS"]);
