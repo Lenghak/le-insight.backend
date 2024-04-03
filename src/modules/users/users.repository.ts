@@ -10,10 +10,11 @@ import {
   UserRoleEnum,
   type UserRoleType,
   type Users,
+  type UserSexType,
 } from "@/database/schemas/users/users.type";
 import { type DatabaseType } from "@/database/types/db.type";
 
-import { and, countDistinct, eq, ilike, sql } from "drizzle-orm";
+import { and, countDistinct, eq, ilike, or, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";
@@ -67,12 +68,14 @@ export class UsersRepository {
     offset,
     query,
     role,
+    sex,
     db = this.db,
   }: {
     limit: number;
     offset: number;
     query?: string;
     role?: UserRoleType;
+    sex?: UserSexType[];
     db?: DatabaseType | DatabaseType<typeof userSchema>;
   }) {
     return await withPaginate({
@@ -93,9 +96,14 @@ export class UsersRepository {
           profile: profileSchema.profiles,
         })
         .from(userSchema.users)
-        .leftJoin(
+        .innerJoin(
           profileSchema.profiles,
-          eq(userSchema.users.profile_id, profileSchema.profiles.id),
+          and(
+            eq(userSchema.users.profile_id, profileSchema.profiles.id),
+            sex
+              ? or(...sex.map((value) => eq(profileSchema.profiles.sex, value)))
+              : undefined,
+          ),
         )
         .$dynamic(),
       limit: limit,
