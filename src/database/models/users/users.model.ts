@@ -76,7 +76,12 @@ export const users = pgTable("users", {
 
   banned_until: timestamp("banned_until", { withTimezone: true }),
   invited_at: timestamp("invited_at", { withTimezone: true }),
-  created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
-  updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
   deleted_at: timestamp("deleted_at", { withTimezone: true }),
 });

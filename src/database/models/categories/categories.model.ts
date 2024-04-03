@@ -8,5 +8,6 @@ export const categories = pgTable("categories", {
     .defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true })
     .notNull()
-    .defaultNow(),
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });

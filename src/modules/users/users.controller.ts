@@ -17,6 +17,7 @@ export class UsersController {
   @Get("/")
   async lists(@Query() usersListDTO: UsersListDTO) {
     const users = await this.usersService.list(usersListDTO);
+
     return {
       data: users.data,
       meta: {

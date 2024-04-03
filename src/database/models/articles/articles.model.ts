@@ -26,6 +26,11 @@ export const articles = pgTable("articles", {
   like_count: integer("like_count").notNull().default(0),
   comment_count: integer("comment_count").notNull().default(0),
 
-  created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
-  updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
