@@ -10,7 +10,7 @@ import { z } from "nestjs-zod/z";
 
 export const UsersListSchema = PaginationSchema.extend({
   role: UserRoleSchema.optional(),
-  "sex[]": z.array(UserSexSchema).optional(),
+  "sex[]": z.array(UserSexSchema).or(UserSexSchema).optional(),
 });
 
 export class UsersListDTO extends createZodDto(UsersListSchema) {}

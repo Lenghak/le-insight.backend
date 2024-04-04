@@ -40,7 +40,7 @@ export class UsersService {
       offset,
       query: q,
       role,
-      sex,
+      sex: typeof sex === "string" ? [sex] : sex,
       db,
     });
 
