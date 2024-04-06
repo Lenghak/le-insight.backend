@@ -16,7 +16,14 @@ export class UsersController {
   @Public()
   @Get("/")
   async lists(@Query() usersListDTO: UsersListDTO) {
-    const users = await this.usersService.list(usersListDTO);
+    const users = await this.usersService.list({
+      ...usersListDTO,
+
+      "sex[]":
+        typeof usersListDTO === "string"
+          ? [usersListDTO["sex[]"]]
+          : usersListDTO["sex[]"],
+    });
 
     return {
       data: users.data,
