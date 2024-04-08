@@ -74,6 +74,7 @@ export const users = pgTable("users", {
     withTimezone: true,
   }),
 
+  banned_at: timestamp("banned_at", { withTimezone: true }),
   banned_until: timestamp("banned_until", { withTimezone: true }),
   invited_at: timestamp("invited_at", { withTimezone: true }),
   created_at: timestamp("created_at", { withTimezone: true })
