@@ -13,4 +13,4 @@ export const UsersListSchema = PaginationSchema.extend({
   "sex[]": z.array(UserSexSchema).or(UserSexSchema).optional(),
 });
 
-export class UsersListDTO extends createZodDto(UsersListSchema) {}
+export class UsersListDTO extends createZodDto(UsersListSchema.partial()) {}

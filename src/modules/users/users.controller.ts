@@ -1,6 +1,18 @@
-import { Controller, Get, Param, ParseUUIDPipe, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Query,
+} from "@nestjs/common";
 
 import { Public } from "@/common/decorators/public.decorator";
+
+import type { RequestUpdateUserDTO } from "@/modules/users/dto/update-user.dto";
 
 import { UsersListDTO } from "./dto/users-list.dto";
 import { UsersSerializer } from "./users.serializer";
@@ -50,5 +62,19 @@ export class UsersController {
   @Get("/total")
   async total() {
     return this.usersSerializer.serialize(await this.usersService.count());
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post("/:id")
+  async edit(
+    @Param("id") id: ParseUUIDPipe,
+    @Body() updateUserDTO: RequestUpdateUserDTO,
+  ) {
+    return this.usersSerializer.serialize(
+      await this.usersService.update({
+        id: id as unknown as string,
+        ...updateUserDTO,
+      }),
+    );
   }
 }

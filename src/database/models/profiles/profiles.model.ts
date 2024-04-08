@@ -18,6 +18,8 @@ export const profiles = pgTable("profiles", {
   image_url: varchar("image_url"),
   birthday: timestamp("birthday"),
 
+  location_id: uuid("location_id"),
+
   bio: varchar("bio", { length: 1023 }),
   gender: varchar("gender", { length: 255 }),
   sex: sexEnum("sex").default("RNTS"),

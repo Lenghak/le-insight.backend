@@ -26,7 +26,7 @@ export class UsersService {
    * of all the records from the `users` in the `schema`.
    */
   async list(
-    { limit, page, q, role, "sex[]": sex }: UsersListDTO,
+    { limit = 50, page = 1, q, role, "sex[]": sex }: UsersListDTO,
     db?: DatabaseType,
   ) {
     const count = (await this.count(q))[0].value;
