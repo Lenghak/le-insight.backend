@@ -17,6 +17,7 @@ export class UsersSerializer implements Serializer {
         "phone",
         "email",
         "role",
+        "banned_at",
         "banned_until",
         "deleted_at",
         "invited_at",

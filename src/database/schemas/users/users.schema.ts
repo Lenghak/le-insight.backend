@@ -19,7 +19,11 @@ export const InsertUserSchema = createInsertSchema(users)
     lastName: z.string().max(255),
   });
 
-export const UpdateUserSchema = SelectUserSchema.partial()
+export const UpdateUserSchema = SelectUserSchema.extend({
+  banned_at: z.date(),
+  banned_until: z.date(),
+})
+  .partial()
   .omit({
     created_at: true,
   })

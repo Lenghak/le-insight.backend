@@ -86,6 +86,7 @@ export class UsersRepository {
           phone: userSchema.users.phone,
           email: userSchema.users.email,
           role: userSchema.users.role,
+          banned_at: userSchema.users.banned_at,
           banned_until: userSchema.users.banned_until,
           deleted_at: userSchema.users.deleted_at,
           invited_at: userSchema.users.invited_at,
@@ -169,6 +170,7 @@ export class UsersRepository {
       .update(userSchema.users)
       .set({
         ...updateUserDTO,
+        banned_at: updateUserDTO.banned_at,
         role: updateUserDTO.role ? UserRoleEnum[updateUserDTO.role] : undefined,
       })
       .where(eq(userSchema.users.id, updateUserDTO.id))

@@ -72,8 +72,14 @@ export class UsersController {
   ) {
     return this.usersSerializer.serialize(
       await this.usersService.update({
-        id: id as unknown as string,
         ...updateUserDTO,
+        id: id as unknown as string,
+        banned_at: updateUserDTO?.banned_at
+          ? new Date(updateUserDTO?.banned_at)
+          : undefined,
+        banned_until: updateUserDTO?.banned_until
+          ? new Date(updateUserDTO?.banned_until)
+          : undefined,
       }),
     );
   }
