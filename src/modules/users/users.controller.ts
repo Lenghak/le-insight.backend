@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
-  Post,
+  Patch,
   Query,
 } from "@nestjs/common";
 
@@ -65,7 +65,7 @@ export class UsersController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post("/:id")
+  @Patch("/:id")
   async edit(
     @Param("id") id: ParseUUIDPipe,
     @Body() updateUserDTO: RequestUpdateUserDTO,
