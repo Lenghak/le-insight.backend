@@ -71,6 +71,7 @@ import { LoggerMiddleware } from "./app.middleware";
           ttl: configService.get("REDIS_TTL"),
         })) as unknown as CacheStore,
       }),
+      isGlobal: true,
     }),
 
     // Config queue mechanism
