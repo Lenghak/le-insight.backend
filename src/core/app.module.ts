@@ -1,17 +1,12 @@
 import { HttpModule } from "@nestjs/axios";
 import { BullModule } from "@nestjs/bull";
 import {
-  CacheInterceptor,
-  CacheModule,
-  type CacheStore,
-} from "@nestjs/cache-manager";
-import {
   type MiddlewareConsumer,
   Module,
   type NestModule,
 } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
+import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
 import { AccessTokenGuard } from "@/common/guards/access-token.guard";
@@ -28,8 +23,6 @@ import { UsersModule } from "@/modules/users/users.module";
 import { DrizzleModule } from "@/database/drizzle.module";
 
 import envConf from "@/core/env";
-import { redisStore } from "cache-manager-redis-store";
-import { type RedisClientOptions } from "redis";
 
 import { LoggerMiddleware } from "./app.middleware";
 
@@ -63,16 +56,16 @@ import { LoggerMiddleware } from "./app.middleware";
     ]),
 
     // Config caching mechanism
-    CacheModule.registerAsync<RedisClientOptions>({
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        store: (await redisStore({
-          url: configService.get("REDIS_URL"),
-          ttl: configService.get("REDIS_TTL"),
-        })) as unknown as CacheStore,
-      }),
-      isGlobal: true,
-    }),
+    // CacheModule.registerAsync<RedisClientOptions>({
+    //   inject: [ConfigService],
+    //   useFactory: async (configService: ConfigService) => ({
+    //     store: (await redisStore({
+    //       url: configService.get("REDIS_URL"),
+    //       ttl: configService.get("REDIS_TTL"),
+    //     })) as unknown as CacheStore,
+    //   }),
+    //   isGlobal: true,
+    // }),
 
     // Config queue mechanism
     BullModule.forRootAsync({
@@ -109,10 +102,10 @@ import { LoggerMiddleware } from "./app.middleware";
     UsersModule,
   ],
   providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: CacheInterceptor,
+    // },
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,

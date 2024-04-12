@@ -1,21 +1,20 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import type { UsersListRepoParams } from "@/modules/users/dto/users-list.dto";
+
 import {
   DRIZZLE_ASYNC_PROVIDER,
   withPaginate,
 } from "@/database/drizzle.service";
 import * as profileSchema from "@/database/models/profiles";
 import * as userSchema from "@/database/models/users";
-import {
-  UserRoleEnum,
-  type UserRoleType,
-  type Users,
-  type UserSexType,
-} from "@/database/schemas/users/users.type";
+import { UserRoleEnum, type Users } from "@/database/schemas/users/users.type";
 import { type DatabaseType } from "@/database/types/db.type";
 
-import { and, countDistinct, eq, ilike, or, sql } from "drizzle-orm";
+import { and, between, countDistinct, eq, ilike, or, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+
+import { addDays, subDays } from "date-fns";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";
 import { type UpdateUserDTO } from "./dto/update-user.dto";
@@ -69,15 +68,10 @@ export class UsersRepository {
     query,
     role,
     sex,
+    from,
+    to,
     db = this.db,
-  }: {
-    limit: number;
-    offset: number;
-    query?: string;
-    role?: UserRoleType;
-    sex?: UserSexType[];
-    db?: DatabaseType | DatabaseType<typeof userSchema>;
-  }) {
+  }: UsersListRepoParams) {
     return await withPaginate({
       qb: db
         .select({
@@ -103,6 +97,20 @@ export class UsersRepository {
             eq(userSchema.users.profile_id, profileSchema.profiles.id),
             sex
               ? or(...sex.map((value) => eq(profileSchema.profiles.sex, value)))
+              : undefined,
+            from && to
+              ? or(
+                  between(
+                    userSchema.users.created_at,
+                    subDays(from, 1),
+                    addDays(to, 1),
+                  ),
+                  between(
+                    userSchema.users.updated_at,
+                    subDays(from, 1),
+                    addDays(to, 1),
+                  ),
+                )
               : undefined,
           ),
         )

@@ -1,23 +1,18 @@
-import { type Cache, CACHE_MANAGER } from "@nestjs/cache-manager";
 import {
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
-  Inject,
   Param,
   ParseUUIDPipe,
   Patch,
   Query,
-  Req,
 } from "@nestjs/common";
 
 import { Public } from "@/common/decorators/public.decorator";
 
 import type { RequestUpdateUserDTO } from "@/modules/users/dto/update-user.dto";
-
-import type { FastifyRequest } from "fastify";
 
 import { UsersListDTO } from "./dto/users-list.dto";
 import { UsersSerializer } from "./users.serializer";
@@ -26,17 +21,16 @@ import { UsersService } from "./users.service";
 @Controller({ path: "/users" })
 export class UsersController {
   constructor(
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly usersService: UsersService,
     private readonly usersSerializer: UsersSerializer,
   ) {}
 
   @Public()
   @Get("/")
-  async lists(@Query() usersListDTO: UsersListDTO) {
+  async lists(@Query() { ...usersListDTO }: UsersListDTO) {
+    console.log(usersListDTO);
     const users = await this.usersService.list({
       ...usersListDTO,
-
       "sex[]":
         typeof usersListDTO === "string"
           ? [usersListDTO["sex[]"]]
@@ -73,14 +67,13 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @Patch("/:id")
   async edit(
-    @Req() request: FastifyRequest,
-    @Param("id") id: ParseUUIDPipe,
+    @Param("id") id: string,
     @Body() updateUserDTO: RequestUpdateUserDTO,
   ) {
     const response = this.usersSerializer.serialize(
       await this.usersService.update({
         ...updateUserDTO,
-        id: id as unknown as string,
+        id: id,
         banned_at: updateUserDTO?.banned_at
           ? new Date(updateUserDTO?.banned_at)
           : undefined,
@@ -88,12 +81,6 @@ export class UsersController {
           ? new Date(updateUserDTO?.banned_until)
           : undefined,
       }),
-    );
-
-    await this.cacheManager.store.mdel(
-      ...(((await this.cacheManager.store.mget(
-        "/v1/api/users/*",
-      )) as string[]) ?? []),
     );
 
     return response;

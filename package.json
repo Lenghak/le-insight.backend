@@ -25,7 +25,7 @@
     "@fastify/cookie": "^9.3.1",
     "@fastify/csrf-protection": "^6.4.1",
     "@fastify/helmet": "^11.1.1",
-    "@fastify/secure-session": "^7.3.0",
+    "@fastify/secure-session": "^7.4.0",
     "@fastify/static": "^7.0.3",
     "@nestjs-modules/mailer": "^1.11.2",
     "@nestjs/axios": "^3.0.2",
@@ -52,7 +52,7 @@
     "countries-list": "^3.1.0",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.30.7",
+    "drizzle-orm": "^0.30.8",
     "drizzle-zod": "^0.5.1",
     "fastify": "^4.26.2",
     "handlebars": "^4.7.8",
@@ -107,9 +107,11 @@
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.4.4"
+    "typescript": "^5.4.5"
   },
   "lint-staged": {
-    "**/*.{js,ts,json}": ["prettier --write --config .prettierrc.cjs"]
+    "**/*.{js,ts,json}": [
+      "prettier --write --config .prettierrc.cjs"
+    ]
   }
 }

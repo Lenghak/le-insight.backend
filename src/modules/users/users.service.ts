@@ -26,7 +26,7 @@ export class UsersService {
    * of all the records from the `users` in the `schema`.
    */
   async list(
-    { limit = 50, page = 1, q, role, "sex[]": sex }: UsersListDTO,
+    { limit = 50, page = 1, q, "sex[]": sex, ...params }: UsersListDTO,
     db?: DatabaseType,
   ) {
     const count = (await this.count(q))[0].value;
@@ -39,9 +39,9 @@ export class UsersService {
       limit,
       offset,
       query: q,
-      role,
       sex: typeof sex === "string" ? [sex] : sex,
       db,
+      ...params,
     });
 
     return {
