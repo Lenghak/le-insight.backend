@@ -28,7 +28,6 @@ export class UsersController {
   @Public()
   @Get("/")
   async lists(@Query() { ...usersListDTO }: UsersListDTO) {
-    console.log(usersListDTO);
     const users = await this.usersService.list({
       ...usersListDTO,
       "sex[]":
