@@ -46,7 +46,7 @@ export class UsersController {
 
   @Public()
   @Get("/:id")
-  async getByID(@Param("id") id: ParseUUIDPipe) {
+  async get(@Param("id") id: ParseUUIDPipe) {
     return this.usersSerializer.serialize(
       await this.usersService.get({
         by: "id",

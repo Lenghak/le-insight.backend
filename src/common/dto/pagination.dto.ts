@@ -15,4 +15,6 @@ export const PaginationSchema = z.object({
     .default(1)
     .describe("Page offseting data"),
   q: z.string().optional().describe("Search string"),
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
 });

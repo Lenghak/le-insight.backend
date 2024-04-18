@@ -1,3 +1,5 @@
+import { type FactoryProvider, Scope } from "@nestjs/common";
+
 import Serializer from "json-api-serializer";
 
 export const JSON_API_SERIALIZER = "JSON_API_SERIALIZER";
@@ -10,10 +12,10 @@ const serializer = new Serializer({
   }),
 });
 
-export const jsonAPISerializerProvider = {
+export const jsonAPISerializerProvider: FactoryProvider<typeof serializer> = {
   provide: JSON_API_SERIALIZER,
   useFactory: () => {
     return serializer;
   },
-  export: [JSON_API_SERIALIZER],
+  scope: Scope.DEFAULT,
 };

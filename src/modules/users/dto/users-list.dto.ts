@@ -17,8 +17,6 @@ import { z } from "nestjs-zod/z";
 export const UsersListSchema = PaginationSchema.extend({
   role: UserRoleSchema.optional(),
   "sex[]": z.array(UserSexSchema).or(UserSexSchema).optional(),
-  from: z.string().datetime().optional(),
-  to: z.string().datetime().optional(),
 });
 
 export type UsersListRepoParams = UsersListDTO & {
