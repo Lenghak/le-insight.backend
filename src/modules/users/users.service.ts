@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
+import paginationHelper from "@/common/helpers/pagination.helper";
+
 import { type Users } from "@/database/schemas/users/users.type";
 import { type DatabaseType } from "@/database/types/db.type";
 
@@ -30,10 +32,8 @@ export class UsersService {
     db?: DatabaseType,
   ) {
     const count = (await this.count(q))[0].value;
-    const offset = (page - 1) * limit;
-    const totalPages = Math.ceil(count / limit);
-    const hasPreviousPage = page > 1;
-    const hasNextPage = page < totalPages;
+    const { hasNextPage, hasPreviousPage, offset, totalPages } =
+      paginationHelper({ count, page, limit });
 
     const users = await this.usersRepository.list({
       limit,

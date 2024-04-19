@@ -14,8 +14,6 @@ import { type DatabaseType } from "@/database/types/db.type";
 import { and, between, countDistinct, eq, ilike, or, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
-import { addDays, subDays } from "date-fns";
-
 import { type CreateUserDTO } from "./dto/create-user.dto";
 import { type UpdateUserDTO } from "./dto/update-user.dto";
 
@@ -102,13 +100,13 @@ export class UsersRepository {
               ? or(
                   between(
                     userSchema.users.created_at,
-                    subDays(from, 1),
-                    addDays(to, 1),
+                    new Date(from),
+                    new Date(to),
                   ),
                   between(
                     userSchema.users.updated_at,
-                    subDays(from, 1),
-                    addDays(to, 1),
+                    new Date(from),
+                    new Date(to),
                   ),
                 )
               : undefined,

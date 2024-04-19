@@ -2,8 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -63,7 +61,6 @@ export class UsersController {
     return this.usersSerializer.serialize(await this.usersService.count());
   }
 
-  @HttpCode(HttpStatus.OK)
   @Patch("/:id")
   async edit(
     @Param("id") id: string,

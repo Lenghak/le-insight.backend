@@ -1,10 +1,23 @@
 import { Module } from "@nestjs/common";
 
+import { jsonAPISerializerProvider } from "@/common/serializers/json-api-serializer.provider";
+
+import { CategoriesRepository } from "@/modules/categories/categories.repository";
+import { CategoriesSerializer } from "@/modules/categories/categories.serializer";
+
+import { DrizzleModule } from "@/database/drizzle.module";
+
 import { CategoriesController } from "./categories.controller";
 import { CategoriesService } from "./categories.service";
 
 @Module({
+  imports: [DrizzleModule],
   controllers: [CategoriesController],
-  providers: [CategoriesService],
+  providers: [
+    CategoriesService,
+    CategoriesRepository,
+    jsonAPISerializerProvider,
+    CategoriesSerializer,
+  ],
 })
 export class CategoriesModule {}

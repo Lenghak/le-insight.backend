@@ -94,9 +94,9 @@ import { LoggerMiddleware } from "./app.middleware";
 
     // modules
     DrizzleModule,
-    CategoriesModule,
     ArticlesModules,
     AuthModule,
+    CategoriesModule,
     MailModule,
     ProfilesModule,
     UsersModule,
