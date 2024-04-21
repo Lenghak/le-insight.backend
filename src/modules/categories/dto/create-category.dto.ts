@@ -6,5 +6,6 @@ export class CreateCategoryDto extends createZodDto(
   SelectCategoriesSchema.pick({
     description: true,
     label: true,
+    status: true,
   }),
 ) {}

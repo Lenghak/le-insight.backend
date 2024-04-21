@@ -94,7 +94,7 @@
     "dependency-cruiser": "^16.3.1",
     "dotenv-flow": "^4.1.0",
     "dotenv-flow-cli": "^1.1.1",
-    "drizzle-kit": "^0.20.14",
+    "drizzle-kit": "^0.20.16",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-drizzle": "^0.2.3",
