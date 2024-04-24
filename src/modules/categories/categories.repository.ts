@@ -29,11 +29,7 @@ export class CategoriesRepository {
     const categories = categoriesSchema.categories;
     return await withPaginate({
       qb: db
-        .select({
-          id: categories.id,
-          created_at: categories.created_at,
-          updated_at: categories.updated_at,
-        })
+        .select()
         .from(categories)
         .where(
           from && to
