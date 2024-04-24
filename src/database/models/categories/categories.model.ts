@@ -19,7 +19,7 @@ export const categories = pgTable("categories", {
   label: varchar("label", { length: 100 }),
   description: varchar("description", { length: 1024 }),
   assigned_count: integer("assigned_count").default(0),
-  generated_count: integer("assigned_count").default(0),
+  generated_count: integer("generated_count").default(0),
   status: categoriesStatusEnum("category_status").default("INACTIVE"),
   created_at: timestamp("created_at", { withTimezone: true })
     .notNull()

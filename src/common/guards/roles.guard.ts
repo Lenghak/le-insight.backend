@@ -24,7 +24,6 @@ export class RolesGuard implements CanActivate {
     ]);
 
     if (!roles) return true;
-
     const req: FastifyRequest["raw"] = context.switchToHttp().getRequest();
 
     return roles?.some((role) => req["user"].role?.includes(role));

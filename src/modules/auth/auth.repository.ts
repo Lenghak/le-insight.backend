@@ -82,6 +82,7 @@ export class AuthRepository {
       const tokens = await this.signTokens({
         userID: user.id,
         email: user.email as string,
+        role: user.role ?? "GUEST",
         sessionID: session.id,
       });
 
@@ -128,6 +129,7 @@ export class AuthRepository {
       const tokens = await this.signTokens({
         userID: user.id ?? "",
         email: user.email as string,
+        role: user.role ?? "GUEST",
         sessionID: session.id,
       });
 
@@ -158,6 +160,7 @@ export class AuthRepository {
         {
           sub: signTokensDTO.userID,
           sid: signTokensDTO.sessionID,
+          role: signTokensDTO.role,
           email: signTokensDTO.email,
         },
         {
@@ -169,6 +172,7 @@ export class AuthRepository {
         {
           sub: signTokensDTO.userID,
           sid: signTokensDTO.sessionID,
+          role: signTokensDTO.role,
           email: signTokensDTO.email,
         },
         {

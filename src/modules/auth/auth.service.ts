@@ -168,6 +168,7 @@ export class AuthService {
     const tokens = await this.authRepository.signTokens({
       email: user.email ?? "",
       userID: user.id,
+      role: user.role ?? "GUEST",
       sessionID: refreshToken.session_id ?? "",
     });
 

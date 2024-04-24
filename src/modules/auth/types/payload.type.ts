@@ -1,3 +1,5 @@
+import { UserRoleSchema } from "@/database/schemas/users/users.schema";
+
 import { z } from "nestjs-zod/z";
 
 export const PayloadSchema = z
@@ -5,6 +7,7 @@ export const PayloadSchema = z
     sub: z.string().uuid(),
     sid: z.string().uuid(),
     email: z.string().email(),
+    role: UserRoleSchema,
     iat: z.number(),
     exp: z.number(),
   })
