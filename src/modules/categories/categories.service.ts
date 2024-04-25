@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
 
 import paginationHelper from "@/common/helpers/pagination.helper";
 
@@ -47,10 +47,25 @@ export class CategoriesService {
     by: keyof CategoriesType;
     values: Record<string, unknown>;
   }) {
-    return (await this.categoriesRepository.get({ by })).execute(values);
+    return (
+      await (await this.categoriesRepository.get({ by })).execute(values)
+    ).at(0);
   }
 
   async create(createCategoryDto: CreateCategoryDto) {
+    const existingCategory = await this.get({
+      by: "label",
+      values: {
+        label: createCategoryDto.label,
+      },
+    });
+
+    if (existingCategory) {
+      throw new ConflictException(
+        "Category with the input label is already exist.",
+      );
+    }
+
     return await this.categoriesRepository.create(createCategoryDto);
   }
 

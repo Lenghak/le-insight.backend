@@ -64,12 +64,11 @@ export class CategoriesRepository {
     by: keyof CategoriesType;
     db?: DatabaseType<typeof categoriesSchema>;
   }) {
-    return db.query.categories
-      .findFirst({
-        where: (categoriesSchema, { eq }) =>
-          eq(categoriesSchema[by], sql.placeholder[by]),
-      })
-      .prepare("get_categories_list");
+    return db
+      .selectDistinct()
+      .from(categoriesSchema.categories)
+      .where(eq(categoriesSchema.categories[by], sql.placeholder(by)))
+      .prepare("get_category_by");
   }
 
   async create(
