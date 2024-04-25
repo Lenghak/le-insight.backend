@@ -7,5 +7,6 @@ export class CreateCategoryDto extends createZodDto(
     description: true,
     label: true,
     status: true,
+    is_archived: true,
   }),
 ) {}

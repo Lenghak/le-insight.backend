@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -60,6 +61,13 @@ export class CategoriesController {
         id as unknown as string,
         updateCategoryDto,
       ),
+    );
+  }
+
+  @Delete("/:id")
+  async delete(@Param("id") id: ParseUUIDPipe) {
+    return this.categoriesSerializer.serialize(
+      await this.categoriesService.delete({ id: id as unknown as string }),
     );
   }
 }

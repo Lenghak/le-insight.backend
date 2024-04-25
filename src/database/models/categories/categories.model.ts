@@ -1,4 +1,5 @@
 import {
+  boolean,
   integer,
   pgEnum,
   pgTable,
@@ -21,6 +22,7 @@ export const categories = pgTable("categories", {
   assigned_count: integer("assigned_count").default(0),
   generated_count: integer("generated_count").default(0),
   status: categoriesStatusEnum("category_status").default("INACTIVE"),
+  is_archived: boolean("is_archived").default(false),
   created_at: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

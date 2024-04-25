@@ -92,4 +92,13 @@ export class CategoriesRepository {
       .where(eq(categoriesSchema.categories.id, id))
       .returning();
   }
+
+  async delete(
+    { id }: { id: string },
+    db: DatabaseType<typeof categoriesSchema> = this.db,
+  ) {
+    return await db
+      .delete(categoriesSchema.categories)
+      .where(eq(categoriesSchema.categories.id, id));
+  }
 }
