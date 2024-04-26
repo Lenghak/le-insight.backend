@@ -13,7 +13,7 @@ import type { CategoriesType } from "@/database/schemas/categories/categories.ty
 export class CategoriesService {
   constructor(private readonly categoriesRepository: CategoriesRepository) {}
 
-  async list({ limit = 50, page, ...params }: GetCategoriesListDTO) {
+  async list({ limit = 50, page, status, ...params }: GetCategoriesListDTO) {
     const count = (await this.count(params.q))[0].value;
     const { hasNextPage, hasPreviousPage, offset, totalPages } =
       paginationHelper({ count, limit, page });
@@ -21,6 +21,7 @@ export class CategoriesService {
     const categories = await this.categoriesRepository.list({
       limit,
       offset,
+      status,
       ...params,
     });
 

@@ -23,7 +23,7 @@ export class CategoriesRepository {
   ) {}
 
   async list(
-    { limit, from, to, offset, q }: GetCategoriesListParams,
+    { limit, from, to, offset, q, status }: GetCategoriesListParams,
     db: DatabaseType | DatabaseType<typeof categoriesSchema> = this.db,
   ) {
     const categories = categoriesSchema.categories;
@@ -32,18 +32,22 @@ export class CategoriesRepository {
         .select()
         .from(categories)
         .where(
-          from && to
-            ? or(
-                between(categories.created_at, new Date(from), new Date(to)),
-                between(categories.updated_at, new Date(from), new Date(to)),
-              )
-            : undefined,
+          and(
+            status ? eq(categories.status, status) : undefined,
+            from && to
+              ? or(
+                  between(categories.created_at, new Date(from), new Date(to)),
+                  between(categories.updated_at, new Date(from), new Date(to)),
+                )
+              : undefined,
+            q ? ilike(categories.label, `%${q}%`) : undefined,
+          ),
         )
         .$dynamic(),
       limit: limit,
       offset: offset,
       columns: [categories.id],
-    }).where(and(q ? ilike(categories.label, `%${q}%`) : undefined));
+    });
   }
 
   async count(

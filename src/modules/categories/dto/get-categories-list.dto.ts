@@ -1,14 +1,20 @@
 import { PaginationSchema } from "@/common/dto/pagination.dto";
 
+import { SelectCategoriesSchema } from "@/database/schemas/categories/categories.schema";
+
 import { createZodDto } from "nestjs-zod";
 import { z } from "nestjs-zod/z";
 
-export const GetCategoriesListSchema = PaginationSchema;
+export const GetCategoriesListSchema = PaginationSchema.extend(
+  SelectCategoriesSchema.shape,
+);
+
 export const GetCategoriesListParamsSchema = PaginationSchema.omit({
   page: true,
 }).extend({
   limit: z.number(),
   offset: z.number(),
+  status: SelectCategoriesSchema.shape.status.optional(),
 });
 
 export type GetCategoriesListParams = z.infer<
