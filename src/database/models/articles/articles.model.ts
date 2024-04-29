@@ -13,6 +13,7 @@ export const articlesVisibilityEnum = pgEnum("status", [
   "DRAFT",
   "PUBLIC",
   "PRIVATE",
+  "ARCHIVED",
 ]);
 
 export const articles = pgTable("articles", {

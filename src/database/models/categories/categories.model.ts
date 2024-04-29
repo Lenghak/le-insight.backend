@@ -18,7 +18,6 @@ export const categoriesStatusEnum = pgEnum("category_status", [
 export const categories = pgTable("categories", {
   id: uuid("id").primaryKey().defaultRandom(),
   label: varchar("label", { length: 100 }),
-  description: varchar("description", { length: 1024 }),
   assigned_count: integer("assigned_count").default(0),
   generated_count: integer("generated_count").default(0),
   status: categoriesStatusEnum("category_status").default("INACTIVE"),
