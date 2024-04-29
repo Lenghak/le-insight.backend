@@ -87,7 +87,6 @@ import { LoggerMiddleware } from "./app.middleware";
 
     HttpModule.registerAsync({
       useFactory: async () => ({
-        timeout: 5000,
         maxRedirects: 3,
       }),
     }),

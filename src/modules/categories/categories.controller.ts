@@ -1,3 +1,4 @@
+import { HttpService } from "@nestjs/axios";
 import {
   Body,
   Controller,
@@ -19,6 +20,10 @@ import type { UpdateCategoryDto } from "@/modules/categories/dto/update-category
 
 import { UserRoleEnum } from "@/database/schemas/users/users.type";
 
+import env from "@/core/env";
+import type { AxiosResponse } from "axios";
+import type { Observable } from "rxjs";
+
 import { CategoriesSerializer } from "./categories.serializer";
 import { CategoriesService } from "./categories.service";
 
@@ -27,6 +32,7 @@ export class CategoriesController {
   constructor(
     private readonly categoriesService: CategoriesService,
     private readonly categoriesSerializer: CategoriesSerializer,
+    private readonly httpService: HttpService,
   ) {}
 
   @Roles(UserRoleEnum.ADMIN)
@@ -69,5 +75,12 @@ export class CategoriesController {
     return this.categoriesSerializer.serialize(
       await this.categoriesService.delete({ id: id as unknown as string }),
     );
+  }
+
+  @Post("/generate")
+  async generate(): Promise<Observable<AxiosResponse<unknown, unknown>>> {
+    return this.httpService.get("/generate", {
+      baseURL: env().AI_HOSTNAME,
+    });
   }
 }
