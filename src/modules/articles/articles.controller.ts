@@ -12,21 +12,22 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
-import { ArticlesRepository } from "@/modules/articles/articles.repository";
-import { ArticlesSerializer } from "@/modules/articles/articles.serializer";
-import { CreateArticlesDTO } from "@/modules/articles/dto/create-articles.dto";
-import { DeleteArticlesDTO } from "@/modules/articles/dto/delete-articles.dto";
-import { UpdateArticlesDTO } from "@/modules/articles/dto/update-articles.dto";
+import { ArticlesService } from "@/modules/articles/articles.service";
 import { AuthSerializer } from "@/modules/auth/auth.serializer";
 
 import { createAuthToken } from "@portive/auth";
+
+import { ArticlesSerializer } from "./articles.serializer";
+import { CreateArticlesDTO } from "./dto/create-articles.dto";
+import { DeleteArticlesDTO } from "./dto/delete-articles.dto";
+import { UpdateArticlesDTO } from "./dto/update-articles.dto";
 
 @Controller({ path: "/articles" })
 export class ArticlesController {
   constructor(
     private readonly configService: ConfigService,
     private readonly articleSerialzer: ArticlesSerializer,
-    private readonly articleRepository: ArticlesRepository,
+    private readonly articleService: ArticlesService,
     private readonly authSerializer: AuthSerializer,
   ) {}
 
@@ -49,21 +50,21 @@ export class ArticlesController {
   @HttpCode(HttpStatus.CREATED)
   @Post("/")
   async create(@Body() createArticleDTO: CreateArticlesDTO) {
-    const article = await this.articleRepository.create(createArticleDTO);
+    const article = await this.articleService.create(createArticleDTO);
     return this.articleSerialzer.serialize(article);
   }
 
   @HttpCode(HttpStatus.OK)
   @Patch("/:id")
   async update(@Body() updateArticleDTO: UpdateArticlesDTO) {
-    const article = await this.articleRepository.update(updateArticleDTO);
+    const article = await this.articleService.update(updateArticleDTO);
     return this.articleSerialzer.serialize(article);
   }
 
   @HttpCode(HttpStatus.OK)
   @Delete("/:id")
   async delete(@Param() deleteArticleDTO: DeleteArticlesDTO) {
-    const article = await this.articleRepository.delete(deleteArticleDTO);
+    const article = await this.articleService.delete(deleteArticleDTO);
     return this.articleSerialzer.serialize(article);
   }
 }

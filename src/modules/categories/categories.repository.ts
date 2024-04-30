@@ -43,7 +43,8 @@ export class CategoriesRepository {
             q ? ilike(categories.label, `%${q}%`) : undefined,
           ),
         )
-        .$dynamic(),
+        .$dynamic()
+        .groupBy(categories.status),
       limit: limit,
       offset: offset,
       columns: [categories.id],
