@@ -1,4 +1,7 @@
-import type { SelectArticleSchema } from "@/database/schemas/articles/articles.schema";
+import type {
+  InsertArticleSchema,
+  SelectArticleSchema,
+} from "@/database/schemas/articles/articles.schema";
 
 import type { z } from "nestjs-zod/z";
 
@@ -10,3 +13,5 @@ export enum ArticlesVisibilityEnum {
   "PUBLIC",
   "PRIVATE",
 }
+
+export type InsertArticleType = z.infer<typeof InsertArticleSchema>;

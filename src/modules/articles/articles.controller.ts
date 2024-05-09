@@ -47,6 +47,13 @@ export class ArticlesController {
     return this.authSerializer.serialize({ token });
   }
 
+  // @HttpCode(HttpStatus.OK)
+  // @Get("/")
+  // async list() {
+  //   const articles = await this.articleService;
+  //   return;
+  // }
+
   @HttpCode(HttpStatus.CREATED)
   @Post("/")
   async create(@Body() createArticleDTO: CreateArticlesDTO) {

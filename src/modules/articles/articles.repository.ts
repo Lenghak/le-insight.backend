@@ -24,15 +24,18 @@ export class ArticlesRepository {
   ) {}
 
   async create(
-    createArticlesDTP: CreateArticlesDTO,
+    createArticlesDTO: CreateArticlesDTO,
     db: DatabaseType | DatabaseType<typeof articleSchema> = this.db,
   ) {
     return db
       .insert(articleSchema.articles)
       .values({
-        content: createArticlesDTP.content,
-        visibility: createArticlesDTP.visibility,
-        user_id: createArticlesDTP.user_id,
+        preview_title: createArticlesDTO.preview_title,
+        preview_description: createArticlesDTO.preview_description,
+        content_html: createArticlesDTO.content_html,
+        content_plain_text: createArticlesDTO.content_plain_text,
+        visibility: createArticlesDTO.visibility,
+        user_id: createArticlesDTO.user_id,
       })
       .returning();
   }
@@ -56,7 +59,9 @@ export class ArticlesRepository {
       offset,
       columns: [articleSchema.articles.id, userSchema.users.id],
     }).where(
-      query ? ilike(articleSchema.articles.content, `%${query}%`) : undefined,
+      query
+        ? ilike(articleSchema.articles.content_plain_text, `%${query}%`)
+        : undefined,
     );
   }
 
@@ -86,7 +91,8 @@ export class ArticlesRepository {
       .update(articleSchema.articles)
       .set({
         ...updateArticleDTO,
-        content: updateArticleDTO.content,
+        content_html: updateArticleDTO.content_html,
+        content_plain_text: updateArticleDTO.content_plain_text,
       })
       .where(eq(articleSchema.articles.id, updateArticleDTO.id ?? ""))
       .returning();

@@ -5,7 +5,10 @@ import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 export const SelectArticleSchema = createSelectSchema(articles);
 
 export const InsertArticleSchema = createInsertSchema(articles).pick({
-  content: true,
+  preview_title: true,
+  preview_description: true,
+  content_html: true,
+  content_plain_text: true,
   user_id: true,
   visibility: true,
 });

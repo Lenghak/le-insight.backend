@@ -9,6 +9,30 @@ import type { UpdateArticlesDTO } from "./dto/update-articles.dto";
 export class ArticlesService {
   constructor(private readonly articleRepository: ArticlesRepository) {}
 
+  // async list({ limit = 50, page, status, ...params }) {
+  //   const count = (await this.count(params.q))[0].value;
+  //   const { hasNextPage, hasPreviousPage, offset, totalPages } =
+  //     paginationHelper({ count, limit, page });
+
+  //   const categories = await this.categoriesRepository.list({
+  //     limit,
+  //     offset,
+  //     status,
+  //     ...params,
+  //   });
+
+  //   return {
+  //     data: categories,
+  //     meta: {
+  //       count,
+  //       page,
+  //       totalPages,
+  //       hasNextPage,
+  //       hasPreviousPage,
+  //     },
+  //   };
+  // }
+
   async create(createArticleDTO: CreateArticlesDTO) {
     return await this.articleRepository.create(createArticleDTO);
   }
