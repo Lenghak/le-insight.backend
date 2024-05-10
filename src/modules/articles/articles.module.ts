@@ -1,8 +1,10 @@
+import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 
 import { jsonAPISerializerProvider } from "@/common/serializers/json-api-serializer.provider";
 
 import { AuthSerializer } from "@/modules/auth/auth.serializer";
+import { UsersModule } from "@/modules/users/users.module";
 
 import { DrizzleModule } from "@/database/drizzle.module";
 
@@ -12,7 +14,7 @@ import { ArticlesSerializer } from "./articles.serializer";
 import { ArticlesService } from "./articles.service";
 
 @Module({
-  imports: [DrizzleModule],
+  imports: [DrizzleModule, UsersModule, HttpModule],
   controllers: [ArticlesController],
   providers: [
     ArticlesRepository,
