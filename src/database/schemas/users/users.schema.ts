@@ -3,7 +3,24 @@ import { users } from "@/database/models";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "nestjs-zod/z";
 
+export const RQUsersColumns = {
+  id: true,
+  profile_id: true,
+  phone: true,
+  email: true,
+  role: true,
+  banned_at: true,
+  banned_until: true,
+  deleted_at: true,
+  invited_at: true,
+  confirmed_at: true,
+  confirmation_sent_at: true,
+  created_at: true,
+  updated_at: true,
+} as const;
+
 export const SelectUserSchema = createSelectSchema(users);
+export const SelectUserForClientSchema = SelectUserSchema.pick(RQUsersColumns);
 
 export const InsertUserSchema = createInsertSchema(users)
   .pick({

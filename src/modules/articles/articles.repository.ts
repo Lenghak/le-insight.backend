@@ -5,16 +5,15 @@ import type { CreateArticlesDTO } from "@/modules/articles/dto/create-articles.d
 import type { DeleteArticlesDTO } from "@/modules/articles/dto/delete-articles.dto";
 import type { UpdateArticlesDTO } from "@/modules/articles/dto/update-articles.dto";
 
-import {
-  DRIZZLE_ASYNC_PROVIDER,
-  withPaginate,
-} from "@/database/drizzle.service";
+import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as articleSchema from "@/database/models/articles";
-import * as userSchema from "@/database/models/users";
+import { RQPreviewArticlesColumns } from "@/database/schemas/articles/articles.schema";
 import type { Articles } from "@/database/schemas/articles/articles.type";
+import { RQMinimalProfileColumn } from "@/database/schemas/profiles/profiles.schema";
+import { RQUsersColumns } from "@/database/schemas/users/users.schema";
 import type { DatabaseType } from "@/database/types/db.type";
 
-import { and, between, countDistinct, eq, ilike, or, sql } from "drizzle-orm";
+import { between, countDistinct, eq, ilike, or, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 @Injectable()
@@ -43,42 +42,34 @@ export class ArticlesRepository {
 
   async list(
     { limit, status, offset, q, from, to }: GetArticlesListParamsType,
-    db: DatabaseType | DatabaseType<typeof articleSchema> = this.db,
+    db: DatabaseType<typeof articleSchema> = this.db,
   ) {
-    return await withPaginate({
-      qb: db
-        .select()
-        .from(articleSchema.articles)
-        .where(
-          and(
-            q
-              ? ilike(articleSchema.articles.content_plain_text, `%${q}%`)
-              : undefined,
-            status ? eq(articleSchema.articles.visibility, status) : undefined,
-            from && to
-              ? or(
-                  between(
-                    articleSchema.articles.created_at,
-                    new Date(from),
-                    new Date(to),
-                  ),
-                  between(
-                    articleSchema.articles.updated_at,
-                    new Date(from),
-                    new Date(to),
-                  ),
-                )
-              : undefined,
-          ),
-        )
-        .leftJoin(
-          userSchema.users,
-          eq(articleSchema.articles.user_id, userSchema.users.id),
-        )
-        .$dynamic(),
+    return await db.query.articles.findMany({
+      columns: RQPreviewArticlesColumns,
+      with: {
+        article_author: {
+          columns: RQUsersColumns,
+          with: {
+            profile: {
+              columns: RQMinimalProfileColumn,
+            },
+          },
+        },
+        article_categories: true,
+      },
+      where: (articles, { and }) =>
+        and(
+          q ? ilike(articles.content_plain_text, `%${q}%`) : undefined,
+          status ? eq(articles.visibility, status) : undefined,
+          from && to
+            ? or(
+                between(articles.created_at, new Date(from), new Date(to)),
+                between(articles.updated_at, new Date(from), new Date(to)),
+              )
+            : undefined,
+        ),
       limit,
       offset,
-      columns: [articleSchema.articles.id, userSchema.users.id],
     });
   }
 
