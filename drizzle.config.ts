@@ -4,9 +4,9 @@ import type { Config } from "drizzle-kit";
 export default {
   schema: "src/database/models/**/*.model.ts",
   out: "./migrations",
-  driver: "pg", // 'pg' | 'mysql2' | 'better-sqlite' | 'libsql' | 'turso'
+  dialect: "postgresql",
   dbCredentials: {
-    connectionString: env().DATABASE_URL,
+    url: env().DATABASE_URL,
   },
   strict: true,
   verbose: true,

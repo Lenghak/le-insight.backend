@@ -88,6 +88,7 @@ import { LoggerMiddleware } from "./app.middleware";
     HttpModule.registerAsync({
       useFactory: async () => ({
         maxRedirects: 3,
+        timeout: 0,
       }),
     }),
 
@@ -101,10 +102,6 @@ import { LoggerMiddleware } from "./app.middleware";
     UsersModule,
   ],
   providers: [
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: CacheInterceptor,
-    // },
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,

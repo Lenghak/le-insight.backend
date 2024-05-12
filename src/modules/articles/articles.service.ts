@@ -4,6 +4,9 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 
+import paginationHelper from "@/common/helpers/pagination.helper";
+
+import type { ArticlesListDTO } from "@/modules/articles/dto/articles-list.dto";
 import { UsersService } from "@/modules/users/users.service";
 
 import { compareAsc } from "date-fns";
@@ -18,32 +21,35 @@ export class ArticlesService {
   constructor(
     private readonly articleRepository: ArticlesRepository,
     private readonly usersService: UsersService,
-    // private readonly httpService: HttpService,
   ) {}
 
-  // async list({ limit = 50, page, status, ...params }) {
-  //   const count = (await this.count(params.q))[0].value;
-  //   const { hasNextPage, hasPreviousPage, offset, totalPages } =
-  //     paginationHelper({ count, limit, page });
+  async list({ limit = 50, page, status, ...params }: ArticlesListDTO) {
+    const count = (await this.count(params.q))[0].value;
+    const { hasNextPage, hasPreviousPage, offset, totalPages } =
+      paginationHelper({ count, limit, page });
 
-  //   const categories = await this.categoriesRepository.list({
-  //     limit,
-  //     offset,
-  //     status,
-  //     ...params,
-  //   });
+    const articles = await this.articleRepository.list({
+      limit,
+      offset,
+      status,
+      ...params,
+    });
 
-  //   return {
-  //     data: categories,
-  //     meta: {
-  //       count,
-  //       page,
-  //       totalPages,
-  //       hasNextPage,
-  //       hasPreviousPage,
-  //     },
-  //   };
-  // }
+    return {
+      data: articles,
+      meta: {
+        count,
+        page,
+        totalPages,
+        hasNextPage,
+        hasPreviousPage,
+      },
+    };
+  }
+
+  async count(q?: string) {
+    return await this.articleRepository.count(q);
+  }
 
   async create(authorID: string, createArticleDTO: CreateArticlesDTO) {
     const currentAuthor = await this.usersService.get({

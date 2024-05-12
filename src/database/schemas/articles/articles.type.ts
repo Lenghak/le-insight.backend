@@ -6,12 +6,8 @@ import type {
 import type { z } from "nestjs-zod/z";
 
 export type Articles = z.infer<typeof SelectArticleSchema>;
-export enum ArticlesVisibilityEnum {
-  "PREMIUM",
-  "ARCHIVED",
-  "DRAFT",
-  "PUBLIC",
-  "PRIVATE",
-}
+export type ArticlesVisibilityType = z.infer<
+  typeof SelectArticleSchema.shape.visibility
+>;
 
 export type InsertArticleType = z.infer<typeof InsertArticleSchema>;

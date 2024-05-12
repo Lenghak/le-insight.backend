@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import type { GetArticlesListParamsType } from "@/modules/articles/dto/articles-list.dto";
 import type { CreateArticlesDTO } from "@/modules/articles/dto/create-articles.dto";
 import type { DeleteArticlesDTO } from "@/modules/articles/dto/delete-articles.dto";
 import type { UpdateArticlesDTO } from "@/modules/articles/dto/update-articles.dto";
@@ -13,7 +14,7 @@ import * as userSchema from "@/database/models/users";
 import type { Articles } from "@/database/schemas/articles/articles.type";
 import type { DatabaseType } from "@/database/types/db.type";
 
-import { eq, ilike, sql } from "drizzle-orm";
+import { and, between, countDistinct, eq, ilike, or, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 @Injectable()
@@ -41,15 +42,35 @@ export class ArticlesRepository {
   }
 
   async list(
-    limit: number,
-    offset: number,
-    query?: string,
+    { limit, status, offset, q, from, to }: GetArticlesListParamsType,
     db: DatabaseType | DatabaseType<typeof articleSchema> = this.db,
   ) {
     return await withPaginate({
       qb: db
         .select()
         .from(articleSchema.articles)
+        .where(
+          and(
+            q
+              ? ilike(articleSchema.articles.content_plain_text, `%${q}%`)
+              : undefined,
+            status ? eq(articleSchema.articles.visibility, status) : undefined,
+            from && to
+              ? or(
+                  between(
+                    articleSchema.articles.created_at,
+                    new Date(from),
+                    new Date(to),
+                  ),
+                  between(
+                    articleSchema.articles.updated_at,
+                    new Date(from),
+                    new Date(to),
+                  ),
+                )
+              : undefined,
+          ),
+        )
         .leftJoin(
           userSchema.users,
           eq(articleSchema.articles.user_id, userSchema.users.id),
@@ -58,11 +79,18 @@ export class ArticlesRepository {
       limit,
       offset,
       columns: [articleSchema.articles.id, userSchema.users.id],
-    }).where(
-      query
-        ? ilike(articleSchema.articles.content_plain_text, `%${query}%`)
-        : undefined,
-    );
+    });
+  }
+
+  async count(
+    query?: string,
+    db: DatabaseType<typeof articleSchema> = this.db,
+  ) {
+    const articles = articleSchema.articles;
+    return await db
+      .select({ value: countDistinct(articles.id) })
+      .from(articles)
+      .where(query ? ilike(articles.preview_title, `%${query}%`) : undefined);
   }
 
   async get({

@@ -9,12 +9,14 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { User } from "@/common/decorators/user.decorator";
 
 import { ArticlesService } from "@/modules/articles/articles.service";
+import type { ArticlesListDTO } from "@/modules/articles/dto/articles-list.dto";
 import { AuthSerializer } from "@/modules/auth/auth.serializer";
 import { PayloadType } from "@/modules/auth/types/payload.type";
 
@@ -50,12 +52,12 @@ export class ArticlesController {
     return this.authSerializer.serialize({ token });
   }
 
-  // @HttpCode(HttpStatus.OK)
-  // @Get("/")
-  // async list() {
-  //   const articles = await this.articleService;
-  //   return;
-  // }
+  @HttpCode(HttpStatus.OK)
+  @Get("/")
+  async list(@Query() params: ArticlesListDTO) {
+    const articles = await this.articleService.list(params);
+    return articles;
+  }
 
   @HttpCode(HttpStatus.CREATED)
   @Post("/")
