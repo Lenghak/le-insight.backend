@@ -26,6 +26,7 @@ export const InsertArticleSchema = createInsertSchema(articles).pick({
   preview_description: true,
   content_html: true,
   content_plain_text: true,
+  content_editor: true,
   user_id: true,
   visibility: true,
   thumbnail: true,

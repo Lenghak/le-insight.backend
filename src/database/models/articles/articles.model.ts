@@ -29,6 +29,7 @@ export const articles = pgTable("articles", {
 
   content_html: text("content_html"),
   content_plain_text: text("content_plain_text"),
+  content_editor: text("content_editor"),
 
   visibility: articlesVisibilityEnum("visibility").default("DRAFT"),
 

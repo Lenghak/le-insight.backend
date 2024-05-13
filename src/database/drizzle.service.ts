@@ -14,7 +14,7 @@ import postgres from "postgres";
 export const DRIZZLE_ASYNC_PROVIDER = "DRIZZLE_ASYNC_PROVIDER";
 
 // for migrations
-export const migrationClient = postgres(env.DATABASE_URL, { max: 1 });
+export const migrationClient = postgres(env.DATABASE_URL, { max: 10 });
 
 // for query purposes
 export const queryClient = postgres(env.DATABASE_URL);
