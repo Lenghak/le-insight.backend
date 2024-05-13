@@ -13,6 +13,7 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
+import { Public } from "@/common/decorators/public.decorator";
 import { User } from "@/common/decorators/user.decorator";
 
 import { ArticlesService } from "@/modules/articles/articles.service";
@@ -52,11 +53,20 @@ export class ArticlesController {
     return this.authSerializer.serialize({ token });
   }
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Get("/")
   async list(@Query() params: ArticlesListDTO) {
     const articles = await this.articleService.list(params);
     return articles;
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Get("/:id")
+  async get(@Param("id") id: string) {
+    const articles = await this.articleService.get(id);
+    return this.articleSerializer.serialize(articles);
   }
 
   @HttpCode(HttpStatus.CREATED)

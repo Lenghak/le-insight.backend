@@ -10,7 +10,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-export const articlesVisibilityEnum = pgEnum("status", [
+export const articlesVisibilityEnum = pgEnum("article_status", [
   "DRAFT",
   "PUBLIC",
   "PRIVATE",

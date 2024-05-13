@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
 
@@ -22,6 +23,20 @@ export class ArticlesService {
     private readonly articleRepository: ArticlesRepository,
     private readonly usersService: UsersService,
   ) {}
+
+  async get(id: string) {
+    const article = await this.articleRepository
+      .get({
+        by: "id",
+      })
+      .execute({ id });
+
+    if (!article) {
+      throw new NotFoundException();
+    }
+
+    return article;
+  }
 
   async list({ limit = 50, page, status, ...params }: ArticlesListDTO) {
     const count = (await this.count(params.q))[0].value;

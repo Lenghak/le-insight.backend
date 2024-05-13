@@ -85,7 +85,7 @@ export class ArticlesRepository {
       .where(query ? ilike(articles.preview_title, `%${query}%`) : undefined);
   }
 
-  async get({
+  get({
     by,
     db = this.db,
   }: {
@@ -123,7 +123,10 @@ export class ArticlesRepository {
     db: DatabaseType | DatabaseType<typeof articleSchema> = this.db,
   ) {
     return db
-      .delete(articleSchema.articles)
+      .update(articleSchema.articles)
+      .set({
+        visibility: "ARCHIVED",
+      })
       .where(eq(articleSchema.articles.id, deleteArticleDTO.id))
       .returning();
   }
