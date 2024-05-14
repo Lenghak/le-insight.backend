@@ -33,6 +33,7 @@ export const InsertArticleSchema = createInsertSchema(articles).pick({
 });
 
 export const UpdateArticleSchema = SelectArticleSchema.omit({
+  id: true,
   user_id: true,
   created_at: true,
 }).partial();

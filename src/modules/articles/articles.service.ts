@@ -91,8 +91,8 @@ export class ArticlesService {
     });
   }
 
-  async update(updateArticleDTO: UpdateArticlesDTO) {
-    return await this.articleRepository.update(updateArticleDTO);
+  async update(id: string, updateArticleDTO: UpdateArticlesDTO) {
+    return await this.articleRepository.update(id, updateArticleDTO);
   }
 
   async delete(deleteArticleDTO: DeleteArticlesDTO) {

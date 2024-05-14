@@ -104,6 +104,7 @@ export class ArticlesRepository {
   }
 
   async update(
+    id: string,
     updateArticleDTO: UpdateArticlesDTO,
     db: DatabaseType | DatabaseType<typeof articleSchema> = this.db,
   ) {
@@ -114,7 +115,7 @@ export class ArticlesRepository {
         content_html: updateArticleDTO.content_html,
         content_plain_text: updateArticleDTO.content_plain_text,
       })
-      .where(eq(articleSchema.articles.id, updateArticleDTO.id ?? ""))
+      .where(eq(articleSchema.articles.id, id ?? ""))
       .returning();
   }
 

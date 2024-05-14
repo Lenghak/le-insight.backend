@@ -82,8 +82,11 @@ export class ArticlesController {
 
   @HttpCode(HttpStatus.OK)
   @Patch("/:id")
-  async update(@Body() updateArticleDTO: UpdateArticlesDTO) {
-    const article = await this.articleService.update(updateArticleDTO);
+  async update(
+    @Param("id") id: string,
+    @Body() updateArticleDTO: UpdateArticlesDTO,
+  ) {
+    const article = await this.articleService.update(id, updateArticleDTO);
     return this.articleSerializer.serialize(article);
   }
 
