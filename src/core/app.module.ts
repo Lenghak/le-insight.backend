@@ -1,5 +1,5 @@
 import { HttpModule } from "@nestjs/axios";
-import { BullModule } from "@nestjs/bull";
+import { BullModule } from "@nestjs/bullmq";
 import {
   type MiddlewareConsumer,
   Module,
@@ -71,16 +71,18 @@ import { LoggerMiddleware } from "./app.middleware";
     BullModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        redis: {
-          host: configService.get("QUEUE_HOST"),
-          username: configService.get("QUEUE_USERNAME"),
-          password: configService.get("QUEUE_PASSWORD"),
-          port: configService.get("QUEUE_PORT"),
-        },
-        limiter: {
-          bounceBack: true,
-          duration: 60 * 60 * 1000,
-          max: 100,
+        connection: {
+          redisOptions: {
+            host: configService.get("QUEUE_HOST"),
+            username: configService.get("QUEUE_USERNAME"),
+            password: configService.get("QUEUE_PASSWORD"),
+            port: configService.get("QUEUE_PORT"),
+          },
+          limiter: {
+            bounceBack: true,
+            duration: 60 * 60 * 1000,
+            max: 100,
+          },
         },
       }),
     }),

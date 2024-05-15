@@ -20,5 +20,6 @@ import { CategoriesService } from "./categories.service";
     jsonAPISerializerProvider,
     CategoriesSerializer,
   ],
+  exports: [CategoriesService, CategoriesRepository],
 })
 export class CategoriesModule {}

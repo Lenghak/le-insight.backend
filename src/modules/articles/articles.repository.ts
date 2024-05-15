@@ -30,13 +30,7 @@ export class ArticlesRepository {
     return db
       .insert(articleSchema.articles)
       .values({
-        preview_title: createArticlesDTO.preview_title,
-        preview_description: createArticlesDTO.preview_description,
-        content_html: createArticlesDTO.content_html,
-        content_plain_text: createArticlesDTO.content_plain_text,
-        content_editor: createArticlesDTO.content_editor,
-        visibility: createArticlesDTO.visibility,
-        user_id: createArticlesDTO.user_id,
+        ...createArticlesDTO,
       })
       .returning();
   }

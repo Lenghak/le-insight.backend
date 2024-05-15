@@ -1,10 +1,11 @@
 import { Logger, Module } from "@nestjs/common";
 
+import { CategoriesModule } from "@/modules/categories/categories.module";
+
 import { DrizzleModule } from "../drizzle.module";
-import { SeederService } from "./seeder.service";
 
 @Module({
-  imports: [DrizzleModule],
-  providers: [Logger, SeederService],
+  imports: [DrizzleModule, CategoriesModule],
+  providers: [Logger],
 })
 export class SeederModule {}

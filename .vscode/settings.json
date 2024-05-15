@@ -3,8 +3,5 @@
     "nest"
   ],
   "workbench.iconTheme": "bearded-icons",
-  "a-file-icon-vscode.saturation": 1,
-  "a-file-icon-vscode.opacity": 1,
-  "a-file-icon-vscode.folderColor": "#727272",
-  "a-file-icon-vscode.folderTheme": "specific",
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
