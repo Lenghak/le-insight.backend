@@ -1,7 +1,8 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 
-import { CategoriesRepository } from "@/modules/categories/categories.repository";
-import { CategoriesService } from "@/modules/categories/categories.service";
+import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
+import { categories } from "@/database/models";
+import type { DatabaseType } from "@/database/types/db.type";
 
 import fs from "fs";
 import { join } from "path";
@@ -9,30 +10,25 @@ import { join } from "path";
 @Injectable()
 export class SeederService {
   constructor(
-    @Inject(CategoriesService)
-    private readonly categoriesService: CategoriesService,
-    @Inject(CategoriesRepository)
-    private readonly categoriesRepository: CategoriesRepository,
+    @Inject(DRIZZLE_ASYNC_PROVIDER) private readonly db: DatabaseType,
   ) {}
 
   async seed() {
     Logger.debug("Starting seed");
+    const db = this.db;
 
-    const categoriesService = this.categoriesService;
-    console.log(categoriesService);
-
-    fs.readFile(
+    return fs.readFile(
       join(__dirname, "./categories.json"),
       "utf8",
       function (err, data) {
         if (err) throw err;
-        const res: { category: string; description: string }[] =
-          JSON.parse(data);
-        res.forEach((o) => {
-          categoriesService.create({
-            is_archived: false,
-            label: o.category,
+        const res: string[] = JSON.parse(data);
+
+        res.map(async (category) => {
+          await db.insert(categories).values({
+            label: category,
             status: "ACTIVE",
+            is_archived: false,
           });
         });
       },
