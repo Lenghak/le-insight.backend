@@ -31,13 +31,13 @@ importers:
         version: 2.0.2(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(nodemailer@6.9.13)
       '@nestjs/axios':
         specifier: ^3.0.2
-        version: 3.0.2(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(axios@1.6.8)(rxjs@7.8.1)
+        version: 3.0.2(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(axios@1.7.0)(rxjs@7.8.1)
       '@nestjs/bull':
         specifier: ^10.1.1
-        version: 10.1.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(bull@4.12.4)
+        version: 10.1.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(bull@4.12.6)
       '@nestjs/bullmq':
         specifier: ^10.1.1
-        version: 10.1.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(bullmq@5.7.8)
+        version: 10.1.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(bullmq@5.7.9)
       '@nestjs/cache-manager':
         specifier: ^2.2.2
         version: 2.2.2(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(cache-manager@5.5.2)(rxjs@7.8.1)
@@ -75,17 +75,17 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0(@swc/core@1.5.7)(@types/node@20.12.12)(typescript@5.4.5)
       axios:
-        specifier: ^1.6.8
-        version: 1.6.8
+        specifier: ^1.7.0
+        version: 1.7.0
       bcrypt:
         specifier: ^5.1.1
         version: 5.1.1
       bull:
-        specifier: ^4.12.4
-        version: 4.12.4
+        specifier: ^4.12.6
+        version: 4.12.6
       bullmq:
-        specifier: ^5.7.8
-        version: 5.7.8
+        specifier: ^5.7.9
+        version: 5.7.9
       cache-manager:
         specifier: ^5.5.2
         version: 5.5.2
@@ -144,8 +144,8 @@ importers:
         specifier: ^3.4.4
         version: 3.4.4
       redis:
-        specifier: ^4.6.13
-        version: 4.6.13
+        specifier: ^4.6.14
+        version: 4.6.14
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -1272,8 +1272,8 @@ packages:
     peerDependencies:
       '@redis/client': ^1.0.0
 
-  '@redis/client@1.5.14':
-    resolution: {integrity: sha512-YGn0GqsRBFUQxklhY7v562VMOP0DcmlrHHs3IV1mFE3cbxe31IITUkqhBcIhVSI/2JqtWAJXg5mjV4aU+zD0HA==}
+  '@redis/client@1.5.16':
+    resolution: {integrity: sha512-X1a3xQ5kEMvTib5fBrHKh6Y+pXbeKXqziYuxOUo1ojQNECg4M5Etd1qqyhMap+lFUOAh8S7UYevgJHOm4A+NOg==}
     engines: {node: '>=14'}
 
   '@redis/graph@1.1.1':
@@ -1882,8 +1882,8 @@ packages:
   avvio@8.3.0:
     resolution: {integrity: sha512-VBVH0jubFr9LdFASy/vNtm5giTrnbVquWBhT0fyizuNK2rQ7e7ONU2plZQWUNqtE1EmxFEb+kbSkFRkstiaS9Q==}
 
-  axios@1.6.8:
-    resolution: {integrity: sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==}
+  axios@1.7.0:
+    resolution: {integrity: sha512-IiB0wQeKyPRdsFVhBgIo31FbzOyf2M6wYl7/NVutFwFBRMiAbjNiydJIHKeLmPugF4kJLfA1uWZ82Is2QzqqFA==}
 
   babel-jest@29.7.0:
     resolution: {integrity: sha512-BrvGY3xZSwEcCzKvKsCi2GgHqDqsYkOP4/by5xCgIwGXQxIEh+8ew3gmrE1y7XRR6LHZIj6yLYnUi/mm2KXKBg==}
@@ -1984,12 +1984,12 @@ packages:
   buffer@6.0.3:
     resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
-  bull@4.12.4:
-    resolution: {integrity: sha512-a+xWS52Mmc9L7S0zYLEPMUwx/r5IkQyMKKKGVKkUurl3zXeg1ktPZjp9NvdaFY/40XtD/RP80KURjjkjAQnF0g==}
+  bull@4.12.6:
+    resolution: {integrity: sha512-QViK1i938moggAtlwhmJ8RmLadswgWKlqOFX9w+WBIAuV2L8qrte1XOIs7KUrRc9fbIfJTziaq7NZEpuaMO4Lw==}
     engines: {node: '>=12'}
 
-  bullmq@5.7.8:
-    resolution: {integrity: sha512-F/Haeu6AVHkFrfeaU/kLOjhfrH6x3CaKAZlQQ+76fa8l3kfI9oaUHeFMW+1mYVz0NtYPF7PNTWFq4ylAHYcCgA==}
+  bullmq@5.7.9:
+    resolution: {integrity: sha512-ZTDIT6gM5XXeqBKqW6/Sbq1tdEzx0HXpx29ffejMcIXiG0wVBlOAEyp5dVHnjRyB2Nz9pZlQmhmJC9a1l+o0ug==}
 
   busboy@1.6.0:
     resolution: {integrity: sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==}
@@ -2033,8 +2033,8 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  caniuse-lite@1.0.30001618:
-    resolution: {integrity: sha512-p407+D1tIkDvsEAPS22lJxLQQaG8OTBEqo0KhzfABGk0TU4juBNDSfH0hyAp/HRyx+M8L17z/ltyhxh27FTfQg==}
+  caniuse-lite@1.0.30001620:
+    resolution: {integrity: sha512-WJvYsOjd1/BYUY6SNGUosK9DUidBPDTnOARHp3fSmFO1ekdxaY6nKRttEVrfMmYi80ctS0kz1wiWmm14fVc3ew==}
 
   chalk@2.4.2:
     resolution: {integrity: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==}
@@ -2614,8 +2614,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.4.769:
-    resolution: {integrity: sha512-bZu7p623NEA2rHTc9K1vykl57ektSPQYFFqQir8BOYf6EKOB+yIsbFB9Kpm7Cgt6tsLr9sRkqfqSZUw7LP1XxQ==}
+  electron-to-chromium@1.4.774:
+    resolution: {integrity: sha512-132O1XCd7zcTkzS3FgkAzKmnBuNJjK8WjcTtNuoylj7MYbqw5eXehjQ5OK91g0zm7OTKIPeaAG4CPoRfD9M1Mg==}
 
   emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
@@ -2671,8 +2671,8 @@ packages:
     resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
     engines: {node: '>= 0.4'}
 
-  es-module-lexer@1.5.2:
-    resolution: {integrity: sha512-l60ETUTmLqbVbVHv1J4/qj+M8nq7AwMzEcg3kmJDt9dCNrTk+yHcYFf/Kw75pMDwd9mPcIGCG5LcS20SxYRzFA==}
+  es-module-lexer@1.5.3:
+    resolution: {integrity: sha512-i1gCgmR9dCl6Vil6UKPI/trA69s08g/syhiDK9TG0Nf1RJjjFI+AzoWW7sPufzkgYAn861skuCwJa0pIIHYxvg==}
 
   es5-ext@0.10.64:
     resolution: {integrity: sha512-p2snDhiLaXe6dahss1LddxqEm+SkuDvV8dnIQG0MWjyHpcMNfXKPE+/Cc0y+PhxJX3A4xGNeFCj5oc0BUh6deg==}
@@ -4807,8 +4807,8 @@ packages:
     resolution: {integrity: sha512-DJnGAeenTdpMEH6uAJRK/uiyEIH9WVsUmoLwzudwGJUwZPp80PDBWPHXSAGNPwNvIXAbe7MSUB1zQFugFml66A==}
     engines: {node: '>=4'}
 
-  redis@4.6.13:
-    resolution: {integrity: sha512-MHgkS4B+sPjCXpf+HfdetBwbRz6vCtsceTmw1pHNYJAsYxrfpOP6dz+piJWGos8wqG7qb3vj/Rrc5qOlmInUuA==}
+  redis@4.6.14:
+    resolution: {integrity: sha512-GrNg/e33HtsQwNXL7kJT+iNFPSwE1IPmd7wzV3j4f2z0EYxZfZE7FVTmUysgAtqQQtg5NXF5SNLR9OdO/UHOfw==}
 
   reflect-metadata@0.2.2:
     resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
@@ -5210,8 +5210,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  swagger-ui-dist@5.17.9:
-    resolution: {integrity: sha512-qhZdoXIleblFxufohnd4ir4KmVA7/uFfd/9sDTtH8A6Qm1lEK40MhrMrDqy9AygGjw1bnJpZH4yZ5wu12vW1aw==}
+  swagger-ui-dist@5.17.10:
+    resolution: {integrity: sha512-fp8SYeEK216KS1/noDvursUOGojEbkvtckOpOmAGZUjlx/ma7VLD2PLQwyermjlzFrlHI5uCt1V+M1C3qBvRyQ==}
 
   swagger-ui-express@5.0.0:
     resolution: {integrity: sha512-tsU9tODVvhyfkNSvf03E6FAk+z+5cU3lXAzMy6Pv4av2Gt2xA0++fogwC4qo19XuFf6hdxevPuVCSKFuMHJhFA==}
@@ -6498,10 +6498,10 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@nestjs/axios@3.0.2(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(axios@1.6.8)(rxjs@7.8.1)':
+  '@nestjs/axios@3.0.2(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(axios@1.7.0)(rxjs@7.8.1)':
     dependencies:
       '@nestjs/common': 10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      axios: 1.6.8
+      axios: 1.7.0
       rxjs: 7.8.1
 
   '@nestjs/bull-shared@10.1.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))':
@@ -6510,20 +6510,20 @@ snapshots:
       '@nestjs/core': 10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       tslib: 2.6.2
 
-  '@nestjs/bull@10.1.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(bull@4.12.4)':
+  '@nestjs/bull@10.1.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(bull@4.12.6)':
     dependencies:
       '@nestjs/bull-shared': 10.1.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))
       '@nestjs/common': 10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/core': 10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      bull: 4.12.4
+      bull: 4.12.6
       tslib: 2.6.2
 
-  '@nestjs/bullmq@10.1.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(bullmq@5.7.8)':
+  '@nestjs/bullmq@10.1.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(bullmq@5.7.9)':
     dependencies:
       '@nestjs/bull-shared': 10.1.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))
       '@nestjs/common': 10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/core': 10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      bullmq: 5.7.8
+      bullmq: 5.7.9
       tslib: 2.6.2
 
   '@nestjs/cache-manager@2.2.2(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(cache-manager@5.5.2)(rxjs@7.8.1)':
@@ -6746,31 +6746,31 @@ snapshots:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@redis/bloom@1.2.0(@redis/client@1.5.14)':
+  '@redis/bloom@1.2.0(@redis/client@1.5.16)':
     dependencies:
-      '@redis/client': 1.5.14
+      '@redis/client': 1.5.16
 
-  '@redis/client@1.5.14':
+  '@redis/client@1.5.16':
     dependencies:
       cluster-key-slot: 1.1.2
       generic-pool: 3.9.0
       yallist: 4.0.0
 
-  '@redis/graph@1.1.1(@redis/client@1.5.14)':
+  '@redis/graph@1.1.1(@redis/client@1.5.16)':
     dependencies:
-      '@redis/client': 1.5.14
+      '@redis/client': 1.5.16
 
-  '@redis/json@1.0.6(@redis/client@1.5.14)':
+  '@redis/json@1.0.6(@redis/client@1.5.16)':
     dependencies:
-      '@redis/client': 1.5.14
+      '@redis/client': 1.5.16
 
-  '@redis/search@1.1.6(@redis/client@1.5.14)':
+  '@redis/search@1.1.6(@redis/client@1.5.16)':
     dependencies:
-      '@redis/client': 1.5.14
+      '@redis/client': 1.5.16
 
-  '@redis/time-series@1.0.5(@redis/client@1.5.14)':
+  '@redis/time-series@1.0.5(@redis/client@1.5.16)':
     dependencies:
-      '@redis/client': 1.5.14
+      '@redis/client': 1.5.16
 
   '@selderee/plugin-htmlparser2@0.11.0':
     dependencies:
@@ -7422,7 +7422,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  axios@1.6.8:
+  axios@1.7.0:
     dependencies:
       follow-redirects: 1.15.6
       form-data: 4.0.0
@@ -7558,8 +7558,8 @@ snapshots:
 
   browserslist@4.23.0:
     dependencies:
-      caniuse-lite: 1.0.30001618
-      electron-to-chromium: 1.4.769
+      caniuse-lite: 1.0.30001620
+      electron-to-chromium: 1.4.774
       node-releases: 2.0.14
       update-browserslist-db: 1.0.16(browserslist@4.23.0)
 
@@ -7585,7 +7585,7 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
-  bull@4.12.4:
+  bull@4.12.6:
     dependencies:
       cron-parser: 4.9.0
       get-port: 5.1.1
@@ -7597,7 +7597,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  bullmq@5.7.8:
+  bullmq@5.7.9:
     dependencies:
       cron-parser: 4.9.0
       ioredis: 5.4.1
@@ -7617,7 +7617,7 @@ snapshots:
 
   cache-manager-redis-store@3.0.1:
     dependencies:
-      redis: 4.6.13
+      redis: 4.6.14
 
   cache-manager@5.5.2:
     dependencies:
@@ -7658,7 +7658,7 @@ snapshots:
 
   camelcase@6.3.0: {}
 
-  caniuse-lite@1.0.30001618: {}
+  caniuse-lite@1.0.30001620: {}
 
   chalk@2.4.2:
     dependencies:
@@ -8213,7 +8213,7 @@ snapshots:
       jake: 10.9.1
     optional: true
 
-  electron-to-chromium@1.4.769: {}
+  electron-to-chromium@1.4.774: {}
 
   emittery@0.13.1: {}
 
@@ -8257,7 +8257,7 @@ snapshots:
 
   es-errors@1.3.0: {}
 
-  es-module-lexer@1.5.2: {}
+  es-module-lexer@1.5.3: {}
 
   es5-ext@0.10.64:
     dependencies:
@@ -11112,14 +11112,14 @@ snapshots:
     dependencies:
       redis-errors: 1.2.0
 
-  redis@4.6.13:
+  redis@4.6.14:
     dependencies:
-      '@redis/bloom': 1.2.0(@redis/client@1.5.14)
-      '@redis/client': 1.5.14
-      '@redis/graph': 1.1.1(@redis/client@1.5.14)
-      '@redis/json': 1.0.6(@redis/client@1.5.14)
-      '@redis/search': 1.1.6(@redis/client@1.5.14)
-      '@redis/time-series': 1.0.5(@redis/client@1.5.14)
+      '@redis/bloom': 1.2.0(@redis/client@1.5.16)
+      '@redis/client': 1.5.16
+      '@redis/graph': 1.1.1(@redis/client@1.5.16)
+      '@redis/json': 1.0.6(@redis/client@1.5.16)
+      '@redis/search': 1.1.6(@redis/client@1.5.16)
+      '@redis/time-series': 1.0.5(@redis/client@1.5.16)
 
   reflect-metadata@0.2.2: {}
 
@@ -11507,12 +11507,12 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  swagger-ui-dist@5.17.9: {}
+  swagger-ui-dist@5.17.10: {}
 
   swagger-ui-express@5.0.0(express@4.19.2):
     dependencies:
       express: 4.19.2
-      swagger-ui-dist: 5.17.9
+      swagger-ui-dist: 5.17.10
 
   symbol-observable@4.0.0: {}
 
@@ -11807,7 +11807,7 @@ snapshots:
       browserslist: 4.23.0
       chrome-trace-event: 1.0.3
       enhanced-resolve: 5.16.1
-      es-module-lexer: 1.5.2
+      es-module-lexer: 1.5.3
       eslint-scope: 5.1.1
       events: 3.3.0
       glob-to-regexp: 0.4.1
