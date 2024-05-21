@@ -91,6 +91,9 @@ import { LoggerMiddleware } from "./app.middleware";
       useFactory: async () => ({
         maxRedirects: 3,
         timeout: 0,
+        headers: {
+          "Content-Type": "applicatin/json",
+        },
       }),
     }),
 

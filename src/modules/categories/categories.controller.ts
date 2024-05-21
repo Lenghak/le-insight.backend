@@ -15,6 +15,10 @@ import { Public } from "@/common/decorators/public.decorator";
 import { Roles } from "@/common/decorators/roles.decorator";
 
 import type { CreateCategoryDto } from "@/modules/categories/dto/create-category.dto";
+import type {
+  GenerateCategoriesDTO,
+  GenerateCategoriesResponseType,
+} from "@/modules/categories/dto/generate-categories.dto";
 import type { GetCategoriesListDTO } from "@/modules/categories/dto/get-categories-list.dto";
 import type { UpdateCategoryDto } from "@/modules/categories/dto/update-category.dto";
 
@@ -22,7 +26,7 @@ import { UserRoleEnum } from "@/database/schemas/users/users.type";
 
 import env from "@/core/env";
 import type { AxiosResponse } from "axios";
-import type { Observable } from "rxjs";
+import { firstValueFrom } from "rxjs";
 
 import { CategoriesSerializer } from "./categories.serializer";
 import { CategoriesService } from "./categories.service";
@@ -77,10 +81,23 @@ export class CategoriesController {
     );
   }
 
+  @Public()
   @Post("/generate")
-  async generate(): Promise<Observable<AxiosResponse<unknown, unknown>>> {
-    return this.httpService.get("/generate", {
-      baseURL: env().AI_HOSTNAME,
-    });
+  async generate(@Body() generateCategoriesDTO: GenerateCategoriesDTO) {
+    const categories = await firstValueFrom<
+      AxiosResponse<GenerateCategoriesResponseType, unknown>
+    >(
+      this.httpService.post(
+        "/categories/generate",
+        {
+          article: generateCategoriesDTO.article,
+        },
+        {
+          baseURL: env().AI_HOSTNAME,
+        },
+      ),
+    );
+
+    return this.categoriesSerializer.serialize(categories.data);
   }
 }
