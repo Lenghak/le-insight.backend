@@ -73,10 +73,11 @@ export class ArticlesController {
   @Post("/")
   async create(
     @User() payload: PayloadType,
-    @Body() createArticleDTO: CreateArticlesDTO,
+    @Body() { ...createArticleDTO }: CreateArticlesDTO,
   ) {
     const userID = payload.sub;
     const article = await this.articleService.create(userID, createArticleDTO);
+
     return this.articleSerializer.serialize(article);
   }
 

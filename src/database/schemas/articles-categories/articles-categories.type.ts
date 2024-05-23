@@ -7,7 +7,7 @@ import type {
   UpdateACSchema,
 } from "./articles-categories.schema";
 
-export type CategoriesType = z.infer<typeof SelectACSchema>;
+export type ArticlesCategoriesType = z.infer<typeof SelectACSchema>;
 
 export type InsertCategoriesType = z.infer<typeof InsertACSchema>;
 export type UpdateCategoriesType = z.infer<typeof UpdateACSchema>;

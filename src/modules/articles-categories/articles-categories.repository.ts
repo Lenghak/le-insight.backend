@@ -19,9 +19,12 @@ export class ArticlesCategoriesRepository {
     createACDTO: CreateACDTO,
     db: DatabaseType | DatabaseType<typeof acSchema> = this.db,
   ) {
-    return db.insert(acSchema.articlesCategories).values({
-      article_id: createACDTO.article_id,
-      category_id: createACDTO.category_id,
-    });
+    return db
+      .insert(acSchema.articlesCategories)
+      .values({
+        article_id: createACDTO.article_id,
+        category_id: createACDTO.category_id,
+      })
+      .returning();
   }
 }
