@@ -1,19 +1,36 @@
+import { HttpService } from "@nestjs/axios";
 import { ConflictException, Injectable } from "@nestjs/common";
 
 import paginationHelper from "@/common/helpers/pagination.helper";
 
 import { CategoriesRepository } from "@/modules/categories/categories.repository";
 import type { CreateCategoryDto } from "@/modules/categories/dto/create-category.dto";
+import type {
+  GenerateCategoriesDTO,
+  GenerateCategoriesResponseType,
+} from "@/modules/categories/dto/generate-categories.dto";
 import type { GetCategoriesListDTO } from "@/modules/categories/dto/get-categories-list.dto";
 import type { UpdateCategoryDto } from "@/modules/categories/dto/update-category.dto";
 
 import type { CategoriesType } from "@/database/schemas/categories/categories.type";
 
+import env from "@/core/env";
+import type { AxiosResponse } from "axios";
+import { firstValueFrom } from "rxjs";
+
 @Injectable()
 export class CategoriesService {
-  constructor(private readonly categoriesRepository: CategoriesRepository) {}
+  constructor(
+    private readonly categoriesRepository: CategoriesRepository,
+    private readonly httpService: HttpService,
+  ) {}
 
-  async list({ limit = 50, page, status, ...params }: GetCategoriesListDTO) {
+  async list({
+    limit = 50,
+    page = 1,
+    status,
+    ...params
+  }: GetCategoriesListDTO) {
     const count = (await this.count(params.q))[0].value;
     const { hasNextPage, hasPreviousPage, offset, totalPages } =
       paginationHelper({ count, limit, page });
@@ -76,5 +93,30 @@ export class CategoriesService {
 
   async delete({ id }: { id: string }) {
     return await this.categoriesRepository.delete({ id });
+  }
+
+  async all(columns?: Record<string, true>) {
+    return await this.categoriesRepository.all(columns);
+  }
+
+  async generate(generateCategoriesDTO: GenerateCategoriesDTO) {
+    const categories = await this.all();
+
+    const response = await firstValueFrom<
+      AxiosResponse<GenerateCategoriesResponseType, unknown>
+    >(
+      this.httpService.post(
+        "/categories/generate",
+        {
+          article: generateCategoriesDTO.article,
+          categories: categories.map((category) => category.label),
+        },
+        {
+          baseURL: env().AI_HOSTNAME,
+        },
+      ),
+    );
+
+    return response;
   }
 }

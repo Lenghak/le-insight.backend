@@ -2,10 +2,10 @@ import { SelectCategoriesSchema } from "@/database/schemas/categories/categories
 
 import { createZodDto } from "nestjs-zod";
 
-export class CreateCategoryDto extends createZodDto(
-  SelectCategoriesSchema.pick({
-    label: true,
-    status: true,
-    is_archived: true,
-  }),
-) {}
+const CreateCategorySchema = SelectCategoriesSchema.pick({
+  label: true,
+  status: true,
+  is_archived: true,
+});
+
+export class CreateCategoryDto extends createZodDto(CreateCategorySchema) {}

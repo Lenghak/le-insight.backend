@@ -1,4 +1,5 @@
 import type {
+  CategoriesStatusSchema,
   DeleteCategoriesSchema,
   InsertCategoriesSchema,
   SelectCategoriesSchema,
@@ -12,3 +13,4 @@ export type CategoriesType = z.infer<typeof SelectCategoriesSchema>;
 export type InsertCategoriesType = z.infer<typeof InsertCategoriesSchema>;
 export type UpdateCategoriesType = z.infer<typeof UpdateCategoriesSchema>;
 export type DeleteCategoriesType = z.infer<typeof DeleteCategoriesSchema>;
+export type CategoriesStatusType = z.infer<typeof CategoriesStatusSchema>;

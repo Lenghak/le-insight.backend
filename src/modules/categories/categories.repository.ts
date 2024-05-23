@@ -23,7 +23,7 @@ export class CategoriesRepository {
   ) {}
 
   async list(
-    { limit, from, to, offset, q, status }: GetCategoriesListParams,
+    { limit = 50, from, to, offset = 0, q, status }: GetCategoriesListParams,
     db: DatabaseType | DatabaseType<typeof categoriesSchema> = this.db,
   ) {
     const categories = categoriesSchema.categories;
@@ -74,6 +74,19 @@ export class CategoriesRepository {
       .from(categoriesSchema.categories)
       .where(eq(categoriesSchema.categories[by], sql.placeholder(by)))
       .prepare("get_category_by");
+  }
+
+  async all(
+    columns?: Record<string, true>,
+    db: DatabaseType<typeof categoriesSchema> = this.db,
+  ) {
+    return db?.query.categories.findMany({
+      columns: {
+        label: true,
+        ...columns,
+      },
+      where: ({ status }) => eq(status, "ACTIVE"),
+    });
   }
 
   async create(

@@ -1,6 +1,14 @@
 import { categories } from "@/database/models";
 
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { z } from "nestjs-zod/z";
+
+export const CategoriesStatusSchema = z.enum([
+  "ACTIVE",
+  "INACTIVE",
+  "PENDING",
+  "REVOKED",
+]);
 
 export const SelectCategoriesSchema = createSelectSchema(categories);
 

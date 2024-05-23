@@ -13,6 +13,7 @@ import { AccessTokenGuard } from "@/common/guards/access-token.guard";
 import { RolesGuard } from "@/common/guards/roles.guard";
 import { jsonAPISerializerProvider } from "@/common/serializers/json-api-serializer.provider";
 
+import { ArticlesCategoriesModule } from "@/modules/articles-categories/articles-categories.module";
 import { ArticlesModules } from "@/modules/articles/articles.module";
 import { AuthModule } from "@/modules/auth/auth.module";
 import { CategoriesModule } from "@/modules/categories/categories.module";
@@ -100,6 +101,7 @@ import { LoggerMiddleware } from "./app.middleware";
     // modules
     DrizzleModule,
     ArticlesModules,
+    ArticlesCategoriesModule,
     AuthModule,
     CategoriesModule,
     MailModule,
