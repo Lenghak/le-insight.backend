@@ -13,7 +13,7 @@ export class ArticlesCategoriesController {
     return await this.acService.apply({ article, categories });
   }
 
-  @Post("/generate")
+  @Post("/regenerate")
   async regenerate(@Body() generateACDto: GenerateACDTO) {
     return this.acService.regenerate(generateACDto);
   }

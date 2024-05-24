@@ -117,6 +117,46 @@ export class CategoriesService {
       ),
     );
 
+    response.data.categories.map(async (cate) => {
+      const currCate = await this.get({
+        by: "label",
+        values: { label: cate.label },
+      });
+
+      if (currCate)
+        await this.updateCounter({
+          category_id: currCate?.id,
+          counterType: "generate",
+          op: "+",
+        });
+    });
+
     return response;
+  }
+
+  async updateCounter({
+    category_id,
+    counterType,
+    op,
+  }: {
+    category_id: string;
+    counterType: "assign" | "generate";
+    op: "+" | "-";
+  }) {
+    const currCate = await this.get({
+      by: "id",
+      values: { id: category_id },
+    });
+
+    return await this.update(category_id, {
+      assigned_count:
+        counterType === "assign"
+          ? (currCate?.assigned_count ?? 0) + (op === "+" ? 1 : -1)
+          : undefined,
+      generated_count:
+        counterType === "generate"
+          ? (currCate?.generated_count ?? 0) + (op === "+" ? 1 : -1)
+          : undefined,
+    });
   }
 }

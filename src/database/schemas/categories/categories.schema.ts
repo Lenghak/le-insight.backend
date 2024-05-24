@@ -17,6 +17,7 @@ export const InsertCategoriesSchema = createInsertSchema(categories).pick({
 });
 
 export const UpdateCategoriesSchema = SelectCategoriesSchema.omit({
+  id: true,
   created_at: true,
 }).partial();
 

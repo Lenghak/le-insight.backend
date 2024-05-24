@@ -29,27 +29,38 @@ export class ArticlesCategoriesService {
     createACDTO: CreateACDTO,
     db?: DatabaseType | DatabaseType<typeof acSchema>,
   ) {
-    return await this.acRepository.create(createACDTO, db);
+    const acs = await this.acRepository.create(createACDTO, db);
+
+    for (const ac of acs) {
+      await this.categoriesService.updateCounter({
+        category_id: ac.category_id,
+        counterType: "assign",
+        op: "+",
+      });
+    }
+
+    return acs;
   }
 
   async apply({ article, categories }: ApplyACDTO) {
     let categoryOther = await this.categoriesService.get({
       by: "label",
       values: {
-        label: "other",
+        label: "Other",
       },
     });
 
     if (!categoryOther)
       categoryOther = await this.categoriesService.create({
-        label: "other",
+        label: "Other",
         status: "ACTIVE",
-        is_archived: false,
       })[0];
 
     const bridged: ArticlesCategoriesType[] = [];
 
-    for (const category of categories.sort((category) => category.rate)) {
+    for (const category of categories
+      .filter((cat) => cat.rate >= 0.65)
+      .sort((a, b) => b.rate - a.rate)) {
       const ligitCategory = await this.categoriesService.get({
         by: "label",
         values: {
@@ -57,24 +68,22 @@ export class ArticlesCategoriesService {
         },
       });
 
-      if (ligitCategory && category.rate > 0.65)
+      if (ligitCategory)
         bridged.push(
           ...(await this.create({
             article_id: article.id,
             category_id: ligitCategory.id,
           })),
         );
-
-      if (category.rate < 0.65 && categoryOther) {
-        bridged.push(
-          ...(await this.create({
-            article_id: article.id,
-            category_id: categoryOther.id,
-          })),
-        );
-        break;
-      }
     }
+
+    if (bridged.length <= 0 && categoryOther)
+      bridged.push(
+        ...(await this.create({
+          article_id: article.id,
+          category_id: categoryOther.id,
+        })),
+      );
 
     return bridged;
   }
@@ -90,23 +99,29 @@ export class ArticlesCategoriesService {
         ).data.categories
       : [
           {
-            label: "other",
+            label: "Other",
             rate: 1.0,
           },
         ];
 
-    const existingCategories = await this.list({ article_id: article.id });
-
-    if (existingCategories) {
-      await this.detach({
-        article_id: article.id,
-      });
-    }
+    await this.detach({
+      article_id: article.id,
+    });
 
     return await this.apply({ article, categories });
   }
 
   async detach(deleteACDTO: DeleteACDTO) {
-    return await this.acRepository.delete(deleteACDTO);
+    const deletedAcs = await this.acRepository.delete(deleteACDTO);
+
+    for (const ac of deletedAcs) {
+      await this.categoriesService.updateCounter({
+        category_id: ac.category_id,
+        counterType: "assign",
+        op: "-",
+      });
+    }
+
+    return deletedAcs;
   }
 }

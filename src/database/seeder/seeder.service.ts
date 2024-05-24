@@ -28,7 +28,6 @@ export class SeederService {
           await db.insert(categories).values({
             label: category,
             status: "ACTIVE",
-            is_archived: false,
           });
         });
       },

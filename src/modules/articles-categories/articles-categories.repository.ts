@@ -72,6 +72,7 @@ export class ArticlesCategoriesRepository {
               )
             : undefined,
         ),
-      );
+      )
+      .returning();
   }
 }
