@@ -3,7 +3,9 @@ import { Injectable } from "@nestjs/common";
 import { ArticlesCategoriesRepository } from "@/modules/articles-categories/articles-categories.repository";
 import type { ApplyACDTO } from "@/modules/articles-categories/dto/apply-ac.dto";
 import type { CreateACDTO } from "@/modules/articles-categories/dto/create-ac.dto";
+import type { DeleteACDTO } from "@/modules/articles-categories/dto/delete-ac.dto";
 import type { GenerateACDTO } from "@/modules/articles-categories/dto/generate-ac.dto";
+import type { GetACListDTO } from "@/modules/articles-categories/dto/get-ac-list.dto";
 import { ArticlesService } from "@/modules/articles/articles.service";
 import { CategoriesService } from "@/modules/categories/categories.service";
 
@@ -18,6 +20,10 @@ export class ArticlesCategoriesService {
     private readonly articleService: ArticlesService,
     private readonly categoriesService: CategoriesService,
   ) {}
+
+  async list(getACListDTO: GetACListDTO) {
+    return await this.acRepository.list(getACListDTO);
+  }
 
   async create(
     createACDTO: CreateACDTO,
@@ -89,6 +95,18 @@ export class ArticlesCategoriesService {
           },
         ];
 
+    const existingCategories = await this.list({ article_id: article.id });
+
+    if (existingCategories) {
+      await this.detach({
+        article_id: article.id,
+      });
+    }
+
     return await this.apply({ article, categories });
+  }
+
+  async detach(deleteACDTO: DeleteACDTO) {
+    return await this.acRepository.delete(deleteACDTO);
   }
 }

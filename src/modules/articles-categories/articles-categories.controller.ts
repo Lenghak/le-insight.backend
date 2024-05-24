@@ -14,7 +14,7 @@ export class ArticlesCategoriesController {
   }
 
   @Post("/generate")
-  async generate(@Body() generateACDto: GenerateACDTO) {
+  async regenerate(@Body() generateACDto: GenerateACDTO) {
     return this.acService.regenerate(generateACDto);
   }
 }
