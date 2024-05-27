@@ -2,13 +2,13 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import type { CreateACDTO } from "@/modules/articles-categories/dto/create-ac.dto";
 import type { DeleteACDTO } from "@/modules/articles-categories/dto/delete-ac.dto";
-import type { GetACListDTO } from "@/modules/articles-categories/dto/get-ac-list.dto";
+import type { GetACAllDTO } from "@/modules/articles-categories/dto/get-ac-all.dto";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as acSchema from "@/database/models/articles-categories";
 import type { DatabaseType } from "@/database/types/db.type";
 
-import { and, eq, or } from "drizzle-orm";
+import { and, countDistinct, eq, or } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 @Injectable()
@@ -18,8 +18,8 @@ export class ArticlesCategoriesRepository {
     private readonly db: PostgresJsDatabase<typeof acSchema>,
   ) {}
 
-  async list(
-    getACListDTO: GetACListDTO,
+  async all(
+    getACListDTO: GetACAllDTO,
     db: DatabaseType | DatabaseType<typeof acSchema> = this.db,
   ) {
     return db
@@ -40,6 +40,18 @@ export class ArticlesCategoriesRepository {
               )
             : undefined,
         ),
+      );
+  }
+
+  async count(query?: string, db: DatabaseType<typeof acSchema> = this.db) {
+    const ac = acSchema.articlesCategories;
+    return await db
+      .select({ value: countDistinct(ac.article_id) })
+      .from(acSchema.articlesCategories)
+      .where(
+        query
+          ? or(eq(ac.article_id, query), eq(ac.category_id, query))
+          : undefined,
       );
   }
 

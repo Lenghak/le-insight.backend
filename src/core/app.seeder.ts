@@ -9,9 +9,9 @@ async function bootstrap() {
   const logger = context.get(Logger);
   const seederService = context.get(SeederService);
 
-  await seederService.seed();
-
-  logger.debug("Seeding Done Running!");
+  await seederService
+    .seed()
+    .finally(() => logger.debug("Seeding Done Running!"));
 
   await context.close();
 }

@@ -5,7 +5,7 @@ import type { ApplyACDTO } from "@/modules/articles-categories/dto/apply-ac.dto"
 import type { CreateACDTO } from "@/modules/articles-categories/dto/create-ac.dto";
 import type { DeleteACDTO } from "@/modules/articles-categories/dto/delete-ac.dto";
 import type { GenerateACDTO } from "@/modules/articles-categories/dto/generate-ac.dto";
-import type { GetACListDTO } from "@/modules/articles-categories/dto/get-ac-list.dto";
+import type { GetACAllDTO } from "@/modules/articles-categories/dto/get-ac-all.dto";
 import { ArticlesService } from "@/modules/articles/articles.service";
 import { CategoriesService } from "@/modules/categories/categories.service";
 
@@ -21,8 +21,8 @@ export class ArticlesCategoriesService {
     private readonly categoriesService: CategoriesService,
   ) {}
 
-  async list(getACListDTO: GetACListDTO) {
-    return await this.acRepository.list(getACListDTO);
+  async all(getACListDTO: GetACAllDTO) {
+    return await this.acRepository.all(getACListDTO);
   }
 
   async create(
@@ -58,9 +58,7 @@ export class ArticlesCategoriesService {
 
     const bridged: ArticlesCategoriesType[] = [];
 
-    for (const category of categories
-      .filter((cat) => cat.rate >= 0.65)
-      .sort((a, b) => b.rate - a.rate)) {
+    for (const category of categories.sort((a, b) => b.rate - a.rate)) {
       const ligitCategory = await this.categoriesService.get({
         by: "label",
         values: {

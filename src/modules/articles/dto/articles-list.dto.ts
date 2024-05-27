@@ -7,6 +7,7 @@ import { z } from "nestjs-zod/z";
 
 export const ArticlesListSchema = PaginationSchema.extend({
   status: SelectArticleSchema.shape.visibility.optional(),
+  category: z.string().optional(),
 });
 
 export class ArticlesListDTO extends createZodDto(ArticlesListSchema) {}
@@ -17,6 +18,7 @@ export const GetArticlesListParamsSchema = PaginationSchema.omit({
   limit: z.number(),
   offset: z.number(),
   status: SelectArticleSchema.shape.visibility.optional(),
+  categoryId: z.string().uuid().optional(),
 });
 
 export type GetArticlesListParamsType = z.infer<

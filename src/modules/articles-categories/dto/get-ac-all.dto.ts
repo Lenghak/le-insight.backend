@@ -2,4 +2,4 @@ import { SelectACSchema } from "@/database/schemas/articles-categories/articles-
 
 import { createZodDto } from "nestjs-zod";
 
-export class GetACListDTO extends createZodDto(SelectACSchema.partial()) {}
+export class GetACAllDTO extends createZodDto(SelectACSchema.partial()) {}

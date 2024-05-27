@@ -8,6 +8,7 @@ import {
 import paginationHelper from "@/common/helpers/pagination.helper";
 
 import type { ArticlesListDTO } from "@/modules/articles/dto/articles-list.dto";
+import { CategoriesService } from "@/modules/categories/categories.service";
 import { UsersService } from "@/modules/users/users.service";
 
 import { compareAsc } from "date-fns";
@@ -21,6 +22,7 @@ import type { UpdateArticlesDTO } from "./dto/update-articles.dto";
 export class ArticlesService {
   constructor(
     private readonly articleRepository: ArticlesRepository,
+    private readonly categoryService: CategoriesService,
     private readonly usersService: UsersService,
   ) {}
 
@@ -43,11 +45,21 @@ export class ArticlesService {
     const { hasNextPage, hasPreviousPage, offset, totalPages } =
       paginationHelper({ count, limit, page });
 
+    const category = params.category
+      ? await this.categoryService.get({
+          by: "label",
+          values: {
+            label: params.category,
+          },
+        })
+      : undefined;
+
     const articles = await this.articleRepository.list({
       limit,
       offset,
       status,
       ...params,
+      categoryId: category?.id,
     });
 
     return {

@@ -6,29 +6,29 @@ import type { DeleteArticlesDTO } from "@/modules/articles/dto/delete-articles.d
 import type { UpdateArticlesDTO } from "@/modules/articles/dto/update-articles.dto";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
-import * as articleSchema from "@/database/models/articles";
-import { RQPreviewArticlesColumns } from "@/database/schemas/articles/articles.schema";
+import * as schema from "@/database/models";
+import { RQPreviewArticlesSelectColumns } from "@/database/schemas/articles/articles.schema";
 import type { Articles } from "@/database/schemas/articles/articles.type";
-import { RQMinimalProfileColumn } from "@/database/schemas/profiles/profiles.schema";
-import { RQUsersColumns } from "@/database/schemas/users/users.schema";
+import { RQMinimalProfileSelectColumns } from "@/database/schemas/profiles/profiles.schema";
+import { RQUsersSelectColumns } from "@/database/schemas/users/users.schema";
 import type { DatabaseType } from "@/database/types/db.type";
 
-import { between, countDistinct, eq, ilike, or, sql } from "drizzle-orm";
+import { and, between, countDistinct, eq, ilike, or, sql } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 @Injectable()
 export class ArticlesRepository {
   constructor(
     @Inject(DRIZZLE_ASYNC_PROVIDER)
-    private readonly db: PostgresJsDatabase<typeof articleSchema>,
+    private readonly db: PostgresJsDatabase<typeof schema>,
   ) {}
 
   async create(
     createArticlesDTO: CreateArticlesDTO,
-    db: DatabaseType | DatabaseType<typeof articleSchema> = this.db,
+    db: DatabaseType | DatabaseType<typeof schema> = this.db,
   ) {
     return db
-      .insert(articleSchema.articles)
+      .insert(schema.articles)
       .values({
         ...createArticlesDTO,
       })
@@ -36,43 +36,114 @@ export class ArticlesRepository {
   }
 
   async list(
-    { limit, status, offset, q, from, to }: GetArticlesListParamsType,
-    db: DatabaseType<typeof articleSchema> = this.db,
+    params: GetArticlesListParamsType,
+    db: DatabaseType<typeof schema> = this.db,
   ) {
-    return await db.query.articles.findMany({
-      columns: RQPreviewArticlesColumns,
-      with: {
+    return db
+      .select({
+        ...RQPreviewArticlesSelectColumns,
         article_author: {
-          columns: RQUsersColumns,
-          with: {
-            profile: {
-              columns: RQMinimalProfileColumn,
-            },
-          },
+          ...RQUsersSelectColumns,
+          //@ts-expect-error another nested type is not assignable to PgColumn ...
+          profile: { ...RQMinimalProfileSelectColumns },
         },
-        article_categories: true,
-      },
-      where: (articles, { and }) =>
+        article_categories: sql<
+          Array<{ article_id: string; category_id: string }>
+        >`
+        (
+          SELECT json_agg(articles_categories) 
+          FROM articles_categories
+          WHERE articles_categories.article_id = articles.id
+        )
+        `.as("article_categories"),
+      })
+      .from(schema.articles)
+      .where(
         and(
-          q ? ilike(articles.content_plain_text, `%${q}%`) : undefined,
-          status ? eq(articles.visibility, status) : undefined,
-          from && to
+          params.categoryId
+            ? eq(schema.articlesCategories.category_id, params.categoryId)
+            : undefined,
+          params.q
+            ? ilike(schema.articles.content_plain_text, `%${params.q}%`)
+            : undefined,
+          params.status
+            ? eq(schema.articles.visibility, params.status)
+            : undefined,
+          params.from && params.to
             ? or(
-                between(articles.created_at, new Date(from), new Date(to)),
-                between(articles.updated_at, new Date(from), new Date(to)),
+                between(
+                  schema.articles.created_at,
+                  new Date(params.from),
+                  new Date(params.to),
+                ),
+                between(
+                  schema.articles.updated_at,
+                  new Date(params.from),
+                  new Date(params.to),
+                ),
               )
             : undefined,
         ),
-      limit,
-      offset,
-    });
+      )
+      .innerJoin(schema.users, eq(schema.articles.user_id, schema.users.id))
+      .innerJoin(
+        schema.profiles,
+        eq(schema.profiles.id, schema.users.profile_id),
+      )
+      .groupBy(schema.articles.id, schema.users.id, schema.profiles.id)
+      .$dynamic()
+      .limit(params.limit > 200 || params.limit <= 0 ? 50 : params.limit)
+      .offset(params.offset);
+
+    // return await db.query.articles.findMany({
+    //   columns: RQPreviewArticlesColumns,
+    //   with: {
+    //     article_author: {
+    //       columns: RQUsersColumns,
+    //       with: {
+    //         profile: {
+    //           columns: RQMinimalProfileColumn,
+    //         },
+    //       },
+    //     },
+    //     article_categories: {
+    //       where: (articlesCategories, { and, eq }) =>
+    //         and(
+    //           params?.categoryId
+    //             ? eq(articlesCategories.category_id, params.categoryId)
+    //             : undefined,
+    //         ),
+    //     },
+    //   },
+    //   where: and(
+    //     params.q
+    //       ? ilike(schema.articles.content_plain_text, `%${params.q}%`)
+    //       : undefined,
+    //     params.status
+    //       ? eq(schema.articles.visibility, params.status)
+    //       : undefined,
+    //     params.from && params.to
+    //       ? or(
+    //           between(
+    //             schema.articles.created_at,
+    //             new Date(params.from),
+    //             new Date(params.to),
+    //           ),
+    //           between(
+    //             schema.articles.updated_at,
+    //             new Date(params.from),
+    //             new Date(params.to),
+    //           ),
+    //         )
+    //       : undefined,
+    //   ),
+    //   limit: params.limit,
+    //   offset: params.offset,
+    // });
   }
 
-  async count(
-    query?: string,
-    db: DatabaseType<typeof articleSchema> = this.db,
-  ) {
-    const articles = articleSchema.articles;
+  async count(query?: string, db: DatabaseType<typeof schema> = this.db) {
+    const articles = schema.articles;
     return await db
       .select({ value: countDistinct(articles.id) })
       .from(articles)
@@ -84,7 +155,7 @@ export class ArticlesRepository {
     db = this.db,
   }: {
     by: keyof Articles;
-    db?: DatabaseType<typeof articleSchema>;
+    db?: DatabaseType<typeof schema>;
   }) {
     return db.query.articles
       .findFirst({
@@ -100,29 +171,29 @@ export class ArticlesRepository {
   async update(
     id: string,
     updateArticleDTO: UpdateArticlesDTO,
-    db: DatabaseType | DatabaseType<typeof articleSchema> = this.db,
+    db: DatabaseType | DatabaseType<typeof schema> = this.db,
   ) {
     return db
-      .update(articleSchema.articles)
+      .update(schema.articles)
       .set({
         ...updateArticleDTO,
         content_html: updateArticleDTO.content_html,
         content_plain_text: updateArticleDTO.content_plain_text,
       })
-      .where(eq(articleSchema.articles.id, id ?? ""))
+      .where(eq(schema.articles.id, id ?? ""))
       .returning();
   }
 
   async delete(
     deleteArticleDTO: DeleteArticlesDTO,
-    db: DatabaseType | DatabaseType<typeof articleSchema> = this.db,
+    db: DatabaseType | DatabaseType<typeof schema> = this.db,
   ) {
     return db
-      .update(articleSchema.articles)
+      .update(schema.articles)
       .set({
         visibility: "ARCHIVED",
       })
-      .where(eq(articleSchema.articles.id, deleteArticleDTO.id))
+      .where(eq(schema.articles.id, deleteArticleDTO.id))
       .returning();
   }
 }
