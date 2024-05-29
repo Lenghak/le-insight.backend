@@ -28,4 +28,6 @@ export type UsersListRepoParams = UsersListDTO & {
   db?: DatabaseType | DatabaseType<typeof userSchema>;
 };
 
+export type UsersCountParams = Omit<UsersListDTO, "limit" | "offset">;
+
 export class UsersListDTO extends createZodDto(UsersListSchema.partial()) {}

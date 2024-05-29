@@ -3,39 +3,40 @@ import { Inject, Injectable } from "@nestjs/common";
 import type { CreateACDTO } from "@/modules/articles-categories/dto/create-ac.dto";
 import type { DeleteACDTO } from "@/modules/articles-categories/dto/delete-ac.dto";
 import type { GetACAllDTO } from "@/modules/articles-categories/dto/get-ac-all.dto";
+import type { GetArticlesListParamsType } from "@/modules/articles/dto/articles-list.dto";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
-import * as acSchema from "@/database/models/articles-categories";
+import * as schema from "@/database/models";
+import { RQPreviewArticlesColumns } from "@/database/schemas/articles/articles.schema";
+import { RQMinimalProfileColumns } from "@/database/schemas/profiles/profiles.schema";
+import { RQUsersColumns } from "@/database/schemas/users/users.schema";
 import type { DatabaseType } from "@/database/types/db.type";
 
-import { and, countDistinct, eq, or } from "drizzle-orm";
+import { and, between, countDistinct, eq, ilike, or } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 @Injectable()
 export class ArticlesCategoriesRepository {
   constructor(
     @Inject(DRIZZLE_ASYNC_PROVIDER)
-    private readonly db: PostgresJsDatabase<typeof acSchema>,
+    private readonly db: PostgresJsDatabase<typeof schema>,
   ) {}
 
   async all(
     getACListDTO: GetACAllDTO,
-    db: DatabaseType | DatabaseType<typeof acSchema> = this.db,
+    db: DatabaseType | DatabaseType<typeof schema> = this.db,
   ) {
     return db
       .select()
-      .from(acSchema.articlesCategories)
+      .from(schema.articlesCategories)
       .where(
         or(
           getACListDTO.article_id
-            ? eq(
-                acSchema.articlesCategories.article_id,
-                getACListDTO.article_id,
-              )
+            ? eq(schema.articlesCategories.article_id, getACListDTO.article_id)
             : undefined,
           getACListDTO.category_id
             ? eq(
-                acSchema.articlesCategories.category_id,
+                schema.articlesCategories.category_id,
                 getACListDTO.category_id,
               )
             : undefined,
@@ -43,24 +44,97 @@ export class ArticlesCategoriesRepository {
       );
   }
 
-  async count(query?: string, db: DatabaseType<typeof acSchema> = this.db) {
-    const ac = acSchema.articlesCategories;
-    return await db
-      .select({ value: countDistinct(ac.article_id) })
-      .from(acSchema.articlesCategories)
-      .where(
-        query
-          ? or(eq(ac.article_id, query), eq(ac.category_id, query))
+  async list(
+    params: GetArticlesListParamsType,
+    db: DatabaseType<typeof schema> = this.db,
+  ) {
+    return db.query.articlesCategories.findMany({
+      with: {
+        article: {
+          columns: RQPreviewArticlesColumns,
+          with: {
+            article_author: {
+              columns: RQUsersColumns,
+              with: {
+                profile: { columns: RQMinimalProfileColumns },
+              },
+            },
+            article_categories: {
+              with: {
+                category: true,
+              },
+            },
+          },
+        },
+      },
+      where: and(
+        params.categoryId
+          ? eq(schema.articlesCategories.category_id, params.categoryId)
           : undefined,
+        params.q
+          ? ilike(schema.articles.preview_title, `%${params.q}%`)
+          : undefined,
+        params.status
+          ? eq(schema.articles.visibility, params.status)
+          : undefined,
+        params.from && params.to
+          ? or(
+              between(
+                schema.articles.created_at,
+                new Date(params.from),
+                new Date(params.to),
+              ),
+              between(
+                schema.articles.updated_at,
+                new Date(params.from),
+                new Date(params.to),
+              ),
+            )
+          : undefined,
+      ),
+    });
+  }
+
+  async count({ ...params }: GetArticlesListParamsType) {
+    const ac = schema.articlesCategories;
+    return await this.db
+      .select({ value: countDistinct(ac.article_id) })
+      .from(schema.articlesCategories)
+      .where(
+        and(
+          params.categoryId
+            ? eq(schema.articlesCategories.category_id, params.categoryId)
+            : undefined,
+          params.q
+            ? ilike(schema.articles.preview_title, `%${params.q}%`)
+            : undefined,
+          params.status
+            ? eq(schema.articles.visibility, params.status)
+            : undefined,
+          params.from && params.to
+            ? or(
+                between(
+                  schema.articles.created_at,
+                  new Date(params.from),
+                  new Date(params.to),
+                ),
+                between(
+                  schema.articles.updated_at,
+                  new Date(params.from),
+                  new Date(params.to),
+                ),
+              )
+            : undefined,
+        ),
       );
   }
 
   async create(
     createACDTO: CreateACDTO,
-    db: DatabaseType | DatabaseType<typeof acSchema> = this.db,
+    db: DatabaseType | DatabaseType<typeof schema> = this.db,
   ) {
     return db
-      .insert(acSchema.articlesCategories)
+      .insert(schema.articlesCategories)
       .values({
         article_id: createACDTO.article_id,
         category_id: createACDTO.category_id,
@@ -70,18 +144,15 @@ export class ArticlesCategoriesRepository {
 
   async delete(
     deleteACDTO: DeleteACDTO,
-    db: DatabaseType | DatabaseType<typeof acSchema> = this.db,
+    db: DatabaseType | DatabaseType<typeof schema> = this.db,
   ) {
     return db
-      .delete(acSchema.articlesCategories)
+      .delete(schema.articlesCategories)
       .where(
         and(
-          eq(acSchema.articlesCategories.article_id, deleteACDTO.article_id),
+          eq(schema.articlesCategories.article_id, deleteACDTO.article_id),
           deleteACDTO.category_id
-            ? eq(
-                acSchema.articlesCategories.category_id,
-                deleteACDTO.category_id,
-              )
+            ? eq(schema.articlesCategories.category_id, deleteACDTO.category_id)
             : undefined,
         ),
       )

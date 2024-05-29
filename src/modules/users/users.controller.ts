@@ -57,8 +57,10 @@ export class UsersController {
 
   @Public()
   @Get("/total")
-  async total() {
-    return this.usersSerializer.serialize(await this.usersService.count());
+  async total(@Query() params: UsersListDTO) {
+    return this.usersSerializer.serialize(
+      await this.usersService.count(params),
+    );
   }
 
   @Patch("/:id")

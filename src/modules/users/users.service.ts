@@ -7,7 +7,7 @@ import { type DatabaseType } from "@/database/types/db.type";
 
 import { type CreateUserDTO } from "./dto/create-user.dto";
 import { type UpdateUserDTO } from "./dto/update-user.dto";
-import { type UsersListDTO } from "./dto/users-list.dto";
+import { type UsersCountParams, type UsersListDTO } from "./dto/users-list.dto";
 import { UsersRepository } from "./users.repository";
 
 @Injectable()
@@ -16,10 +16,6 @@ export class UsersService {
 
   async create(createUserDTO: CreateUserDTO, db: DatabaseType) {
     return await this.usersRepository.create(createUserDTO, db);
-  }
-
-  async count(q?: string) {
-    return await this.usersRepository.count(q);
   }
 
   /**
@@ -31,7 +27,13 @@ export class UsersService {
     { limit = 50, page = 1, q, "sex[]": sex, ...params }: UsersListDTO,
     db?: DatabaseType,
   ) {
-    const count = (await this.count(q))[0].value;
+    const count = (
+      await this.usersRepository.count({
+        q,
+        "sex[]": sex,
+        ...params,
+      })
+    )[0].value;
     const { hasNextPage, hasPreviousPage, offset, totalPages } =
       paginationHelper({ count, page, limit });
 
@@ -75,5 +77,9 @@ export class UsersService {
 
   async update(updateUserDTO: UpdateUserDTO, db?: DatabaseType) {
     return await this.usersRepository.update(updateUserDTO, db);
+  }
+
+  async count(params: UsersCountParams) {
+    return await this.usersRepository.count(params);
   }
 }

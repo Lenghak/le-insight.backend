@@ -1,6 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import type { UsersListRepoParams } from "@/modules/users/dto/users-list.dto";
+import type {
+  UsersCountParams,
+  UsersListRepoParams,
+} from "@/modules/users/dto/users-list.dto";
 
 import {
   DRIZZLE_ASYNC_PROVIDER,
@@ -48,11 +51,40 @@ export class UsersRepository {
       .returning();
   }
 
-  async count(query?: string, db: DatabaseType<typeof userSchema> = this.db) {
+  async count(
+    { "sex[]": sex, from, to, q: query, role }: UsersCountParams,
+    db: DatabaseType<typeof userSchema> = this.db,
+  ) {
     return await db
       .select({ value: countDistinct(userSchema.users.id) })
       .from(userSchema.users)
-      .where(query ? ilike(userSchema.users.email, `%${query}%`) : undefined);
+      .where(
+        and(
+          query ? ilike(userSchema.users.email, `%${query}%`) : undefined,
+          sex
+            ? or(
+                ...(typeof sex === "string" ? [sex] : sex).map((value) =>
+                  eq(profileSchema.profiles.sex, value),
+                ),
+              )
+            : undefined,
+          from && to
+            ? or(
+                between(
+                  userSchema.users.created_at,
+                  new Date(from),
+                  new Date(to),
+                ),
+                between(
+                  userSchema.users.updated_at,
+                  new Date(from),
+                  new Date(to),
+                ),
+              )
+            : undefined,
+          role ? eq(userSchema.users.role, role) : undefined,
+        ),
+      );
   }
 
   /**
@@ -110,18 +142,15 @@ export class UsersRepository {
                   ),
                 )
               : undefined,
+            query ? ilike(userSchema.users.email, `%${query}%`) : undefined,
+            role ? eq(userSchema.users.role, role) : undefined,
           ),
         )
         .$dynamic(),
       limit: limit,
       offset: offset,
       columns: [userSchema.users.id, profileSchema.profiles.id],
-    }).where(
-      and(
-        query ? ilike(userSchema.users.email, `%${query}%`) : undefined,
-        role ? eq(userSchema.users.role, role) : undefined,
-      ),
-    );
+    });
   }
 
   /**
