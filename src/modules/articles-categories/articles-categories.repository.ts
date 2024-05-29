@@ -48,7 +48,7 @@ export class ArticlesCategoriesRepository {
     params: GetArticlesListParamsType,
     db: DatabaseType<typeof schema> = this.db,
   ) {
-    return db.query.articlesCategories.findMany({
+    const results = await db.query.articlesCategories.findMany({
       with: {
         article: {
           columns: RQPreviewArticlesColumns,
@@ -71,12 +71,6 @@ export class ArticlesCategoriesRepository {
         params.categoryId
           ? eq(schema.articlesCategories.category_id, params.categoryId)
           : undefined,
-        params.q
-          ? ilike(schema.articles.preview_title, `%${params.q}%`)
-          : undefined,
-        params.status
-          ? eq(schema.articles.visibility, params.status)
-          : undefined,
         params.from && params.to
           ? or(
               between(
@@ -93,6 +87,8 @@ export class ArticlesCategoriesRepository {
           : undefined,
       ),
     });
+
+    return results;
   }
 
   async count({ ...params }: GetArticlesListParamsType) {

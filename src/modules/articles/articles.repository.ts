@@ -7,10 +7,10 @@ import type { UpdateArticlesDTO } from "@/modules/articles/dto/update-articles.d
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as schema from "@/database/models";
-import { RQPreviewArticlesSelectColumns } from "@/database/schemas/articles/articles.schema";
+import { RQPreviewArticlesColumns } from "@/database/schemas/articles/articles.schema";
 import type { Articles } from "@/database/schemas/articles/articles.type";
-import { RQMinimalProfileSelectColumns } from "@/database/schemas/profiles/profiles.schema";
-import { RQUsersSelectColumns } from "@/database/schemas/users/users.schema";
+import { RQMinimalProfileColumns } from "@/database/schemas/profiles/profiles.schema";
+import { RQUsersColumns } from "@/database/schemas/users/users.schema";
 import type { DatabaseType } from "@/database/types/db.type";
 
 import { and, between, countDistinct, eq, ilike, or, sql } from "drizzle-orm";
@@ -39,107 +39,116 @@ export class ArticlesRepository {
     params: GetArticlesListParamsType,
     db: DatabaseType<typeof schema> = this.db,
   ) {
-    return db
-      .select({
-        ...RQPreviewArticlesSelectColumns,
-        article_author: {
-          ...RQUsersSelectColumns,
-          //@ts-expect-error another nested type is not assignable to PgColumn ...
-          profile: { ...RQMinimalProfileSelectColumns },
-        },
-        article_categories: sql<
-          Array<{ article_id: string; category_id: string }>
-        >`
-        (
-          SELECT json_agg(articles_categories) 
-          FROM articles_categories
-          WHERE articles_categories.article_id = articles.id
-        )
-        `.as("article_categories"),
-      })
-      .from(schema.articles)
-      .where(
-        and(
-          params.categoryId
-            ? eq(schema.articlesCategories.category_id, params.categoryId)
-            : undefined,
-          params.q
-            ? ilike(schema.articles.content_plain_text, `%${params.q}%`)
-            : undefined,
-          params.status
-            ? eq(schema.articles.visibility, params.status)
-            : undefined,
-          params.from && params.to
-            ? or(
-                between(
-                  schema.articles.created_at,
-                  new Date(params.from),
-                  new Date(params.to),
-                ),
-                between(
-                  schema.articles.updated_at,
-                  new Date(params.from),
-                  new Date(params.to),
-                ),
-              )
-            : undefined,
-        ),
-      )
-      .innerJoin(schema.users, eq(schema.articles.user_id, schema.users.id))
-      .innerJoin(
-        schema.profiles,
-        eq(schema.profiles.id, schema.users.profile_id),
-      )
-      .groupBy(schema.articles.id, schema.users.id, schema.profiles.id)
-      .$dynamic()
-      .limit(params.limit > 200 || params.limit <= 0 ? 50 : params.limit)
-      .offset(params.offset);
-
-    // return await db.query.articles.findMany({
-    //   columns: RQPreviewArticlesColumns,
-    //   with: {
+    // return db
+    //   .select({
+    //     ...RQPreviewArticlesSelectColumns,
     //     article_author: {
-    //       columns: RQUsersColumns,
-    //       with: {
-    //         profile: {
-    //           columns: RQMinimalProfileColumn,
-    //         },
-    //       },
+    //       ...RQUsersSelectColumns,
+    //       //@ts-expect-error another nested type is not assignable to PgColumn ...
+    //       profile: { ...RQMinimalProfileSelectColumns },
     //     },
-    //     article_categories: {
-    //       where: (articlesCategories, { and, eq }) =>
-    //         and(
-    //           params?.categoryId
-    //             ? eq(articlesCategories.category_id, params.categoryId)
-    //             : undefined,
-    //         ),
-    //     },
-    //   },
-    //   where: and(
-    //     params.q
-    //       ? ilike(schema.articles.content_plain_text, `%${params.q}%`)
-    //       : undefined,
-    //     params.status
-    //       ? eq(schema.articles.visibility, params.status)
-    //       : undefined,
-    //     params.from && params.to
-    //       ? or(
-    //           between(
-    //             schema.articles.created_at,
-    //             new Date(params.from),
-    //             new Date(params.to),
-    //           ),
-    //           between(
-    //             schema.articles.updated_at,
-    //             new Date(params.from),
-    //             new Date(params.to),
-    //           ),
-    //         )
-    //       : undefined,
-    //   ),
-    //   limit: params.limit,
-    //   offset: params.offset,
-    // });
+    //     article_categories: sql<
+    //       Array<{ article_id: string; category_id: string }>
+    //     >`
+    //     (
+    //       SELECT json_agg(articles_categories)
+    //       FROM articles_categories
+    //       WHERE articles_categories.article_id = articles.id
+    //     )
+    //     `.as("article_categories"),
+    //   })
+    //   .from(schema.articles)
+    //   .where(
+    //     and(
+    //       params.categoryId
+    //         ? eq(schema.articlesCategories.category_id, params.categoryId)
+    //         : undefined,
+    //       params.q
+    //         ? ilike(schema.articles.content_plain_text, `%${params.q}%`)
+    //         : undefined,
+    //       params.status
+    //         ? eq(schema.articles.visibility, params.status)
+    //         : undefined,
+    //       params.from && params.to
+    //         ? or(
+    //             between(
+    //               schema.articles.created_at,
+    //               new Date(params.from),
+    //               new Date(params.to),
+    //             ),
+    //             between(
+    //               schema.articles.updated_at,
+    //               new Date(params.from),
+    //               new Date(params.to),
+    //             ),
+    //           )
+    //         : undefined,
+    //     ),
+    //   )
+    //   .innerJoin(schema.users, eq(schema.articles.user_id, schema.users.id))
+    //   .innerJoin(
+    //     schema.profiles,
+    //     eq(schema.profiles.id, schema.users.profile_id),
+    //   )
+    //   .groupBy(schema.articles.id, schema.users.id, schema.profiles.id)
+    //   .$dynamic()
+    //   .limit(params.limit > 200 || params.limit <= 0 ? 50 : params.limit)
+    //   .offset(params.offset);
+
+    const result = await db.query.articles.findMany({
+      columns: RQPreviewArticlesColumns,
+      with: {
+        article_author: {
+          columns: RQUsersColumns,
+          with: {
+            profile: {
+              columns: RQMinimalProfileColumns,
+            },
+          },
+        },
+        article_categories: {
+          where: (articlesCategories, { and, eq }) =>
+            and(
+              params?.categoryId
+                ? eq(articlesCategories.category_id, params.categoryId)
+                : undefined,
+            ),
+          with: { category: true },
+        },
+      },
+      where: and(
+        params.q
+          ? ilike(schema.articles.content_plain_text, `%${params.q}%`)
+          : undefined,
+        params.status
+          ? eq(schema.articles.visibility, params.status)
+          : undefined,
+        params.from && params.to
+          ? or(
+              between(
+                schema.articles.created_at,
+                new Date(params.from),
+                new Date(params.to),
+              ),
+              between(
+                schema.articles.updated_at,
+                new Date(params.from),
+                new Date(params.to),
+              ),
+            )
+          : undefined,
+      ),
+      limit: params.limit,
+      offset: params.offset,
+    });
+
+    return result.filter((article) =>
+      params.categoryId
+        ? article.article_categories.some(
+            (ac) => ac.category_id === params.categoryId,
+          )
+        : true,
+    );
   }
 
   async count(query?: string, db: DatabaseType<typeof schema> = this.db) {
