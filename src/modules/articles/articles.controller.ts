@@ -8,23 +8,19 @@ import {
   InternalServerErrorException,
   Param,
   Patch,
-  Post,
   Query,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 import { Public } from "@/common/decorators/public.decorator";
-import { User } from "@/common/decorators/user.decorator";
 
 import { ArticlesService } from "@/modules/articles/articles.service";
 import type { ArticlesListDTO } from "@/modules/articles/dto/articles-list.dto";
 import { AuthSerializer } from "@/modules/auth/auth.serializer";
-import { PayloadType } from "@/modules/auth/types/payload.type";
 
 import { createAuthToken } from "@portive/auth";
 
 import { ArticlesSerializer } from "./articles.serializer";
-import { CreateArticlesDTO } from "./dto/create-articles.dto";
 import { DeleteArticlesDTO } from "./dto/delete-articles.dto";
 import { UpdateArticlesDTO } from "./dto/update-articles.dto";
 
@@ -67,18 +63,6 @@ export class ArticlesController {
   async get(@Param("id") id: string) {
     const articles = await this.articleService.get(id);
     return this.articleSerializer.serialize(articles);
-  }
-
-  @HttpCode(HttpStatus.CREATED)
-  @Post("/")
-  async create(
-    @User() payload: PayloadType,
-    @Body() { ...createArticleDTO }: CreateArticlesDTO,
-  ) {
-    const userID = payload.sub;
-    const article = await this.articleService.create(userID, createArticleDTO);
-
-    return this.articleSerializer.serialize(article);
   }
 
   @HttpCode(HttpStatus.OK)

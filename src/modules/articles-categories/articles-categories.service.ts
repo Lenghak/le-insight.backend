@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnprocessableEntityException } from "@nestjs/common";
 
 import paginationHelper from "@/common/helpers/pagination.helper";
 
@@ -133,7 +133,14 @@ export class ArticlesCategoriesService {
   }
 
   async regenerate(generateACDto: GenerateACDTO) {
-    const article = await this.articleService.get(generateACDto.article_id);
+    const article = await this.articleService.get(
+      generateACDto.article_id ?? "",
+    );
+
+    if (!article)
+      throw new UnprocessableEntityException(
+        "Cannot find article with the current ID",
+      );
 
     const categories = article.content_plain_text
       ? (

@@ -24,6 +24,6 @@ import { ArticlesService } from "./articles.service";
     ArticlesSerializer,
     AuthSerializer,
   ],
-  exports: [ArticlesService],
+  exports: [ArticlesService, ArticlesRepository, ArticlesSerializer],
 })
 export class ArticlesModules {}

@@ -17,6 +17,8 @@ import { ArticlesCategoriesModule } from "@/modules/articles-categories/articles
 import { ArticlesModules } from "@/modules/articles/articles.module";
 import { AuthModule } from "@/modules/auth/auth.module";
 import { CategoriesModule } from "@/modules/categories/categories.module";
+import { ClassificationsModule } from "@/modules/classifications/classifications.module";
+import { LlmModule } from "@/modules/llm/llm.module";
 import { MailModule } from "@/modules/mail/mail.module";
 import { ProfilesModule } from "@/modules/profiles/profiles.module";
 import { UsersModule } from "@/modules/users/users.module";
@@ -104,6 +106,8 @@ import { LoggerMiddleware } from "./app.middleware";
     ArticlesCategoriesModule,
     AuthModule,
     CategoriesModule,
+    ClassificationsModule,
+    LlmModule,
     MailModule,
     ProfilesModule,
     UsersModule,

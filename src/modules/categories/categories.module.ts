@@ -5,6 +5,7 @@ import { jsonAPISerializerProvider } from "@/common/serializers/json-api-seriali
 
 import { CategoriesRepository } from "@/modules/categories/categories.repository";
 import { CategoriesSerializer } from "@/modules/categories/categories.serializer";
+import { ClassificationsModule } from "@/modules/classifications/classifications.module";
 
 import { DrizzleModule } from "@/database/drizzle.module";
 
@@ -12,7 +13,7 @@ import { CategoriesController } from "./categories.controller";
 import { CategoriesService } from "./categories.service";
 
 @Module({
-  imports: [DrizzleModule, HttpModule],
+  imports: [DrizzleModule, HttpModule, ClassificationsModule],
   controllers: [CategoriesController],
   providers: [
     CategoriesService,
