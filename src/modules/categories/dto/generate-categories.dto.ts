@@ -12,6 +12,10 @@ export const GenerateCategoriesResponseSchema = z.object({
       rate: z.number(),
     }),
   ),
+  sensitivity: z.object({
+    label: z.string(),
+    rate: z.number(),
+  }),
 });
 
 export type GenerateCategoriesResponseType = z.infer<

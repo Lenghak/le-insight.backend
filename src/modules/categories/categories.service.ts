@@ -106,7 +106,7 @@ export class CategoriesService {
       AxiosResponse<GenerateCategoriesResponseType, unknown>
     >(
       this.httpService.post(
-        "/categories/generate",
+        "/classifications/generate?model=phi3:medium",
         {
           article: generateCategoriesDTO.article,
           categories: categories.map((category) => category.label),
