@@ -147,7 +147,7 @@ export class ArticlesCategoriesService {
           await this.categoryService.generate({
             article: article.content_plain_text,
           })
-        ).data.categories
+        ).categories
       : [
           {
             label: "Other",

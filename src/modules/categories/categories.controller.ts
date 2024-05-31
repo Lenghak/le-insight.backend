@@ -82,6 +82,6 @@ export class CategoriesController {
       generateCategoriesDTO,
     );
 
-    return this.categoriesSerializer.serialize(response.data);
+    return this.categoriesSerializer.serialize(response);
   }
 }

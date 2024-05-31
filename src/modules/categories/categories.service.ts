@@ -5,24 +5,19 @@ import paginationHelper from "@/common/helpers/pagination.helper";
 
 import { CategoriesRepository } from "@/modules/categories/categories.repository";
 import type { CreateCategoryDto } from "@/modules/categories/dto/create-category.dto";
-import type {
-  GenerateCategoriesDTO,
-  GenerateCategoriesResponseType,
-} from "@/modules/categories/dto/generate-categories.dto";
+import type { GenerateCategoriesDTO } from "@/modules/categories/dto/generate-categories.dto";
 import type { GetCategoriesListDTO } from "@/modules/categories/dto/get-categories-list.dto";
 import type { UpdateCategoryDto } from "@/modules/categories/dto/update-category.dto";
+import { ClassificationsService } from "@/modules/classifications/classifications.service";
 
 import type { CategoriesType } from "@/database/schemas/categories/categories.type";
-
-import env from "@/core/env";
-import type { AxiosResponse } from "axios";
-import { firstValueFrom } from "rxjs";
 
 @Injectable()
 export class CategoriesService {
   constructor(
     private readonly categoriesRepository: CategoriesRepository,
     private readonly httpService: HttpService,
+    private readonly classificationService: ClassificationsService,
   ) {}
 
   async list({
@@ -102,22 +97,29 @@ export class CategoriesService {
   async generate(generateCategoriesDTO: GenerateCategoriesDTO) {
     const categories = await this.all();
 
-    const response = await firstValueFrom<
-      AxiosResponse<GenerateCategoriesResponseType, unknown>
-    >(
-      this.httpService.post(
-        "/classifications/generate?model=phi3:medium",
-        {
-          article: generateCategoriesDTO.article,
-          categories: categories.map((category) => category.label),
-        },
-        {
-          baseURL: env().AI_HOSTNAME,
-        },
-      ),
-    );
+    // const response = await firstValueFrom<
+    //   AxiosResponse<GenerateCategoriesResponseType, unknown>
+    // >(
+    //   this.httpService.post(
+    //     "/classifications/generate?model=phi3",
+    //     {
+    //       article: generateCategoriesDTO.article,
+    //       categories: categories.map((category) => category.label),
+    //     },
+    //     {
+    //       baseURL: env().AI_HOSTNAME,
+    //     },
+    //   ),
+    // );
 
-    response.data.categories.map(async (cate) => {
+    const response = await this.classificationService.generate({
+      article: generateCategoriesDTO.article,
+      categories: categories.map((cat) => cat.label),
+    });
+
+    console.log(response, typeof response);
+
+    response.categories.map(async (cate) => {
       const currCate = await this.get({
         by: "label",
         values: { label: cate.label },
