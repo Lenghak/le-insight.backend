@@ -24,4 +24,19 @@ export class ClassificationsController {
       model,
     );
   }
+
+  @Public()
+  @Post("/sensitize")
+  async sensitize(
+    @Body() generateCategoriesDTO: GenerateCategoriesDTO,
+    @Query() model: GetModelDto,
+  ) {
+    return await this.classificationService.generate(
+      {
+        article: generateCategoriesDTO.article,
+        categories: [],
+      },
+      model,
+    );
+  }
 }
