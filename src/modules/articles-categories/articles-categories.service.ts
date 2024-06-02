@@ -104,7 +104,9 @@ export class ArticlesCategoriesService {
 
     const bridged: ArticlesCategoriesType[] = [];
 
-    for (const category of categories.sort((a, b) => b.rate - a.rate)) {
+    for (const category of categories
+      .sort((a, b) => b.rate - a.rate)
+      .filter((category) => category.rate > 0.6)) {
       const ligitCategory = await this.categoryService.get({
         by: "label",
         values: {
@@ -112,7 +114,7 @@ export class ArticlesCategoriesService {
         },
       });
 
-      if (ligitCategory)
+      if (ligitCategory?.id)
         bridged.push(
           ...(await this.create({
             article_id: article.id,
@@ -121,13 +123,14 @@ export class ArticlesCategoriesService {
         );
     }
 
-    if (bridged.length <= 0 && categoryOther)
+    if (bridged.length <= 0 && categoryOther) {
       bridged.push(
         ...(await this.create({
           article_id: article.id,
           category_id: categoryOther.id,
         })),
       );
+    }
 
     return bridged;
   }

@@ -23,9 +23,11 @@ export class LlmService {
             model: getModelDto.model,
             format: "json",
             temperature: 0,
+            cache: false,
           }),
       );
     }
+
     return (
       this._llmInstances.get(getModelDto.model) ??
       ollama ??
@@ -33,6 +35,7 @@ export class LlmService {
         model: getModelDto.model,
         format: "json",
         temperature: 0,
+        cache: false,
       })
     );
   }

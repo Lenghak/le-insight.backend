@@ -107,12 +107,6 @@ export class ArticlesRepository {
           },
         },
         article_categories: {
-          where: (articlesCategories, { and, eq }) =>
-            and(
-              params?.categoryId
-                ? eq(articlesCategories.category_id, params.categoryId)
-                : undefined,
-            ),
           with: { category: true },
         },
       },

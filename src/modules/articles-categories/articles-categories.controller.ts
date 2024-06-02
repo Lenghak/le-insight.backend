@@ -51,7 +51,7 @@ export class ArticlesCategoriesController {
     @Body() generateACDto: GenerateACDTO,
     @Query() _model: GetModelDto,
   ) {
-    return this.acService.regenerate(generateACDto);
+    return await this.acService.regenerate(generateACDto);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -67,17 +67,10 @@ export class ArticlesCategoriesController {
     if (!article)
       throw new UnprocessableEntityException("Article cannot be created");
 
-    const categories =
-      createArticleDTO.categories ??
-      (await this.acService.regenerate({
+    createArticleDTO.categories ??
+      this.acService.regenerate({
         article_id: article.at(0)?.id ?? "",
-        category_id: "",
-      }));
-
-    this.apply({
-      article: article[0],
-      categories,
-    });
+      });
 
     return this.articleSerializer.serialize(article);
   }

@@ -1,3 +1,5 @@
-import { CreateACDTO } from "@/modules/articles-categories/dto/create-ac.dto";
+import { InsertACSchema } from "@/database/schemas/articles-categories/articles-categories.schema";
 
-export class GenerateACDTO extends CreateACDTO {}
+import { createZodDto } from "nestjs-zod";
+
+export class GenerateACDTO extends createZodDto(InsertACSchema.partial()) {}

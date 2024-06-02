@@ -117,8 +117,6 @@ export class CategoriesService {
       categories: categories.map((cat) => cat.label),
     });
 
-    console.log(response, typeof response);
-
     response.categories.map(async (cate) => {
       const currCate = await this.get({
         by: "label",

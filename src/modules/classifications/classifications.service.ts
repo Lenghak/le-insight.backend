@@ -29,9 +29,9 @@ export class ClassificationsService {
   ): Promise<GenerateCategoriesResponseType> {
     const promptTemplate = PromptTemplate.fromTemplate(
       [
+        "###Categories### \n{categories}",
+        "###Article### \n{article}",
         ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
-        "###Categories### {categories}",
-        "###Article### {article}",
       ].join("\n"),
     );
 
@@ -39,9 +39,12 @@ export class ClassificationsService {
 
     // Logger.debug(classifyCategoriesDto);
     const input = await promptTemplate.formatPromptValue({
-      rules: CATEGORIES_RULE,
+      rules: [
+        ...CATEGORIES_RULE,
+        "- YOU MUST OUTPUT ONLY THE CATEGORIES FROM THE PROVIDED CATEGORIES",
+      ],
       article: JSON.stringify(classifyCategoriesDto.article),
-      categories: JSON.stringify(classifyCategoriesDto.categories),
+      categories: classifyCategoriesDto.categories.join("\n"),
       response_format: JSON.stringify(CATEGORIES_RESPONSE_FORMAT),
     });
 
