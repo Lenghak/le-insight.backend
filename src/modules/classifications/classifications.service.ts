@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 
-import { COMMON_PROMPT_TEMPLATE } from "@/common/constants/common-rule-prompt";
+import { COMMON_PROMPT_TEMPLATE_WITH_RESPONSE } from "@/common/constants/common-rule-prompt";
 
 import type { GenerateCategoriesResponseType } from "@/modules/categories/dto/generate-categories.dto";
 import {
@@ -29,7 +29,7 @@ export class ClassificationsService {
   ): Promise<GenerateCategoriesResponseType> {
     const promptTemplate = PromptTemplate.fromTemplate(
       [
-        ...COMMON_PROMPT_TEMPLATE,
+        ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
         "###Categories### {categories}",
         "###Article### {article}",
       ].join("\n"),
@@ -62,7 +62,7 @@ export class ClassificationsService {
 
     const chains = PromptTemplate.fromTemplate(
       [
-        ...COMMON_PROMPT_TEMPLATE,
+        ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
         "###Sensitivities### \n{sensitivities}",
         "###Article### \n{article}",
       ].join("\n"),

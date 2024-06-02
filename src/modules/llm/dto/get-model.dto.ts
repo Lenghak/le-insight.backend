@@ -16,7 +16,8 @@ export const ModelEnumSchema = z.enum([
 export type ModelEnumType = z.infer<typeof ModelEnumSchema>;
 
 export const GetModelSchema = z.object({
-  model: ModelEnumSchema.optional(),
+  model: ModelEnumSchema,
+  name: z.string().optional(),
 });
 
 export class GetModelDto extends createZodDto(GetModelSchema) {}

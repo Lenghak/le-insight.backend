@@ -1,3 +1,3 @@
 export const CONTENT_GENERATION_REPONSE_FORMAT = {
-  output: "output content goes here...",
+  output: "GENERATED OR MODIFIED CONTENT GOES HERE!!!",
 };
