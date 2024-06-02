@@ -1,14 +1,16 @@
 import { Injectable, Logger } from "@nestjs/common";
 
+import { COMMON_PROMPT_TEMPLATE } from "@/common/constants/common-rule-prompt";
+
 import type { GenerateCategoriesResponseType } from "@/modules/categories/dto/generate-categories.dto";
 import {
   CATEGORIES_RESPONSE_FORMAT,
   CATEGORIES_RULE,
-} from "@/modules/classifications/constants/categories-classifications-template";
+} from "@/modules/classifications/constants/categories-classifications-prompt";
 import {
   SENSITIVITIES_RESPONSE_FORMAT,
   SENSITIVITIES_RULE,
-} from "@/modules/classifications/constants/sensitivities-classifications-template";
+} from "@/modules/classifications/constants/sensitivities-classifications-prompt";
 import type { GetModelDto } from "@/modules/llm/dto/get-model.dto";
 import { LlmService } from "@/modules/llm/llm.service";
 
@@ -26,7 +28,11 @@ export class ClassificationsService {
     model?: GetModelDto,
   ): Promise<GenerateCategoriesResponseType> {
     const promptTemplate = PromptTemplate.fromTemplate(
-      "###RULES### {rules} \n###Response Format### \n{response_format} \n###Categories### \n{categories} \n###Article### \n{article}",
+      [
+        ...COMMON_PROMPT_TEMPLATE,
+        "###Categories### {categories}",
+        "###Article### {article}",
+      ].join("\n"),
     );
 
     const llm = this.llmService.getOllamaInstance(model);
@@ -55,7 +61,11 @@ export class ClassificationsService {
     const llm = this.llmService.getOllamaInstance(model);
 
     const chains = PromptTemplate.fromTemplate(
-      "###RULES### {rules} \n###Response Format### \n{response_format} \n###Sensitivities### \n{sensitivities} \n###Article### \n{article}",
+      [
+        ...COMMON_PROMPT_TEMPLATE,
+        "###Sensitivities### \n{sensitivities}",
+        "###Article### \n{article}",
+      ].join("\n"),
     ).pipe(llm);
 
     const response = await chains.invoke({

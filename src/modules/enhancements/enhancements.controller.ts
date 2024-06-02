@@ -1,12 +1,15 @@
 import { Body, Controller, Post } from "@nestjs/common";
 
+import { Public } from "@/common/decorators/public.decorator";
+
 import type { EnhancementsDto } from "@/modules/enhancements/dto/enhancements.dto";
-import type { EnhancementsService } from "@/modules/enhancements/enhancement.service";
+import { EnhancementsService } from "@/modules/enhancements/enhancement.service";
 
 @Controller("/enhancements")
 export class EnhancementsController {
   constructor(private readonly enhancementsService: EnhancementsService) {}
 
+  @Public()
   @Post("/title")
   async title(@Body() enhancementsDTO: EnhancementsDto) {
     return await this.enhancementsService.title(enhancementsDTO);

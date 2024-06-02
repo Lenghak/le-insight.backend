@@ -1,7 +1,11 @@
 import { Injectable } from "@nestjs/common";
 
+import { COMMON_PROMPT_TEMPLATE } from "@/common/constants/common-rule-prompt";
+
+import { CONTENT_GENERATION_REPONSE_FORMAT } from "@/modules/enhancements/contants/content-generation-prompt";
+import { TITLE_GENERATION_PROMPT } from "@/modules/enhancements/contants/title-generation-prompt";
 import type { EnhancementsDto } from "@/modules/enhancements/dto/enhancements.dto";
-import type { LlmService } from "@/modules/llm/llm.service";
+import { LlmService } from "@/modules/llm/llm.service";
 
 import { PromptTemplate } from "@langchain/core/prompts";
 
@@ -9,10 +13,22 @@ import { PromptTemplate } from "@langchain/core/prompts";
 export class EnhancementsService {
   constructor(private readonly llmService: LlmService) {}
 
-  async title(_enhancementsDTO: EnhancementsDto) {
+  async title(enhancementsDTO: EnhancementsDto) {
     const llm = this.llmService.getOllamaInstance();
-    const chains = PromptTemplate.fromTemplate("").pipe(llm);
-    const response = await chains.invoke({});
+
+    const template = [
+      ...COMMON_PROMPT_TEMPLATE,
+      "###Content### \n{content}",
+    ].join("\n");
+
+    const chains = PromptTemplate.fromTemplate(template).pipe(llm);
+
+    const response = await chains.invoke({
+      rules: JSON.stringify(TITLE_GENERATION_PROMPT),
+      response_format: JSON.stringify(CONTENT_GENERATION_REPONSE_FORMAT),
+      content: enhancementsDTO.content,
+    });
+
     return JSON.parse(response);
   }
 
