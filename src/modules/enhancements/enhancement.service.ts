@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 
 import { COMMON_PROMPT_TEMPLATE_WITH_RESPONSE } from "@/common/constants/common-rule-prompt";
 
@@ -13,21 +13,33 @@ import type { ContentOptionDto } from "@/modules/enhancements/dto/content-option
 import type { EnhancementsDto } from "@/modules/enhancements/dto/enhancements.dto";
 import { LlmService } from "@/modules/llm/llm.service";
 
+import { Ollama } from "@langchain/community/llms/ollama";
+import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { PromptTemplate } from "@langchain/core/prompts";
 
 @Injectable()
 export class EnhancementsService {
+  _llm: Ollama = new Ollama({
+    cache: false,
+    penalizeNewline: true,
+    model: "phi3",
+    temperature: 0,
+    verbose: true,
+  });
+
   constructor(private readonly llmService: LlmService) {}
 
-  _llm = this.llmService.getOllamaInstance();
-
   async title(enhancementsDTO: EnhancementsDto) {
+    const llm = this.llmService.getOllamaInstance();
+
     const template = [
       ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
       "###Content### \n{content}",
     ].join("\n");
 
-    const chains = PromptTemplate.fromTemplate(template).pipe(this._llm);
+    const chains = PromptTemplate.fromTemplate(template)
+      .pipe(llm)
+      .pipe(new JsonOutputParser());
 
     const response = await chains.invoke({
       rules: JSON.stringify(TITLE_GENERATION_PROMPT),
@@ -35,33 +47,44 @@ export class EnhancementsService {
       content: enhancementsDTO.content,
     });
 
-    return JSON.parse(response);
+    return response;
   }
 
   async content(
     enhancementsDTO: EnhancementsDto,
     extensions?: ContentExtentionsDto,
-  ) {
+  ): Promise<ReadableStream<unknown> & AsyncIterable<unknown>> {
+    if (!this._llm)
+      throw new InternalServerErrorException("Llm is not initialized");
+
     const template = [
       ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
       "###Content### \n{content}",
     ].join("\n");
 
-    const chains = PromptTemplate.fromTemplate(template).pipe(this._llm);
+    const chains = PromptTemplate.fromTemplate(template)
+      .pipe(this._llm)
+      .pipe(new JsonOutputParser());
 
-    const response = await chains.invoke({
-      rules: JSON.stringify([
-        ...(extensions?.rules ?? []),
-        ...CONTENT_ENHANCEMENT_PROMPT,
-      ]),
+    const stream = await chains.stream({
+      rules: [...(extensions?.rules ?? []), ...CONTENT_ENHANCEMENT_PROMPT].join(
+        "\n",
+      ),
       response_format: JSON.stringify(CONTENT_GENERATION_REPONSE_FORMAT),
       content: enhancementsDTO.content,
     });
 
-    return JSON.parse(response);
+    return stream;
   }
 
-  async grammar(_enhancementsDTO: EnhancementsDto) {}
+  async grammar(enhancementsDTO: EnhancementsDto) {
+    return await this.content(enhancementsDTO, {
+      rules: [
+        "- YOUR MAIN TASK IS TO FIX THE GRAMMAR AND SPELLING BY RESEARVING USER WRITING STYLES",
+        "- DO NOT MODIFY OR ENHANCE THE CONTENT, JUST CORRECT THE GRAMMAR AND SPELLING",
+      ],
+    });
+  }
 
   async complete(_enhancementsDTO: EnhancementsDto) {}
 

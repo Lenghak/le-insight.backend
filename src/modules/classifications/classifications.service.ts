@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 
 import { COMMON_PROMPT_TEMPLATE_WITH_RESPONSE } from "@/common/constants/common-rule-prompt";
 
@@ -14,6 +14,7 @@ import {
 import type { GetModelDto } from "@/modules/llm/dto/get-model.dto";
 import { LlmService } from "@/modules/llm/llm.service";
 
+import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { PromptTemplate } from "@langchain/core/prompts";
 
 import type { ClassifyCategoriesDto } from "./dto/classify-categories.dto";
@@ -37,24 +38,20 @@ export class ClassificationsService {
 
     const llm = this.llmService.getOllamaInstance(model);
 
-    // Logger.debug(classifyCategoriesDto);
-    const input = await promptTemplate.formatPromptValue({
-      rules: [
-        ...CATEGORIES_RULE,
-        "- YOU MUST OUTPUT ONLY THE CATEGORIES FROM THE PROVIDED CATEGORIES",
-      ],
-      article: JSON.stringify(classifyCategoriesDto.article),
-      categories: classifyCategoriesDto.categories.join("\n"),
-      response_format: JSON.stringify(CATEGORIES_RESPONSE_FORMAT),
-    });
+    const response = await promptTemplate
+      .pipe(llm)
+      .pipe(new JsonOutputParser())
+      .invoke({
+        rules: [
+          ...CATEGORIES_RULE,
+          "- YOU MUST OUTPUT ONLY THE CATEGORIES FROM THE PROVIDED CATEGORIES",
+        ].join("\n"),
+        article: JSON.stringify(classifyCategoriesDto.article),
+        categories: classifyCategoriesDto.categories.join("\n"),
+        response_format: JSON.stringify(CATEGORIES_RESPONSE_FORMAT),
+      });
 
-    Logger.debug("Classification Input: ", input.value);
-
-    const response = await llm.invoke(input.value);
-
-    Logger.debug("Reponse:", response);
-
-    return JSON.parse(response);
+    return response;
   }
 
   async sensitize(
@@ -69,7 +66,9 @@ export class ClassificationsService {
         "###Sensitivities### \n{sensitivities}",
         "###Article### \n{article}",
       ].join("\n"),
-    ).pipe(llm);
+    )
+      .pipe(llm)
+      .pipe(new JsonOutputParser());
 
     const response = await chains.invoke({
       rules: JSON.stringify(SENSITIVITIES_RULE),
@@ -78,6 +77,6 @@ export class ClassificationsService {
       sensitivities: JSON.stringify(["positive", "neutral", "negative"]),
     });
 
-    return JSON.parse(response);
+    return response;
   }
 }

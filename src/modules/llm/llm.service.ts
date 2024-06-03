@@ -24,6 +24,7 @@ export class LlmService {
             format: "json",
             temperature: 0,
             cache: false,
+            verbose: true,
           }),
       );
     }
