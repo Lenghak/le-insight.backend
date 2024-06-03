@@ -45,27 +45,22 @@ async function bootstrap() {
     ),
   );
 
-  // @ts-expect-error ... uncompitable with FastifyPlugin<...>
   await app.register(fastifyCompress, {
     global: true,
     encodings: ["gzip", "deflate"],
   });
 
-  // @ts-expect-error ... uncompitable with FastifyPlugin<...>
   await app.register(fastifyCookie, {
     secret: await configService.get("COOKIE_SECRET"),
   });
 
-  // @ts-expect-error ... uncompitable with FastifyPlugin<...>
   await app.register(fastifySecureSession, {
     secret: await configService.get("SESSION_SECRET"),
     salt: await configService.get("SESSION_SALT"),
   });
 
-  // @ts-expect-error ... uncompitable with FastifyPlugin<...>
   await app.register(fastifyHelmet, { global: true });
 
-  // @ts-expect-error ... uncompitable with FastifyPlugin<...>
   await app.register(fastifyCsrfProtection, {
     sessionPlugin: "@fastify/secure-session",
     cookieOpts: {
