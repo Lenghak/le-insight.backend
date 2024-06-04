@@ -34,7 +34,9 @@ export class EnhancementsController {
     const encoder = new TextEncoder();
 
     try {
-      const readable = await this.enhancementsService.enhance(enhancementsDTO);
+      const readable = await this.enhancementsService.enhance(enhancementsDTO, {
+        rules: ["- I want to generate an article from the provided content."],
+      });
 
       res.raw.writeHead(200, { "access-control-allow-origin": "*" });
       res.type("text/plain;");
