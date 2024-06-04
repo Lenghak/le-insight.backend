@@ -3,12 +3,11 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Logger,
   Param,
   Post,
   Res,
 } from "@nestjs/common";
-
-import { Public } from "@/common/decorators/public.decorator";
 
 import type { ContentOptionDto } from "@/modules/enhancements/dto/content-options.dto";
 import type { EnhancementsDto } from "@/modules/enhancements/dto/enhancements.dto";
@@ -20,38 +19,55 @@ import { FastifyReply } from "fastify";
 export class EnhancementsController {
   constructor(private readonly enhancementsService: EnhancementsService) {}
 
-  @Public()
   @HttpCode(HttpStatus.OK)
   @Post("/title")
   async title(@Body() enhancementsDTO: EnhancementsDto) {
     return await this.enhancementsService.title(enhancementsDTO);
   }
 
-  @Public()
   @HttpCode(HttpStatus.OK)
   @Post("/content")
-  async content(@Body() enhancementsDTO: EnhancementsDto) {
-    return await this.enhancementsService.content(enhancementsDTO);
+  async content(
+    @Res({ passthrough: false }) res: FastifyReply,
+    @Body() enhancementsDTO: EnhancementsDto,
+  ) {
+    const encoder = new TextEncoder();
+
+    try {
+      const readable = await this.enhancementsService.enhance(enhancementsDTO);
+
+      res.raw.writeHead(200, { "access-control-allow-origin": "*" });
+      res.type("text/plain;");
+
+      for await (const chunk of readable) {
+        res.raw.write(encoder.encode(JSON.stringify(chunk)));
+      }
+    } catch (_err) {
+      res.status(500);
+    } finally {
+      res.raw.end();
+    }
   }
 
-  @Public()
   @HttpCode(HttpStatus.OK)
   @Post("/grammar")
   async grammar(
-    @Res({ passthrough: true }) res: FastifyReply,
+    @Res({ passthrough: false }) res: FastifyReply,
     @Body() enhancementsDTO: EnhancementsDto,
   ) {
-    res.header("Cache-Control", "no-cache");
-    res.header("Connection", "keep-alive");
     const encoder = new TextEncoder();
 
     try {
       const readable = await this.enhancementsService.grammar(enhancementsDTO);
+
+      res.raw.writeHead(200, { "access-control-allow-origin": "*" });
+      res.type("text/plain;");
+
       for await (const chunk of readable) {
-        res.raw.write(encoder.encode(`${chunk}`));
+        res.raw.write(encoder.encode(JSON.stringify(chunk)));
       }
     } catch (_err) {
-      res.status(500).raw.end();
+      res.status(500);
     } finally {
       res.raw.end();
     }
@@ -59,50 +75,157 @@ export class EnhancementsController {
 
   @HttpCode(HttpStatus.OK)
   @Post("/complete")
-  async complete(@Body() enhancementsDTO: EnhancementsDto) {
-    return await this.enhancementsService.complete(enhancementsDTO);
+  async complete(
+    @Res({ passthrough: false }) res: FastifyReply,
+    @Body() enhancementsDTO: EnhancementsDto,
+  ) {
+    const encoder = new TextEncoder();
+
+    try {
+      const readable = await this.enhancementsService.complete(enhancementsDTO);
+
+      res.raw.writeHead(200, { "access-control-allow-origin": "*" });
+      res.type("text/plain;");
+
+      for await (const chunk of readable) {
+        res.raw.write(encoder.encode(JSON.stringify(chunk)));
+      }
+    } catch (_err) {
+      res.status(500);
+    } finally {
+      res.raw.end();
+    }
   }
 
   @HttpCode(HttpStatus.OK)
   @Post("/emojify")
-  async emojify(@Body() enhancementsDTO: EnhancementsDto) {
-    return await this.enhancementsService.emojify(enhancementsDTO);
+  async emojify(
+    @Res({ passthrough: false }) res: FastifyReply,
+    @Body() enhancementsDTO: EnhancementsDto,
+  ) {
+    const encoder = new TextEncoder();
+
+    try {
+      const readable = await this.enhancementsService.emojify(enhancementsDTO);
+
+      res.raw.writeHead(200, { "access-control-allow-origin": "*" });
+      res.type("text/plain;");
+
+      for await (const chunk of readable) {
+        res.raw.write(encoder.encode(JSON.stringify(chunk)));
+      }
+    } catch (_err) {
+      res.status(500);
+    } finally {
+      res.raw.end();
+    }
   }
 
   @HttpCode(HttpStatus.OK)
   @Post("/tldr")
-  async tldr(@Body() enhancementsDTO: EnhancementsDto) {
-    return await this.enhancementsService.tldr(enhancementsDTO);
+  async tldr(
+    @Res({ passthrough: false }) res: FastifyReply,
+    @Body() enhancementsDTO: EnhancementsDto,
+  ) {
+    const encoder = new TextEncoder();
+
+    try {
+      const readable = await this.enhancementsService.tldr(enhancementsDTO);
+
+      res.raw.writeHead(200, { "access-control-allow-origin": "*" });
+      res.type("text/plain;");
+
+      for await (const chunk of readable) {
+        res.raw.write(encoder.encode(JSON.stringify(chunk)));
+      }
+    } catch (_err) {
+      res.status(500);
+    } finally {
+      res.raw.end();
+    }
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post("/summarize")
-  async summarize(@Body() enhancementsDTO: EnhancementsDto) {
-    return await this.enhancementsService.summarize(enhancementsDTO);
+  @Post("/simplify")
+  async summarize(
+    @Res({ passthrough: false }) res: FastifyReply,
+    @Body() enhancementsDTO: EnhancementsDto,
+  ) {
+    const encoder = new TextEncoder();
+
+    try {
+      const readable = await this.enhancementsService.simplify(enhancementsDTO);
+
+      res.raw.writeHead(200, { "access-control-allow-origin": "*" });
+      res.type("text/plain;");
+
+      for await (const chunk of readable) {
+        res.raw.write(encoder.encode(JSON.stringify(chunk)));
+      }
+    } catch (_err) {
+      res.status(500);
+    } finally {
+      res.raw.end();
+      res.send("Done");
+    }
   }
 
   @HttpCode(HttpStatus.OK)
   @Post("/shorten")
-  async shorten(@Body() enhancementsDTO: EnhancementsDto) {
-    return await this.enhancementsService.shorten(enhancementsDTO);
+  async shorten(
+    @Res({ passthrough: false }) res: FastifyReply,
+    @Body() enhancementsDTO: EnhancementsDto,
+  ) {
+    const encoder = new TextEncoder();
+
+    try {
+      const readable = await this.enhancementsService.shorten(enhancementsDTO);
+
+      res.raw.writeHead(200, { "access-control-allow-origin": "*" });
+      res.type("text/plain;");
+
+      for await (const chunk of readable) {
+        res.raw.write(encoder.encode(JSON.stringify(chunk)));
+      }
+    } catch (_err) {
+      res.status(500);
+    } finally {
+      res.raw.end();
+    }
   }
 
   @HttpCode(HttpStatus.OK)
   @Post("/lengthen")
-  async lengthen(@Body() enhancementsDTO: EnhancementsDto) {
-    return await this.enhancementsService.lengthen(enhancementsDTO);
+  async lengthen(
+    @Res({ passthrough: false }) res: FastifyReply,
+    @Body() enhancementsDTO: EnhancementsDto,
+  ) {
+    const encoder = new TextEncoder();
+
+    try {
+      const readable = await this.enhancementsService.lengthen(enhancementsDTO);
+
+      res.raw.writeHead(200, { "access-control-allow-origin": "*" });
+      res.type("text/plain;");
+
+      for await (const chunk of readable) {
+        res.raw.write(encoder.encode(JSON.stringify(chunk)));
+      }
+    } catch (_err) {
+      Logger.error(_err);
+      res.status(500);
+    } finally {
+      res.raw.end();
+    }
   }
 
-  @Public()
   @HttpCode(HttpStatus.OK)
   @Post("/tone/:tone")
   async tone(
-    @Res({ passthrough: true }) res: FastifyReply,
+    @Res({ passthrough: false }) res: FastifyReply,
     @Param() contentOptionDto: ContentOptionDto,
     @Body() enhancementsDTO: EnhancementsDto,
   ) {
-    res.header("Cache-Control", "no-cache");
-    res.header("Connection", "keep-alive");
     const encoder = new TextEncoder();
 
     try {
@@ -110,11 +233,16 @@ export class EnhancementsController {
         enhancementsDTO,
         contentOptionDto,
       );
+
+      res.raw.writeHead(200, { "access-control-allow-origin": "*" });
+      res.type("text/plain;");
+
       for await (const chunk of readable) {
-        res.raw.write(encoder.encode(`${chunk}`));
+        res.raw.write(encoder.encode(JSON.stringify(chunk)));
       }
     } catch (_err) {
-      res.status(500).raw.end();
+      Logger.error(_err);
+      res.status(500);
     } finally {
       res.raw.end();
     }

@@ -2,10 +2,7 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 
 import { COMMON_PROMPT_TEMPLATE_WITH_RESPONSE } from "@/common/constants/common-rule-prompt";
 
-import {
-  CONTENT_ENHANCEMENT_PROMPT,
-  CONTENT_TONE_CHANGE_PROMPT,
-} from "@/modules/enhancements/contants/content-enhance-prompt";
+import { CONTENT_ENHANCEMENT_PROMPT } from "@/modules/enhancements/contants/content-enhance-prompt";
 import { CONTENT_GENERATION_REPONSE_FORMAT } from "@/modules/enhancements/contants/content-generation-prompt";
 import { TITLE_GENERATION_PROMPT } from "@/modules/enhancements/contants/title-generation-prompt";
 import type { ContentExtentionsDto } from "@/modules/enhancements/dto/content-extentions.dto";
@@ -50,17 +47,17 @@ export class EnhancementsService {
     return response;
   }
 
-  async content(
+  async enhance(
     enhancementsDTO: EnhancementsDto,
     extensions?: ContentExtentionsDto,
   ): Promise<ReadableStream<unknown> & AsyncIterable<unknown>> {
     if (!this._llm)
       throw new InternalServerErrorException("Llm is not initialized");
 
-    const template = [
+    const template = JSON.stringify([
       ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
-      "###Content### \n{content}",
-    ].join("\n");
+      "Content: \n{content}",
+    ]);
 
     const chains = PromptTemplate.fromTemplate(template)
       .pipe(this._llm)
@@ -78,34 +75,63 @@ export class EnhancementsService {
   }
 
   async grammar(enhancementsDTO: EnhancementsDto) {
-    return await this.content(enhancementsDTO, {
+    return await this.enhance(enhancementsDTO, {
       rules: [
-        "- YOUR MAIN TASK IS TO FIX THE GRAMMAR AND SPELLING BY RESEARVING USER WRITING STYLES",
-        "- DO NOT MODIFY OR ENHANCE THE CONTENT, JUST CORRECT THE GRAMMAR AND SPELLING",
+        "- I want you to fix the spelling and grammar from the provided input.",
+        "- DO NOT MODIFY THE MEANING OF THE CONTENT, JUST CORRECT THE GRAMMAR AND SPELLING.",
       ],
     });
   }
 
-  async complete(_enhancementsDTO: EnhancementsDto) {}
+  async complete(enhancementsDTO: EnhancementsDto) {
+    return await this.enhance(enhancementsDTO, {
+      rules: ["- I want you to auto-complete the provided input."],
+    });
+  }
 
-  async emojify(_enhancementsDTO: EnhancementsDto) {}
+  async emojify(enhancementsDTO: EnhancementsDto) {
+    return await this.enhance(enhancementsDTO, {
+      rules: [
+        "- I want you to turn each sentences from the content to emojis.",
+      ],
+    });
+  }
 
-  async tldr(_enhancementsDTO: EnhancementsDto) {}
+  async tldr(enhancementsDTO: EnhancementsDto) {
+    return await this.enhance(enhancementsDTO, {
+      rules: [
+        "- I want you to summarize the provided content with tl;dr as the first word of the content",
+      ],
+    });
+  }
 
-  async summarize(_enhancementsDTO: EnhancementsDto) {}
+  async simplify(enhancementsDTO: EnhancementsDto) {
+    return await this.enhance(enhancementsDTO, {
+      rules: ["- I want you to simiplify the provided content"],
+    });
+  }
 
-  async shorten(_enhancementsDTO: EnhancementsDto) {}
+  async shorten(enhancementsDTO: EnhancementsDto) {
+    return await this.enhance(enhancementsDTO, {
+      rules: ["- I want you to shorten the provided input"],
+    });
+  }
 
-  async lengthen(_enhancementsDTO: EnhancementsDto) {}
+  async lengthen(enhancementsDTO: EnhancementsDto) {
+    return await this.enhance(enhancementsDTO, {
+      rules: ["- I want you to lengthen the provided input"],
+    });
+  }
 
   async tone(
     enhancementsDTO: EnhancementsDto,
     contentOptionDto: ContentOptionDto,
   ) {
-    return await this.content(enhancementsDTO, {
+    return await this.enhance(enhancementsDTO, {
       rules: [
-        `- ENHANCE THE CONTENT WITH ${contentOptionDto.tone.toUpperCase()} TONE`,
-        CONTENT_TONE_CHANGE_PROMPT[contentOptionDto.tone],
+        "- I want you to modify the input content based on the provided tone",
+        `Tone: \n${contentOptionDto.tone}`,
+        // CONTENT_TONE_CHANGE_PROMPT[contentOptionDto.tone],
       ],
     });
   }

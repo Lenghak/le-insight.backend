@@ -4,34 +4,36 @@ import { ContentToneEnumSchema } from "@/modules/enhancements/dto/content-option
 
 export const CONTENT_ENHANCEMENT_PROMPT = [
   ...COMMON_RULE_WITH_JSON_PROMPT,
-  "- MAKE SURE TO KEEP THE CONTENT WRITING STYLES, CONTEXT, AND DO NOT SHORTEN THE CONTENT",
+  "- IF U DON'T HAVE TO UNDERSTAND THE CONTENT.",
+  "- MAKE SURE TO KEEP THE CONTENT WRITING STYLES AND THE CONTEXT OF THE INPUT.",
+  "- YOU MUST OUTPUT ONLY THE MODIFIED CONTENT IN THE RESPONSE WITH NO EXPLAINATION SENTENCES.",
 ];
 
 export const CONTENT_TONE_CHANGE_PROMPT = {
   [ContentToneEnumSchema.Enum.academic]:
-    "We aim to elevate the level of discourse, ensuring that the content is scholarly, well-researched, and suitable for academic purposes.",
+    "- Apply the tone of scholarly, well-researched, and suitable for academic purposes.",
   [ContentToneEnumSchema.Enum.business]:
-    "We aim to create a professional, persuasive, and engaging message that aligns with the corporate world.",
+    "- Apply the tone of professional, persuasive, and engaging message that aligns with the corporate world.",
   [ContentToneEnumSchema.Enum.casual]:
-    "We want to create a relaxed, friendly, and conversational vibe that resonates with your audience.",
+    "- Apply the tone of relaxed, friendly, and conversational vibe that resonates with your audience.",
   [ContentToneEnumSchema.Enum.childfriendly]:
-    "We want to create a tone that is playful, interactive, and suitable for young minds to enjoy and understand.",
+    "- Apply the tone of playful, interactive, and suitable for young minds to enjoy and understand.",
   [ContentToneEnumSchema.Enum.emotional]:
-    "We want to create a deep, heartfelt connection with the audience, evoking strong emotions and leaving a lasting impact.",
+    "- Apply the tone of deep, heartfelt connection with the audience, evoking strong emotions and leaving a lasting impact.",
   [ContentToneEnumSchema.Enum.humorous]:
-    "We want to create a jovial and entertaining atmosphere that will make your audience burst into laughter.",
+    "- Apply the tone of jovial and entertaining atmosphere that will make your audience burst into laughter.",
   [ContentToneEnumSchema.Enum.informative]:
-    "We aim to provide valuable insights, educate the audience, and deliver information in a clear and concise manner.",
+    "- Apply the tone of valuable, educate the audience, and deliver information in a clear and concise manner.",
   [ContentToneEnumSchema.Enum.inspirational]:
-    "We aim to provide uplifting messages, empower the audience, and inspire them to reach their full potential.",
+    "- Apply the tone of uplifting, empower the audience, and inspire them to reach their full potential.",
   [ContentToneEnumSchema.Enum.memeified]:
-    "We aim to make it hilarious, funny, and full of joke potential for gen z!",
+    "- Apply the tone of hilarious, funny, and full of joke potential for going viral!",
   [ContentToneEnumSchema.Enum.narrative]:
-    "We aim to create a captivating story that engages the audience, evokes emotions, and brings the content to life through vivid storytelling.",
+    "- Apply the tone of captivating that engages the audience, evokes emotions, and brings the content to life through vivid storytelling.",
   [ContentToneEnumSchema.Enum.objective]:
-    "We aim to present information impartially, focusing on facts and avoiding personal opinions or biases.",
+    "- Apply the tone of informative, focusing on facts and avoiding personal opinions or biases.",
   [ContentToneEnumSchema.Enum.persuasive]:
-    "We aim to engage and influence the audience, using compelling arguments and persuasive language to convince them of a particular viewpoint or take action.",
+    "- Apply the tone of influencing, using compelling arguments and persuasive language to convince them of a particular viewpoint or take action.",
   [ContentToneEnumSchema.Enum.poetic]:
-    "We aim to create a lyrical and elegant experience, using beautiful language and imagery that evokes emotions and stirs the imagination.",
+    "- Apply the tone of a lyrical and elegant, using beautiful language and imagery that evokes emotions and stirs the imagination.",
 };
