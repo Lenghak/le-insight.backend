@@ -20,8 +20,9 @@ export class EnhancementsService {
     cache: false,
     penalizeNewline: true,
     model: "phi3",
-    temperature: 0,
+    temperature: 1,
     verbose: true,
+    format: "json",
   });
 
   constructor(private readonly llmService: LlmService) {}
@@ -64,8 +65,8 @@ export class EnhancementsService {
       .pipe(new JsonOutputParser());
 
     const stream = await chains.stream({
-      rules: [...(extensions?.rules ?? []), ...CONTENT_ENHANCEMENT_PROMPT].join(
-        "\n",
+      rules: JSON.stringify(
+        [...(extensions?.rules ?? []), ...CONTENT_ENHANCEMENT_PROMPT].flat(),
       ),
       response_format: JSON.stringify(CONTENT_GENERATION_REPONSE_FORMAT),
       content: enhancementsDTO.content,
@@ -99,9 +100,7 @@ export class EnhancementsService {
 
   async tldr(enhancementsDTO: EnhancementsDto) {
     return await this.enhance(enhancementsDTO, {
-      rules: [
-        "- I want you to summarize the provided content with tl;dr as the first word of the content",
-      ],
+      rules: ["- I want you to summarize the content as TL;DR"],
     });
   }
 
