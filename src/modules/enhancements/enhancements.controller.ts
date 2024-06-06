@@ -21,8 +21,26 @@ export class EnhancementsController {
 
   @HttpCode(HttpStatus.OK)
   @Post("/title")
-  async title(@Body() enhancementsDTO: EnhancementsDto) {
-    return await this.enhancementsService.title(enhancementsDTO);
+  async title(
+    @Res({ passthrough: false }) res: FastifyReply,
+    @Body() enhancementsDTO: EnhancementsDto,
+  ) {
+    const encoder = new TextEncoder();
+
+    try {
+      const readable = await this.enhancementsService.title(enhancementsDTO);
+
+      res.raw.writeHead(200, { "access-control-allow-origin": "*" });
+      res.type("text/plain;");
+
+      for await (const chunk of readable) {
+        res.raw.write(encoder.encode(JSON.stringify(chunk)));
+      }
+    } catch (_err) {
+      res.status(500);
+    } finally {
+      res.raw.end();
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -35,7 +53,10 @@ export class EnhancementsController {
 
     try {
       const readable = await this.enhancementsService.enhance(enhancementsDTO, {
-        rules: ["- I want to generate an article from the provided content."],
+        rules: [
+          "- I want to generate a full article from the input title.",
+          "- I want you to it as much as possible with good article writing structure.",
+        ],
       });
 
       res.raw.writeHead(200, { "access-control-allow-origin": "*" });

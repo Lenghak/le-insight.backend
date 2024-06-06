@@ -27,25 +27,28 @@ export class EnhancementsService {
 
   constructor(private readonly llmService: LlmService) {}
 
-  async title(enhancementsDTO: EnhancementsDto) {
-    const llm = this.llmService.getOllamaInstance();
-
-    const template = [
+  async title(
+    enhancementsDTO: EnhancementsDto,
+    extensions?: ContentExtentionsDto,
+  ): Promise<ReadableStream<unknown> & AsyncIterable<unknown>> {
+    const template = JSON.stringify([
       ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
-      "###Content### \n{content}",
-    ].join("\n");
+      "Input: \n{input}",
+    ]);
 
     const chains = PromptTemplate.fromTemplate(template)
-      .pipe(llm)
+      .pipe(this._llm)
       .pipe(new JsonOutputParser());
 
-    const response = await chains.invoke({
-      rules: JSON.stringify(TITLE_GENERATION_PROMPT),
+    const stream = await chains.stream({
+      rules: JSON.stringify(
+        [...(extensions?.rules ?? []), ...TITLE_GENERATION_PROMPT].flat(),
+      ),
       response_format: JSON.stringify(CONTENT_GENERATION_REPONSE_FORMAT),
-      content: enhancementsDTO.content,
+      input: enhancementsDTO.content,
     });
 
-    return response;
+    return stream;
   }
 
   async enhance(
@@ -88,7 +91,7 @@ export class EnhancementsService {
     return await this.enhance(enhancementsDTO, {
       rules: [
         "- I want you to auto-complete the provided input.",
-        "- I want you to extend the INPUT as long as possible to at least 2 paragraphs.",
+        "- I want you to extend the INPUT as long as possible in a complete sentence.",
       ],
     });
   }
@@ -103,7 +106,7 @@ export class EnhancementsService {
     return await this.enhance(enhancementsDTO, {
       rules: [
         "- I want you to summarize the INPUT as TL;DR",
-        "- I want you to extend the INPUT as long as possible to at least 2 paragraphs.",
+        "- I want you to extend the INPUT as long as possible to at least a paragraphs.",
       ],
     });
   }
@@ -112,7 +115,7 @@ export class EnhancementsService {
     return await this.enhance(enhancementsDTO, {
       rules: [
         "- I want you to simiplify the provided content",
-        "- I want you to extend the INPUT as long as possible to at least 2 paragraphs.",
+        "- I want you to extend the INPUT as long as possible to at least a paragraphs.",
       ],
     });
   }
@@ -139,7 +142,7 @@ export class EnhancementsService {
     return await this.enhance(enhancementsDTO, {
       rules: [
         "- I want you to modify the input content based on the provided tone",
-        "- I want you to extend the INPUT as long as possible to at least 2 paragraphs.",
+        "- I want you to extend the INPUT as long as possible to at least more or equal to the input.",
         `Tone: \n${contentOptionDto.tone}`,
         // CONTENT_TONE_CHANGE_PROMPT[contentOptionDto.tone],
       ],
