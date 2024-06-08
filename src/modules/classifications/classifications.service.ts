@@ -30,24 +30,22 @@ export class ClassificationsService {
   ): Promise<GenerateCategoriesResponseType> {
     const promptTemplate = PromptTemplate.fromTemplate(
       [
-        "###Categories### \n{categories}",
-        "###Article### \n{article}",
+        "Categories-List: \n{categories}",
+        "Article: \n{article}",
         ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
       ].join("\n"),
     );
 
     const llm = this.llmService.getOllamaInstance(model);
+    const categories = JSON.stringify(classifyCategoriesDto.categories);
 
     const response = await promptTemplate
       .pipe(llm)
       .pipe(new JsonOutputParser())
       .invoke({
-        rules: [
-          ...CATEGORIES_RULE,
-          "- YOU MUST OUTPUT ONLY THE CATEGORIES FROM THE PROVIDED CATEGORIES",
-        ].join("\n"),
-        article: JSON.stringify(classifyCategoriesDto.article),
-        categories: classifyCategoriesDto.categories.join("\n"),
+        rules: [...CATEGORIES_RULE].join("\n"),
+        article: classifyCategoriesDto.article,
+        categories: categories,
         response_format: JSON.stringify(CATEGORIES_RESPONSE_FORMAT),
       });
 
@@ -76,6 +74,8 @@ export class ClassificationsService {
       response_format: JSON.stringify(SENSITIVITIES_RESPONSE_FORMAT),
       sensitivities: JSON.stringify(["positive", "neutral", "negative"]),
     });
+
+    console.log(response);
 
     return response;
   }

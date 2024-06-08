@@ -106,13 +106,18 @@ export class ArticlesCategoriesService {
 
     for (const category of categories
       .sort((a, b) => b.rate - a.rate)
-      .filter((category) => category.rate > 0.6)) {
-      const ligitCategory = await this.categoryService.get({
+      .filter((category) => category.rate > 0.75)) {
+      let ligitCategory = await this.categoryService.get({
         by: "label",
         values: {
           label: category.label,
         },
       });
+      if (category.rate >= 0.8 && !ligitCategory?.id)
+        ligitCategory = await this.categoryService.create({
+          label: category.label,
+          status: "ACTIVE",
+        })[0];
 
       if (ligitCategory?.id)
         bridged.push(
@@ -161,7 +166,6 @@ export class ArticlesCategoriesService {
     await this.detach({
       article_id: article.id,
     });
-
     return await this.apply({ article, categories });
   }
 

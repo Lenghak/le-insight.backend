@@ -1,15 +1,15 @@
 import { COMMON_RULE_WITH_JSON_PROMPT } from "@/common/constants/common-rule-prompt";
 
 export const CATEGORIES_RULE = [
-  "- YOUR ROLE IS TO BE AN ARTICLE WRITER ASSISITANT EXPERT.",
-  "- YOUR TASK IS TO SELECT THE MOST SUITABLE CATEGORIES FROM CATEGORY LIST FOR THE INPUT ARTICLE, AND OUTPUT IN DECENDING ORDER OF RATE.",
+  "- You are categories classifiers for articles writers",
+  "- Your task is to suggest at least three most suitable (rate > 0.8) categories from the provided LIST for the article.",
   ...COMMON_RULE_WITH_JSON_PROMPT,
 ];
 export const CATEGORIES_RESPONSE_FORMAT = {
   categories: [
     {
       label: "category",
-      rate: "rate in decimal",
+      rate: "suitability rate in decimal",
     },
   ],
 };

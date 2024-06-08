@@ -95,22 +95,7 @@ export class CategoriesService {
   }
 
   async generate(generateCategoriesDTO: GenerateCategoriesDTO) {
-    const categories = await this.all();
-
-    // const response = await firstValueFrom<
-    //   AxiosResponse<GenerateCategoriesResponseType, unknown>
-    // >(
-    //   this.httpService.post(
-    //     "/classifications/generate?model=phi3",
-    //     {
-    //       article: generateCategoriesDTO.article,
-    //       categories: categories.map((category) => category.label),
-    //     },
-    //     {
-    //       baseURL: env().AI_HOSTNAME,
-    //     },
-    //   ),
-    // );
+    const categories = (await this.all()).sort();
 
     const response = await this.classificationService.generate({
       article: generateCategoriesDTO.article,

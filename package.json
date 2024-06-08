@@ -28,7 +28,7 @@
     "@fastify/helmet": "^11.1.1",
     "@fastify/secure-session": "^7.5.1",
     "@fastify/static": "^7.0.4",
-    "@langchain/community": "^0.2.6",
+    "@langchain/community": "^0.2.9",
     "@langchain/core": "^0.2.6",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/axios": "^3.0.2",
