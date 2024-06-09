@@ -6,14 +6,15 @@ import {
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 
-import { SerializedHTTPExceptionFilter } from "@/common/filters/serialized-http.filter";
-import { JSON_API_SERIALIZER } from "@/common/serializers/json-api-serializer.provider";
-
 import { fastifyCompress } from "@fastify/compress";
 import { fastifyCookie } from "@fastify/cookie";
 import { fastifyCsrfProtection } from "@fastify/csrf-protection";
 import { fastifyHelmet } from "@fastify/helmet";
 import { fastifySecureSession } from "@fastify/secure-session";
+
+import { SerializedHTTPExceptionFilter } from "@/common/filters/serialized-http.filter";
+import { JSON_API_SERIALIZER } from "@/common/serializers/json-api-serializer.provider";
+
 import { ZodValidationPipe } from "nestjs-zod";
 
 import { AppModule } from "./app.module";

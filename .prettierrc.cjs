@@ -10,7 +10,7 @@ module.exports = {
   plugins: [require.resolve("@trivago/prettier-plugin-sort-imports")],
   importOrder: [
     "^@nestjs/(.*)$",
-    "^@express/(.*)$",
+    "^@fastify/(.*)$",
     "^@/common/(.*)$",
     "^@/modules/(.*)$",
     "^@/database/(.*)$",
