@@ -106,17 +106,14 @@ export class EnhancementsService {
     return await this.enhance(enhancementsDTO, {
       rules: [
         "- I want you to summarize the INPUT as TL;DR",
-        "- I want you to extend the INPUT as long as possible to at least a paragraphs.",
+        "- I want you to output at least a paragraphs and respect the input length.",
       ],
     });
   }
 
   async simplify(enhancementsDTO: EnhancementsDto) {
     return await this.enhance(enhancementsDTO, {
-      rules: [
-        "- I want you to simiplify the provided content",
-        "- I want you to extend the INPUT as long as possible to at least a paragraphs.",
-      ],
+      rules: ["- I want you to simiplify (not summarize) the provided content"],
     });
   }
 
@@ -130,7 +127,7 @@ export class EnhancementsService {
     return await this.enhance(enhancementsDTO, {
       rules: [
         "- I want you to lengthen the provided input",
-        "- I want you to extend the INPUT as long as possible to at least 2 paragraphs.",
+        "- I want you to extend the INPUT as long as possible.",
       ],
     });
   }
@@ -141,8 +138,8 @@ export class EnhancementsService {
   ) {
     return await this.enhance(enhancementsDTO, {
       rules: [
-        "- I want you to modify the input content based on the provided tone",
-        "- I want you to extend the INPUT as long as possible to at least more or equal to the input.",
+        "- I want you to modify the input content based on the provided tone (Do not Summarize)",
+        "- I want you to extend the INPUT as long as possible.",
         `Tone: \n${contentOptionDto.tone}`,
         // CONTENT_TONE_CHANGE_PROMPT[contentOptionDto.tone],
       ],
