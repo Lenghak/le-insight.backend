@@ -1,6 +1,10 @@
 import { Injectable } from "@nestjs/common";
 
-import { COMMON_PROMPT_TEMPLATE_WITH_RESPONSE } from "@/common/constants/common-rule-prompt";
+import {
+  COMMON_PROMPT_TEMPLATE,
+  COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
+  COMMON_RESPONSE,
+} from "@/common/constants/common-rule-prompt";
 
 import type { GenerateCategoriesResponseType } from "@/modules/categories/dto/generate-categories.dto";
 import {
@@ -29,15 +33,16 @@ export class ClassificationsService {
     model?: GetModelDto,
   ): Promise<GenerateCategoriesResponseType> {
     const promptTemplate = PromptTemplate.fromTemplate(
-      [
-        "Categories-List: \n{categories}",
-        "Article: \n{article}",
-        ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
-      ].join("\n"),
+      `${[
+        ...COMMON_PROMPT_TEMPLATE,
+        "\n+ Classify the following article: \n{article}",
+        "\n+ Select categories from the following list: \n[{categories}]",
+        ...COMMON_RESPONSE,
+      ]}`,
     );
 
     const llm = this.llmService.getOllamaInstance(model);
-    const categories = JSON.stringify(classifyCategoriesDto.categories);
+    const categories = classifyCategoriesDto.categories.join(", ");
 
     const response = await promptTemplate
       .pipe(llm)
@@ -45,7 +50,7 @@ export class ClassificationsService {
       .invoke({
         rules: [...CATEGORIES_RULE].join("\n"),
         article: classifyCategoriesDto.article,
-        categories: categories,
+        categories: `${categories}`,
         response_format: JSON.stringify(CATEGORIES_RESPONSE_FORMAT),
       });
 
@@ -59,11 +64,11 @@ export class ClassificationsService {
     const llm = this.llmService.getOllamaInstance(model);
 
     const chains = PromptTemplate.fromTemplate(
-      [
+      `${[
+        "+ Sensitize the following article: \n{article}",
+        "+ Select sensitivities from the following list: \n{sensitivities}",
         ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
-        "###Sensitivities### \n{sensitivities}",
-        "###Article### \n{article}",
-      ].join("\n"),
+      ].join("\n")}`,
     )
       .pipe(llm)
       .pipe(new JsonOutputParser());
@@ -74,8 +79,6 @@ export class ClassificationsService {
       response_format: JSON.stringify(SENSITIVITIES_RESPONSE_FORMAT),
       sensitivities: JSON.stringify(["positive", "neutral", "negative"]),
     });
-
-    console.log(response);
 
     return response;
   }

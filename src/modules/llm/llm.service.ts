@@ -13,8 +13,8 @@ export class LlmService {
     ollama?: Ollama,
   ) {
     if (
-      this._llmInstances.size ||
-      this._llmInstances.has(getModelDto.name ?? getModelDto.model)
+      !this._llmInstances.size ||
+      !this._llmInstances.has(getModelDto.name ?? getModelDto.model)
     ) {
       this._llmInstances.set(
         getModelDto.name ?? getModelDto.model,
@@ -37,6 +37,7 @@ export class LlmService {
         format: "json",
         temperature: 0,
         cache: false,
+        verbose: true,
       })
     );
   }
