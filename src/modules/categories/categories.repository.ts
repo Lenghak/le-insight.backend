@@ -52,14 +52,19 @@ export class CategoriesRepository {
   }
 
   async count(
-    query?: string,
+    { q, status }: GetCategoriesListParams,
     db: DatabaseType<typeof categoriesSchema> = this.db,
   ) {
     const categories = categoriesSchema.categories;
     return await db
       .select({ value: countDistinct(categories.id) })
       .from(categories)
-      .where(query ? ilike(categories.label, `%${query}%`) : undefined);
+      .where(
+        and(
+          q ? ilike(categories.label, `%${q}%`) : undefined,
+          status ? eq(categories.status, status) : undefined,
+        ),
+      );
   }
 
   async get({

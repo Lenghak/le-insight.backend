@@ -119,7 +119,7 @@ export class ArticlesCategoriesService {
           status: "ACTIVE",
         })[0];
 
-      if (ligitCategory?.id)
+      if (ligitCategory?.id && ligitCategory.status === "ACTIVE")
         bridged.push(
           ...(await this.create({
             article_id: article.id,

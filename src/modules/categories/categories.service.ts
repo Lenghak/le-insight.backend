@@ -26,7 +26,7 @@ export class CategoriesService {
     status,
     ...params
   }: GetCategoriesListDTO) {
-    const count = (await this.count(params.q))[0].value;
+    const count = (await this.count({ q: params.q, status }))[0].value;
     const { hasNextPage, hasPreviousPage, offset, totalPages } =
       paginationHelper({ count, limit, page });
 
@@ -49,8 +49,8 @@ export class CategoriesService {
     };
   }
 
-  async count(q?: string) {
-    return await this.categoriesRepository.count(q);
+  async count({ q, status }: GetCategoriesListDTO) {
+    return await this.categoriesRepository.count({ q, status });
   }
 
   async get({
