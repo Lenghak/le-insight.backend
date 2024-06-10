@@ -1,4 +1,5 @@
 import { articlesCategories } from "@/database/models/articles-categories/articles-categories.model";
+import { articlesSensitivities } from "@/database/models/articles-sensitivities";
 import { articles } from "@/database/models/articles/articles.model";
 import { users } from "@/database/models/users/users.model";
 
@@ -10,4 +11,5 @@ export const articlesRelations = relations(articles, ({ one, many }) => ({
     references: [users.id],
   }),
   article_categories: many(articlesCategories),
+  article_sensitivities: many(articlesSensitivities),
 }));

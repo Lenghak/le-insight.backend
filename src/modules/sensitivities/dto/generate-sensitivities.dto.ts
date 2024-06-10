@@ -9,6 +9,7 @@ export const GenerateSensitivitiesResponseSchema = z.object({
   sensitivities: z.array(
     z.object({
       label: z.string(),
+      sentiment: z.string(),
       rate: z.number(),
     }),
   ),

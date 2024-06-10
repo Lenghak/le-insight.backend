@@ -1,17 +1,18 @@
 import { COMMON_RULE_WITH_JSON_PROMPT } from "@/common/constants/common-rule-prompt";
 
 export const SENSITIVITIES_RULE = [
-  "- YOUR ROLE IS TO BE AN ARTICLE SENSITIVITIES DETECTOR.",
-  "- YOUR TASK IS TO SENITIZE THE INPUT ARTICLE, AND OUTPUT IN PROVIDED JSON FORMAT",
+  "- Your role is sensititivity classifier for articles",
   ...COMMON_RULE_WITH_JSON_PROMPT,
+  "- Your task is to select sensitivities from the provided list for the article",
+  "- You can ouput empty array if you find no sensitive content in the article",
 ];
 
 export const SENSITIVITIES_RESPONSE_FORMAT = {
   sensitivities: [
     {
-      label: "sensitiviy",
+      label: "sensitivity from the list",
       rate: "rate in decimal",
-      language: "language of the article",
+      sentiment: "positive, negative, neutral, or mixed",
     },
   ],
 };

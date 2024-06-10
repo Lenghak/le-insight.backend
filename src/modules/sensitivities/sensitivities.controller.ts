@@ -24,7 +24,7 @@ import { SensitivitiesSerializer } from "./sensitivities.serializer";
 import { SensitivitiesService } from "./sensitivities.service";
 
 @Controller({ path: "/sensitivities" })
-export class CategoriesController {
+export class SensitivitiesController {
   constructor(
     private readonly sensitivitiesService: SensitivitiesService,
     private readonly sensitivitiesSerializer: SensitivitiesSerializer,
@@ -81,7 +81,6 @@ export class CategoriesController {
     const response = await this.sensitivitiesService.generate(
       generateSensitivitiesDTO,
     );
-
     return this.sensitivitiesSerializer.serialize(response);
   }
 }

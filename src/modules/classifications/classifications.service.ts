@@ -51,7 +51,7 @@ export class ClassificationsService {
       .invoke({
         rules: [...CATEGORIES_RULE].join("\n"),
         article: classifyCategoriesDto.article,
-        categories: `${categories}`,
+        categories: categories,
         response_format: JSON.stringify(CATEGORIES_RESPONSE_FORMAT),
       });
 
@@ -78,8 +78,10 @@ export class ClassificationsService {
       rules: JSON.stringify(SENSITIVITIES_RULE),
       article: classifySensitiviteisDto.article,
       response_format: JSON.stringify(SENSITIVITIES_RESPONSE_FORMAT),
-      sensitivities: JSON.stringify(["positive", "neutral", "negative"]),
+      sensitivities: classifySensitiviteisDto.sensitivities.join(", "),
     });
+
+    console.log(response);
 
     return response;
   }

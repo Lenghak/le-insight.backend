@@ -3,10 +3,12 @@ import { sensitivities } from "@/database/models/sensitivities/sensitivities.mod
 
 import { pgEnum, pgTable, primaryKey, uuid } from "drizzle-orm/pg-core";
 
-export const sensitivityPerspectivenessEnum = pgEnum(
-  "sensitivity_perspectiveness",
-  ["POSITIVE", "NEGATIVE", "NEUTRAL"],
-);
+export const sensitivitySentimentEnum = pgEnum("sensitivity_sentiment", [
+  "POSITIVE",
+  "NEGATIVE",
+  "NEUTRAL",
+  "MIXED",
+]);
 
 export const articlesSensitivities = pgTable(
   "articles_sensitivities",
@@ -17,7 +19,7 @@ export const articlesSensitivities = pgTable(
     sensitivity_id: uuid("sensitivity_id")
       .notNull()
       .references(() => sensitivities.id),
-    perspectiveness: sensitivityPerspectivenessEnum("perspectiveness"),
+    sentiment: sensitivitySentimentEnum("sentiment"),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.article_id, table.sensitivity_id] }),

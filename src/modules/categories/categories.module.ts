@@ -1,4 +1,3 @@
-import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 
 import { jsonAPISerializerProvider } from "@/common/serializers/json-api-serializer.provider";
@@ -13,7 +12,7 @@ import { CategoriesController } from "./categories.controller";
 import { CategoriesService } from "./categories.service";
 
 @Module({
-  imports: [DrizzleModule, HttpModule, ClassificationsModule],
+  imports: [DrizzleModule, ClassificationsModule],
   controllers: [CategoriesController],
   providers: [
     CategoriesService,

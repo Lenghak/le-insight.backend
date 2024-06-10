@@ -1,4 +1,3 @@
-import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 
 import { jsonAPISerializerProvider } from "@/common/serializers/json-api-serializer.provider";
@@ -7,14 +6,14 @@ import { ClassificationsModule } from "@/modules/classifications/classifications
 
 import { DrizzleModule } from "@/database/drizzle.module";
 
-import { CategoriesController } from "./sensitivities.controller";
+import { SensitivitiesController } from "./sensitivities.controller";
 import { SensitivitiesRepository } from "./sensitivities.repository";
 import { SensitivitiesSerializer } from "./sensitivities.serializer";
 import { SensitivitiesService } from "./sensitivities.service";
 
 @Module({
-  imports: [DrizzleModule, HttpModule, ClassificationsModule],
-  controllers: [CategoriesController],
+  imports: [DrizzleModule, ClassificationsModule],
+  controllers: [SensitivitiesController],
   providers: [
     SensitivitiesService,
     SensitivitiesRepository,

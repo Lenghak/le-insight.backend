@@ -1,22 +1,31 @@
-import { HttpService } from "@nestjs/axios";
-import { ConflictException, Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  UnprocessableEntityException,
+} from "@nestjs/common";
 
 import paginationHelper from "@/common/helpers/pagination.helper";
 
 import { CategoriesRepository } from "@/modules/categories/categories.repository";
+import type { ApplyACDTO } from "@/modules/categories/dto/apply-ac.dto";
+import type { CreateACDTO } from "@/modules/categories/dto/create-ac.dto";
 import type { CreateCategoryDto } from "@/modules/categories/dto/create-category.dto";
+import type { DeleteACDTO } from "@/modules/categories/dto/delete-ac.dto";
+import type { GenerateACDTO } from "@/modules/categories/dto/generate-ac.dto";
 import type { GenerateCategoriesDTO } from "@/modules/categories/dto/generate-categories.dto";
 import type { GetCategoriesListDTO } from "@/modules/categories/dto/get-categories-list.dto";
 import type { UpdateCategoryDto } from "@/modules/categories/dto/update-category.dto";
 import { ClassificationsService } from "@/modules/classifications/classifications.service";
 
+import * as schema from "@/database/models";
+import type { ArticlesCategoriesType } from "@/database/schemas/articles-categories/articles-categories.type";
 import type { CategoriesType } from "@/database/schemas/categories/categories.type";
+import type { DatabaseType } from "@/database/types/db.type";
 
 @Injectable()
 export class CategoriesService {
   constructor(
     private readonly categoriesRepository: CategoriesRepository,
-    private readonly httpService: HttpService,
     private readonly classificationService: ClassificationsService,
   ) {}
 
@@ -143,5 +152,109 @@ export class CategoriesService {
           ? (currCate?.generated_count ?? 0) + (op === "+" ? 1 : -1)
           : undefined,
     });
+  }
+
+  async bridge(
+    createACDTO: CreateACDTO,
+    db?: DatabaseType | DatabaseType<typeof schema>,
+  ) {
+    const acs = await this.categoriesRepository.bridge(createACDTO, db);
+
+    for (const ac of acs) {
+      await this.updateCounter({
+        category_id: ac.category_id,
+        counterType: "assign",
+        op: "+",
+      });
+    }
+
+    return acs;
+  }
+
+  async apply({ article, categories }: ApplyACDTO) {
+    let categoryOther = await this.get({
+      by: "label",
+      values: {
+        label: "Other",
+      },
+    });
+
+    if (!categoryOther)
+      categoryOther = await this.create({
+        label: "Other",
+        status: "ACTIVE",
+      })[0];
+
+    const bridged: ArticlesCategoriesType[] = [];
+
+    for (const category of categories
+      .sort((a, b) => b.rate - a.rate)
+      .filter((category) => category.rate > 0.75)
+      .slice(0, 3)) {
+      const ligitCategory = await this.get({
+        by: "label",
+        values: {
+          label: category.label,
+        },
+      });
+
+      if (ligitCategory?.id && ligitCategory.status === "ACTIVE")
+        bridged.push(
+          ...(await this.bridge({
+            article_id: article.id,
+            category_id: ligitCategory.id,
+          })),
+        );
+    }
+
+    if (bridged.length <= 0 && categoryOther) {
+      bridged.push(
+        ...(await this.bridge({
+          article_id: article.id,
+          category_id: categoryOther.id,
+        })),
+      );
+    }
+
+    return bridged;
+  }
+
+  async regenerate(generateACDto: GenerateACDTO) {
+    if (!generateACDto.article)
+      throw new UnprocessableEntityException(
+        "Cannot find article with the current ID",
+      );
+
+    const categories = generateACDto.article.content_plain_text
+      ? (
+          await this.generate({
+            article: generateACDto.article.content_plain_text,
+          })
+        ).categories
+      : [
+          {
+            label: "Other",
+            rate: 1.0,
+          },
+        ];
+
+    await this.detach({
+      article_id: generateACDto.article.id,
+    });
+    return await this.apply({ article: generateACDto.article, categories });
+  }
+
+  async detach(deleteACDTO: DeleteACDTO) {
+    const deletedAcs = await this.categoriesRepository.break(deleteACDTO);
+
+    for (const ac of deletedAcs) {
+      await this.updateCounter({
+        category_id: ac.category_id,
+        counterType: "assign",
+        op: "-",
+      });
+    }
+
+    return deletedAcs;
   }
 }

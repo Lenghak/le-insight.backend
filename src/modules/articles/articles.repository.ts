@@ -39,62 +39,6 @@ export class ArticlesRepository {
     params: GetArticlesListParamsType,
     db: DatabaseType<typeof schema> = this.db,
   ) {
-    // return db
-    //   .select({
-    //     ...RQPreviewArticlesSelectColumns,
-    //     article_author: {
-    //       ...RQUsersSelectColumns,
-    //       //@ts-expect-error another nested type is not assignable to PgColumn ...
-    //       profile: { ...RQMinimalProfileSelectColumns },
-    //     },
-    //     article_categories: sql<
-    //       Array<{ article_id: string; category_id: string }>
-    //     >`
-    //     (
-    //       SELECT json_agg(articles_categories)
-    //       FROM articles_categories
-    //       WHERE articles_categories.article_id = articles.id
-    //     )
-    //     `.as("article_categories"),
-    //   })
-    //   .from(schema.articles)
-    //   .where(
-    //     and(
-    //       params.categoryId
-    //         ? eq(schema.articlesCategories.category_id, params.categoryId)
-    //         : undefined,
-    //       params.q
-    //         ? ilike(schema.articles.content_plain_text, `%${params.q}%`)
-    //         : undefined,
-    //       params.status
-    //         ? eq(schema.articles.visibility, params.status)
-    //         : undefined,
-    //       params.from && params.to
-    //         ? or(
-    //             between(
-    //               schema.articles.created_at,
-    //               new Date(params.from),
-    //               new Date(params.to),
-    //             ),
-    //             between(
-    //               schema.articles.updated_at,
-    //               new Date(params.from),
-    //               new Date(params.to),
-    //             ),
-    //           )
-    //         : undefined,
-    //     ),
-    //   )
-    //   .innerJoin(schema.users, eq(schema.articles.user_id, schema.users.id))
-    //   .innerJoin(
-    //     schema.profiles,
-    //     eq(schema.profiles.id, schema.users.profile_id),
-    //   )
-    //   .groupBy(schema.articles.id, schema.users.id, schema.profiles.id)
-    //   .$dynamic()
-    //   .limit(params.limit > 200 || params.limit <= 0 ? 50 : params.limit)
-    //   .offset(params.offset);
-
     const result = await db.query.articles.findMany({
       columns: RQPreviewArticlesColumns,
       with: {
@@ -108,6 +52,11 @@ export class ArticlesRepository {
         },
         article_categories: {
           with: { category: true },
+        },
+        article_sensitivities: {
+          with: {
+            sensitvity: true,
+          },
         },
       },
       where: and(
@@ -164,7 +113,8 @@ export class ArticlesRepository {
       .findFirst({
         with: {
           article_author: true,
-          article_categories: true,
+          article_categories: { with: { category: true } },
+          article_sensitivities: { with: { sensitvity: true } },
         },
         where: (articles, { eq }) => eq(articles[by], sql.placeholder(by)),
       })

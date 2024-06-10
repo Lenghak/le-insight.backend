@@ -1,6 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 
+import type { CreateACDTO } from "@/modules/categories/dto/create-ac.dto";
 import type { CreateCategoryDto } from "@/modules/categories/dto/create-category.dto";
+import type { DeleteACDTO } from "@/modules/categories/dto/delete-ac.dto";
 import type { GetCategoriesListParams } from "@/modules/categories/dto/get-categories-list.dto";
 import type { UpdateCategoryDto } from "@/modules/categories/dto/update-category.dto";
 
@@ -8,7 +10,7 @@ import {
   DRIZZLE_ASYNC_PROVIDER,
   withPaginate,
 } from "@/database/drizzle.service";
-import * as categoriesSchema from "@/database/models/categories";
+import * as schema from "@/database/models";
 import type { CategoriesType } from "@/database/schemas/categories/categories.type";
 import type { DatabaseType } from "@/database/types/db.type";
 
@@ -19,14 +21,14 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 export class CategoriesRepository {
   constructor(
     @Inject(DRIZZLE_ASYNC_PROVIDER)
-    private readonly db: PostgresJsDatabase<typeof categoriesSchema>,
+    private readonly db: PostgresJsDatabase<typeof schema>,
   ) {}
 
   async list(
     { limit = 50, from, to, offset = 0, q, status }: GetCategoriesListParams,
-    db: DatabaseType | DatabaseType<typeof categoriesSchema> = this.db,
+    db: DatabaseType | DatabaseType<typeof schema> = this.db,
   ) {
-    const categories = categoriesSchema.categories;
+    const categories = schema.categories;
     return await withPaginate({
       qb: db
         .select()
@@ -53,9 +55,9 @@ export class CategoriesRepository {
 
   async count(
     { q, status }: GetCategoriesListParams,
-    db: DatabaseType<typeof categoriesSchema> = this.db,
+    db: DatabaseType<typeof schema> = this.db,
   ) {
-    const categories = categoriesSchema.categories;
+    const categories = schema.categories;
     return await db
       .select({ value: countDistinct(categories.id) })
       .from(categories)
@@ -72,18 +74,18 @@ export class CategoriesRepository {
     db = this.db,
   }: {
     by: keyof CategoriesType;
-    db?: DatabaseType<typeof categoriesSchema>;
+    db?: DatabaseType<typeof schema>;
   }) {
     return db
       .selectDistinct()
-      .from(categoriesSchema.categories)
-      .where(eq(categoriesSchema.categories[by], sql.placeholder(by)))
+      .from(schema.categories)
+      .where(eq(schema.categories[by], sql.placeholder(by)))
       .prepare("get_category_by");
   }
 
   async all(
     columns?: Record<string, true>,
-    db: DatabaseType<typeof categoriesSchema> = this.db,
+    db: DatabaseType<typeof schema> = this.db,
   ) {
     return db?.query.categories.findMany({
       columns: {
@@ -96,10 +98,10 @@ export class CategoriesRepository {
 
   async create(
     createCategoryDto: CreateCategoryDto,
-    db: DatabaseType<typeof categoriesSchema> = this.db,
+    db: DatabaseType<typeof schema> = this.db,
   ) {
     return await db
-      .insert(categoriesSchema.categories)
+      .insert(schema.categories)
       .values({ ...createCategoryDto })
       .returning();
   }
@@ -107,21 +109,51 @@ export class CategoriesRepository {
   async update(
     id: string,
     updateCategoryDto: UpdateCategoryDto,
-    db: DatabaseType<typeof categoriesSchema> = this.db,
+    db: DatabaseType<typeof schema> = this.db,
   ) {
     return await db
-      .update(categoriesSchema.categories)
+      .update(schema.categories)
       .set({ ...updateCategoryDto })
-      .where(eq(categoriesSchema.categories.id, id))
+      .where(eq(schema.categories.id, id))
       .returning();
   }
 
   async delete(
     { id }: { id: string },
-    db: DatabaseType<typeof categoriesSchema> = this.db,
+    db: DatabaseType<typeof schema> = this.db,
   ) {
     return await db
-      .delete(categoriesSchema.categories)
-      .where(eq(categoriesSchema.categories.id, id));
+      .delete(schema.categories)
+      .where(eq(schema.categories.id, id));
+  }
+
+  async bridge(
+    createACDTO: CreateACDTO,
+    db: DatabaseType | DatabaseType<typeof schema> = this.db,
+  ) {
+    return db
+      .insert(schema.articlesCategories)
+      .values({
+        article_id: createACDTO.article_id,
+        category_id: createACDTO.category_id,
+      })
+      .returning();
+  }
+
+  async break(
+    deleteACDTO: DeleteACDTO,
+    db: DatabaseType | DatabaseType<typeof schema> = this.db,
+  ) {
+    return db
+      .delete(schema.articlesCategories)
+      .where(
+        and(
+          eq(schema.articlesCategories.article_id, deleteACDTO.article_id),
+          deleteACDTO.category_id
+            ? eq(schema.articlesCategories.category_id, deleteACDTO.category_id)
+            : undefined,
+        ),
+      )
+      .returning();
   }
 }
