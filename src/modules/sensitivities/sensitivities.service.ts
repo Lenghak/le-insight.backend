@@ -70,9 +70,9 @@ export class SensitivitiesService {
     by: keyof SensitivitiesType;
     values: Record<string, unknown>;
   }) {
-    return (
-      await (await this.sensitivitiesRepository.get({ by })).execute(values)
-    ).at(0);
+    return (await this.sensitivitiesRepository.get({ by }).execute(values)).at(
+      0,
+    );
   }
 
   async create(createSensitivitiesDto: CreateSensitivitiesDto) {
@@ -180,7 +180,7 @@ export class SensitivitiesService {
 
     for (const sensitivity of sensitivities
       .sort((a, b) => b.rate - a.rate)
-      .filter((sensitivitiy) => sensitivitiy.rate > 0.75)
+      .filter((sensitivitiy) => sensitivitiy.rate >= 0.75)
       .slice(0, 3)) {
       const ligitSensitivity = await this.get({
         by: "label",

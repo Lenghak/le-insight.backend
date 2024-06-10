@@ -77,7 +77,7 @@ export class SensitivitiesRepository {
       );
   }
 
-  async get({
+  get({
     by,
     db = this.db,
   }: {

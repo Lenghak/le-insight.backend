@@ -69,9 +69,7 @@ export class CategoriesService {
     by: keyof CategoriesType;
     values: Record<string, unknown>;
   }) {
-    return (
-      await (await this.categoriesRepository.get({ by })).execute(values)
-    ).at(0);
+    return (await this.categoriesRepository.get({ by }).execute(values)).at(0);
   }
 
   async create(createCategoryDto: CreateCategoryDto) {
@@ -189,7 +187,7 @@ export class CategoriesService {
 
     for (const category of categories
       .sort((a, b) => b.rate - a.rate)
-      .filter((category) => category.rate > 0.75)
+      .filter((category) => category.rate >= 0.75)
       .slice(0, 3)) {
       const ligitCategory = await this.get({
         by: "label",
@@ -197,6 +195,8 @@ export class CategoriesService {
           label: category.label,
         },
       });
+
+      console.log(ligitCategory, category);
 
       if (ligitCategory?.id && ligitCategory.status === "ACTIVE")
         bridged.push(

@@ -69,7 +69,7 @@ export class CategoriesRepository {
       );
   }
 
-  async get({
+  get({
     by,
     db = this.db,
   }: {
