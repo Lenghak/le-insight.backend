@@ -9,3 +9,8 @@ export {
 } from "./articles-categories";
 export { categories, categoriesRelations } from "./categories";
 export { profiles, sexEnum } from "./profiles";
+export {
+  sensitivities,
+  sensitivitiesRelations,
+  sensitivityStatusEnum,
+} from "./sensitivities";

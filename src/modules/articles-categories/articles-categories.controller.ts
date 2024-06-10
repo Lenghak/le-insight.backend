@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -9,16 +8,13 @@ import {
   UnprocessableEntityException,
 } from "@nestjs/common";
 
-import { Public } from "@/common/decorators/public.decorator";
 import { User } from "@/common/decorators/user.decorator";
 
 import { ArticlesCategoriesService } from "@/modules/articles-categories/articles-categories.service";
-import type { ApplyACDTO } from "@/modules/articles-categories/dto/apply-ac.dto";
 import type { CreateArticlesDTO } from "@/modules/articles-categories/dto/create-articles.dto";
 import type { GenerateACDTO } from "@/modules/articles-categories/dto/generate-ac.dto";
 import { ArticlesSerializer } from "@/modules/articles/articles.serializer";
 import { ArticlesService } from "@/modules/articles/articles.service";
-import type { ArticlesListDTO } from "@/modules/articles/dto/articles-list.dto";
 import type { PayloadType } from "@/modules/auth/types/payload.type";
 import type {
   GetModelDto,
@@ -32,19 +28,6 @@ export class ArticlesCategoriesController {
     private readonly articleService: ArticlesService,
     private readonly articleSerializer: ArticlesSerializer,
   ) {}
-
-  @Public()
-  @HttpCode(HttpStatus.OK)
-  @Get("/")
-  async list(@Query() params: ArticlesListDTO) {
-    const articles = await this.acService.list(params);
-    return articles;
-  }
-
-  @Post("/apply")
-  async apply(@Body() { article, categories }: ApplyACDTO) {
-    return await this.acService.apply({ article, categories });
-  }
 
   @Post("/regenerate")
   async regenerate(

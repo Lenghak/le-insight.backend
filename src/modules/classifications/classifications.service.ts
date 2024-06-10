@@ -17,6 +17,7 @@ import {
 } from "@/modules/classifications/constants/sensitivities-classifications-prompt";
 import type { GetModelDto } from "@/modules/llm/dto/get-model.dto";
 import { LlmService } from "@/modules/llm/llm.service";
+import type { GenerateSensitivitiesResponseType } from "@/modules/sensitivities/dto/generate-sensitivities.dto";
 
 import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { PromptTemplate } from "@langchain/core/prompts";
@@ -28,7 +29,7 @@ import type { ClassifySensitiviesDto } from "./dto/classify-sensitivity.dto";
 export class ClassificationsService {
   constructor(private readonly llmService: LlmService) {}
 
-  async generate(
+  async categorize(
     classifyCategoriesDto: ClassifyCategoriesDto,
     model?: GetModelDto,
   ): Promise<GenerateCategoriesResponseType> {
@@ -60,7 +61,7 @@ export class ClassificationsService {
   async sensitize(
     classifySensitiviteisDto: ClassifySensitiviesDto,
     model?: GetModelDto,
-  ) {
+  ): Promise<GenerateSensitivitiesResponseType> {
     const llm = this.llmService.getOllamaInstance(model);
 
     const chains = PromptTemplate.fromTemplate(

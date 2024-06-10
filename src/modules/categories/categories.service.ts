@@ -97,7 +97,7 @@ export class CategoriesService {
   async generate(generateCategoriesDTO: GenerateCategoriesDTO) {
     const categories = (await this.all()).sort();
 
-    const response = await this.classificationService.generate({
+    const response = await this.classificationService.categorize({
       article: generateCategoriesDTO.article,
       categories: categories.map((cat) => cat.label),
     });

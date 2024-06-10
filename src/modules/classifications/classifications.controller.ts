@@ -16,7 +16,7 @@ export class ClassificationsController {
     @Body() generateCategoriesDTO: GenerateCategoriesDTO,
     @Query() model: GetModelDto,
   ) {
-    return await this.classificationService.generate(
+    return await this.classificationService.categorize(
       {
         article: generateCategoriesDTO.article,
         categories: [],
@@ -31,7 +31,7 @@ export class ClassificationsController {
     @Body() generateCategoriesDTO: GenerateCategoriesDTO,
     @Query() model: GetModelDto,
   ) {
-    return await this.classificationService.generate(
+    return await this.classificationService.categorize(
       {
         article: generateCategoriesDTO.article,
         categories: [],

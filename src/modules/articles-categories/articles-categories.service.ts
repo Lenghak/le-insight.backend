@@ -1,15 +1,11 @@
 import { Injectable, UnprocessableEntityException } from "@nestjs/common";
 
-import paginationHelper from "@/common/helpers/pagination.helper";
-
 import { ArticlesCategoriesRepository } from "@/modules/articles-categories/articles-categories.repository";
 import type { ApplyACDTO } from "@/modules/articles-categories/dto/apply-ac.dto";
 import type { CreateACDTO } from "@/modules/articles-categories/dto/create-ac.dto";
 import type { DeleteACDTO } from "@/modules/articles-categories/dto/delete-ac.dto";
 import type { GenerateACDTO } from "@/modules/articles-categories/dto/generate-ac.dto";
-import type { GetACAllDTO } from "@/modules/articles-categories/dto/get-ac-all.dto";
 import { ArticlesService } from "@/modules/articles/articles.service";
-import type { ArticlesListDTO } from "@/modules/articles/dto/articles-list.dto";
 import { CategoriesService } from "@/modules/categories/categories.service";
 
 import * as schema from "@/database/models";
@@ -23,53 +19,6 @@ export class ArticlesCategoriesService {
     private readonly articleService: ArticlesService,
     private readonly categoryService: CategoriesService,
   ) {}
-
-  async all(getACListDTO: GetACAllDTO) {
-    return await this.acRepository.all(getACListDTO);
-  }
-
-  async list({ limit = 50, page, status, ...params }: ArticlesListDTO) {
-    const category = params.category
-      ? await this.categoryService.get({
-          by: "label",
-          values: {
-            label: params.category,
-          },
-        })
-      : undefined;
-
-    const count = (
-      await this.acRepository.count({
-        limit,
-        offset: 0,
-        status,
-        ...params,
-        categoryId: category?.id,
-      })
-    )[0].value;
-
-    const { hasNextPage, hasPreviousPage, offset, totalPages } =
-      paginationHelper({ count, limit, page });
-
-    const articles = await this.acRepository.list({
-      limit,
-      offset,
-      status,
-      ...params,
-      categoryId: category?.id,
-    });
-
-    return {
-      data: articles,
-      meta: {
-        count,
-        page,
-        totalPages,
-        hasNextPage,
-        hasPreviousPage,
-      },
-    };
-  }
 
   async create(
     createACDTO: CreateACDTO,
