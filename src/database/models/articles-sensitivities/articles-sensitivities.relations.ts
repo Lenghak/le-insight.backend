@@ -12,7 +12,7 @@ export const articlesSensitivitiesRelations = relations(
       fields: [articlesSensitivities.article_id],
       references: [articles.id],
     }),
-    sensitvity: one(sensitivities, {
+    sensitivity: one(sensitivities, {
       fields: [articlesSensitivities.sensitivity_id],
       references: [sensitivities.id],
     }),

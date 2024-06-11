@@ -55,7 +55,7 @@ export class ArticlesRepository {
         },
         article_sensitivities: {
           with: {
-            sensitvity: true,
+            sensitivity: true,
           },
         },
       },
@@ -114,7 +114,7 @@ export class ArticlesRepository {
         with: {
           article_author: true,
           article_categories: { with: { category: true } },
-          article_sensitivities: { with: { sensitvity: true } },
+          article_sensitivities: { with: { sensitivity: true } },
         },
         where: (articles, { eq }) => eq(articles[by], sql.placeholder(by)),
       })
