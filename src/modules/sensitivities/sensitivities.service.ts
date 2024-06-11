@@ -182,12 +182,14 @@ export class SensitivitiesService {
       .sort((a, b) => b.rate - a.rate)
       .filter((sensitivitiy) => sensitivitiy.rate >= 0.75)
       .slice(0, 3)) {
-      const ligitSensitivity = await this.get({
-        by: "label",
-        values: {
-          label: sensitivity.label,
-        },
-      });
+      const ligitSensitivity = sensitivity.label
+        ? await this.get({
+            by: "label",
+            values: {
+              label: sensitivity.label,
+            },
+          })
+        : undefined;
 
       if (ligitSensitivity?.id && ligitSensitivity.status === "ACTIVE")
         bridged.push(

@@ -189,12 +189,14 @@ export class CategoriesService {
       .sort((a, b) => b.rate - a.rate)
       .filter((category) => category.rate >= 0.75)
       .slice(0, 3)) {
-      const ligitCategory = await this.get({
-        by: "label",
-        values: {
-          label: category.label,
-        },
-      });
+      const ligitCategory = category.label
+        ? await this.get({
+            by: "label",
+            values: {
+              label: category.label,
+            },
+          })
+        : undefined;
 
       console.log(ligitCategory, category);
 
