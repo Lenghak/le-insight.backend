@@ -54,8 +54,8 @@ export class EnhancementsController {
     try {
       const readable = await this.enhancementsService.enhance(enhancementsDTO, {
         rules: [
-          "- I want to generate a full article from the input title.",
-          "- I want you to it as much as possible with good article writing structure.",
+          "- I want to write a full detail article from the input title by adding all neccessary information.",
+          "- I want you to it long as much as possible with good article writing structure.",
         ],
       });
 
