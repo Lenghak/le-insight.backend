@@ -4,10 +4,9 @@ import { ContentToneEnumSchema } from "@/modules/enhancements/dto/content-option
 
 export const CONTENT_ENHANCEMENT_PROMPT = [
   ...COMMON_RULE_WITH_JSON_PROMPT,
-  "- MAKE SURE TO KEEP THE CONTENT WRITING STYLES AND THE CONTEXT OF THE INPUT.",
-  "- YOU MUST OUTPUT ONLY THE MODIFIED CONTENT IN THE RESPONSE WITH NO EXPLAINATION SENTENCES.",
-  "- YOU MUST NOT ANSWER ANY QUESTIONS IN THE INPUT.",
-  "- Say something if you don't understand the context. I don't want to see empty responses.",
+  "- Ensure that the content writing style and context of the input are maintained.",
+  "- You must provide only the modified content in the response, without any explanatory sentences.",
+  "- Indicate if you do not understand the context. Avoid providing empty responses.",
 ];
 
 export const CONTENT_TONE_CHANGE_PROMPT = {
