@@ -36,8 +36,8 @@ export class ClassificationsService {
     const promptTemplate = PromptTemplate.fromTemplate(
       `${[
         ...COMMON_PROMPT_TEMPLATE,
-        "\n+ Classify the following article: \n{article}",
-        "\n+ Select categories from the following list: \n[{categories}]",
+        "###\nClassify the following article: \n{article} \n###",
+        "###\nSelect categories from the following list: \n[{categories}] \n###",
         ...COMMON_RESPONSE,
       ]}`,
     );
@@ -66,8 +66,8 @@ export class ClassificationsService {
 
     const chains = PromptTemplate.fromTemplate(
       `${[
-        "+ Sensitize the following article: \n{article}",
-        "+ Select sensitivities from the following list: \n{sensitivities}",
+        "###\nSensitize the following article: \n{article} \n###",
+        "###\nSelect sensitivities from the following list: \n{sensitivities} \n###",
         ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
       ].join("\n")}`,
     )

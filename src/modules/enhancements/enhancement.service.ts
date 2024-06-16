@@ -33,7 +33,7 @@ export class EnhancementsService {
   ): Promise<ReadableStream<unknown> & AsyncIterable<unknown>> {
     const template = JSON.stringify([
       ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
-      "Input: \n{input}",
+      "###\nInput: \n{input}\n###",
     ]);
 
     const chains = PromptTemplate.fromTemplate(template)
@@ -60,7 +60,7 @@ export class EnhancementsService {
 
     const template = JSON.stringify([
       ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
-      "Input: \n{input}",
+      "###\nInput: \n{input}\n###",
     ]);
 
     const chains = PromptTemplate.fromTemplate(template)
@@ -138,8 +138,8 @@ export class EnhancementsService {
   ) {
     return await this.enhance(enhancementsDTO, {
       rules: [
-        "- I want you to modify the input content based on the provided tone (Do not Summarize)",
-        "- I want you to extend the INPUT as long as possible.",
+        "- I want you to modify the input content based on the provided tone",
+        "- I want you to extend the content as long as possible.",
         `Tone: \n${contentOptionDto.tone}`,
         // CONTENT_TONE_CHANGE_PROMPT[contentOptionDto.tone],
       ],
