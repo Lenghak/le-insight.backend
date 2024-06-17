@@ -141,7 +141,7 @@ export class EnhancementsService {
   ) {
     return await this.enhance(enhancementsDTO, {
       rules: [
-        "- Your role to modify the input content based on the provided tone",
+        "- I want you to modify the input content based on the provided tone",
         "- I want you to extend the content as long as possible.",
       ],
       template: [
