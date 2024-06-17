@@ -1,9 +1,11 @@
 {
   "workbench.iconTheme": "bearded-icons",
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll": "never",
     "source.organizeImports": "always"
   },
-  "files.autoSave": "onFocusChange"
+  "files.autoSave": "onFocusChange",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

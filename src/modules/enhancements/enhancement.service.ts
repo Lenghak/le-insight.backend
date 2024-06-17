@@ -1,6 +1,10 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 
-import { COMMON_PROMPT_TEMPLATE_WITH_RESPONSE } from "@/common/constants/common-rule-prompt";
+import {
+  COMMON_PROMPT_TEMPLATE,
+  COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
+  COMMON_RESPONSE,
+} from "@/common/constants/common-rule-prompt";
 
 import { CONTENT_ENHANCEMENT_PROMPT } from "@/modules/enhancements/contants/content-enhance-prompt";
 import { CONTENT_GENERATION_REPONSE_FORMAT } from "@/modules/enhancements/contants/content-generation-prompt";
@@ -8,7 +12,6 @@ import { TITLE_GENERATION_PROMPT } from "@/modules/enhancements/contants/title-g
 import type { ContentExtentionsDto } from "@/modules/enhancements/dto/content-extentions.dto";
 import type { ContentOptionDto } from "@/modules/enhancements/dto/content-options.dto";
 import type { EnhancementsDto } from "@/modules/enhancements/dto/enhancements.dto";
-import { LlmService } from "@/modules/llm/llm.service";
 
 import { Ollama } from "@langchain/community/llms/ollama";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
@@ -24,8 +27,6 @@ export class EnhancementsService {
     verbose: true,
     format: "json",
   });
-
-  constructor(private readonly llmService: LlmService) {}
 
   async title(
     enhancementsDTO: EnhancementsDto,
@@ -59,8 +60,10 @@ export class EnhancementsService {
       throw new InternalServerErrorException("Llm is not initialized");
 
     const template = JSON.stringify([
-      ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
+      ...COMMON_PROMPT_TEMPLATE,
+      ...(extensions?.template ?? []),
       "###\nInput: \n{input}\n###",
+      ...COMMON_RESPONSE,
     ]);
 
     const chains = PromptTemplate.fromTemplate(template)
@@ -82,7 +85,7 @@ export class EnhancementsService {
     return await this.enhance(enhancementsDTO, {
       rules: [
         "- I want you to fix the spelling and grammar from the provided input.",
-        "- DO NOT MODIFY THE MEANING OF THE INPUT, JUST CORRECT THE GRAMMAR AND SPELLING.",
+        "- Do not modify the meaning of the input, just correct the grammar and spelling.",
       ],
     });
   }
@@ -91,7 +94,7 @@ export class EnhancementsService {
     return await this.enhance(enhancementsDTO, {
       rules: [
         "- I want you to auto-complete the provided input.",
-        "- I want you to extend the INPUT as long as possible in a complete sentence.",
+        "- I want you to extend the input as long as possible in a complete sentence.",
       ],
     });
   }
@@ -105,15 +108,15 @@ export class EnhancementsService {
   async tldr(enhancementsDTO: EnhancementsDto) {
     return await this.enhance(enhancementsDTO, {
       rules: [
-        "- I want you to summarize the INPUT as TL;DR",
-        "- I want you to output at least a paragraphs and respect the input length.",
+        "- I want you to summarize the input",
+        "- I want you to output at least a paragraph and respect the input length.",
       ],
     });
   }
 
   async simplify(enhancementsDTO: EnhancementsDto) {
     return await this.enhance(enhancementsDTO, {
-      rules: ["- I want you to simiplify (not summarize) the provided content"],
+      rules: ["- I want you to simplify (not summarize) the provided content"],
     });
   }
 
@@ -127,7 +130,7 @@ export class EnhancementsService {
     return await this.enhance(enhancementsDTO, {
       rules: [
         "- I want you to lengthen the provided input",
-        "- I want you to extend the INPUT as long as possible.",
+        "- I want you to extend the input as long as possible.",
       ],
     });
   }
@@ -138,10 +141,11 @@ export class EnhancementsService {
   ) {
     return await this.enhance(enhancementsDTO, {
       rules: [
-        "- I want you to modify the input content based on the provided tone",
+        "- Your role to modify the input content based on the provided tone",
         "- I want you to extend the content as long as possible.",
-        `Tone: \n${contentOptionDto.tone}`,
-        // CONTENT_TONE_CHANGE_PROMPT[contentOptionDto.tone],
+      ],
+      template: [
+        `###\n Rephrase the input content according to the provided tone: ${contentOptionDto.tone ?? "standard"}\n###`,
       ],
     });
   }
