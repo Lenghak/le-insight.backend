@@ -6,7 +6,7 @@ export const CONTENT_ENHANCEMENT_PROMPT = [
   ...COMMON_RULE_WITH_JSON_PROMPT,
   "- Ensure that the content writing style and context of the input are maintained.",
   "- You must provide only the modified content in the response, without any explanatory sentences.",
-  "- Indicate if you do not understand the context. Avoid providing empty responses.",
+  "- Indicate in one sentence if you do not understand the context. Avoid providing empty responses.",
 ];
 
 export const CONTENT_TONE_CHANGE_PROMPT = {

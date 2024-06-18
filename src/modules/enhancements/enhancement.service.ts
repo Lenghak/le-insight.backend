@@ -116,7 +116,7 @@ export class EnhancementsService {
 
   async simplify(enhancementsDTO: EnhancementsDto) {
     return await this.enhance(enhancementsDTO, {
-      rules: ["- I want you to simplify (not summarize) the provided content"],
+      rules: ["- I want you to simplify each word in the provided content"],
     });
   }
 
@@ -142,7 +142,6 @@ export class EnhancementsService {
     return await this.enhance(enhancementsDTO, {
       rules: [
         "- I want you to modify the input content based on the provided tone",
-        "- I want you to extend the content as long as possible.",
       ],
       template: [
         `###\n Rephrase the input content according to the provided tone: ${contentOptionDto.tone ?? "standard"}\n###`,
