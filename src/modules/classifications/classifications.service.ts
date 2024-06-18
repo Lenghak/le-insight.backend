@@ -81,8 +81,6 @@ export class ClassificationsService {
       sensitivities: classifySensitiviteisDto.sensitivities.join(", "),
     });
 
-    console.log(response);
-
     return response;
   }
 }
