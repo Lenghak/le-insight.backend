@@ -27,13 +27,14 @@ export class UsersService {
     { limit = 50, page = 1, q, "sex[]": sex, ...params }: UsersListDTO,
     db?: DatabaseType,
   ) {
-    const count = (
-      await this.usersRepository.count({
-        q,
-        "sex[]": sex,
-        ...params,
-      })
-    )[0].value;
+    const count = 0;
+    //  (
+    //   await this.usersRepository.count({
+    //     q,
+    //     "sex[]": sex,
+    //     ...params,
+    //   })
+    // )[0].value;
     const { hasNextPage, hasPreviousPage, offset, totalPages } =
       paginationHelper({ count, page, limit });
 

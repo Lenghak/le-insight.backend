@@ -9,8 +9,7 @@ import {
   DRIZZLE_ASYNC_PROVIDER,
   withPaginate,
 } from "@/database/drizzle.service";
-import * as profileSchema from "@/database/models/profiles";
-import * as userSchema from "@/database/models/users";
+import * as schema from "@/database/models";
 import { UserRoleEnum, type Users } from "@/database/schemas/users/users.type";
 import { type DatabaseType } from "@/database/types/db.type";
 
@@ -24,7 +23,7 @@ import { type UpdateUserDTO } from "./dto/update-user.dto";
 export class UsersRepository {
   constructor(
     @Inject(DRIZZLE_ASYNC_PROVIDER)
-    private readonly db: PostgresJsDatabase<typeof userSchema>,
+    private readonly db: PostgresJsDatabase<typeof schema>,
   ) {}
 
   /**
@@ -36,10 +35,10 @@ export class UsersRepository {
    */
   async create(
     createUser: CreateUserDTO,
-    db: DatabaseType | DatabaseType<typeof userSchema> = this.db,
+    db: DatabaseType | DatabaseType<typeof schema> = this.db,
   ) {
     return db
-      .insert(userSchema.users)
+      .insert(schema.users)
       .values({
         email: createUser.email,
         encrypted_password: createUser.encrypted_password,
@@ -53,36 +52,30 @@ export class UsersRepository {
 
   async count(
     { "sex[]": sex, from, to, q: query, role }: UsersCountParams,
-    db: DatabaseType<typeof userSchema> = this.db,
+    db: DatabaseType<typeof schema> = this.db,
   ) {
     return await db
-      .select({ value: countDistinct(userSchema.users.id) })
-      .from(userSchema.users)
-      .where(
+      .select({ value: countDistinct(schema.users.id) })
+      .from(schema.users)
+      .innerJoin(
+        schema.profiles,
         and(
-          query ? ilike(userSchema.users.email, `%${query}%`) : undefined,
+          eq(schema.users.profile_id, schema.profiles.id),
           sex
             ? or(
-                ...(typeof sex === "string" ? [sex] : sex).map((value) =>
-                  eq(profileSchema.profiles.sex, value),
+                ...(typeof sex === "string" ? [sex] : sex).map((s) =>
+                  eq(schema.profiles.sex, s),
                 ),
               )
             : undefined,
+          query ? ilike(schema.users.email, `%${query}%`) : undefined,
           from && to
             ? or(
-                between(
-                  userSchema.users.created_at,
-                  new Date(from),
-                  new Date(to),
-                ),
-                between(
-                  userSchema.users.updated_at,
-                  new Date(from),
-                  new Date(to),
-                ),
+                between(schema.users.created_at, new Date(from), new Date(to)),
+                between(schema.users.updated_at, new Date(from), new Date(to)),
               )
             : undefined,
-          role ? eq(userSchema.users.role, role) : undefined,
+          role ? eq(schema.users.role, role) : undefined,
         ),
       );
   }
@@ -105,51 +98,49 @@ export class UsersRepository {
     return await withPaginate({
       qb: db
         .select({
-          id: userSchema.users.id,
-          profile_id: userSchema.users.profile_id,
-          phone: userSchema.users.phone,
-          email: userSchema.users.email,
-          role: userSchema.users.role,
-          banned_at: userSchema.users.banned_at,
-          banned_until: userSchema.users.banned_until,
-          deleted_at: userSchema.users.deleted_at,
-          invited_at: userSchema.users.invited_at,
-          confirmed_at: userSchema.users.confirmed_at,
-          confirmation_sent_at: userSchema.users.confirmation_sent_at,
-          created_at: userSchema.users.created_at,
-          updated_at: userSchema.users.updated_at,
-          profile: profileSchema.profiles,
+          id: schema.users.id,
+          profile_id: schema.users.profile_id,
+          phone: schema.users.phone,
+          email: schema.users.email,
+          role: schema.users.role,
+          banned_at: schema.users.banned_at,
+          banned_until: schema.users.banned_until,
+          deleted_at: schema.users.deleted_at,
+          invited_at: schema.users.invited_at,
+          confirmed_at: schema.users.confirmed_at,
+          confirmation_sent_at: schema.users.confirmation_sent_at,
+          created_at: schema.users.created_at,
+          updated_at: schema.users.updated_at,
+          profile: schema.profiles,
         })
-        .from(userSchema.users)
+        .from(schema.users)
         .innerJoin(
-          profileSchema.profiles,
+          schema.profiles,
           and(
-            eq(userSchema.users.profile_id, profileSchema.profiles.id),
-            sex
-              ? or(...sex.map((value) => eq(profileSchema.profiles.sex, value)))
-              : undefined,
+            eq(schema.users.profile_id, schema.profiles.id),
+            sex ? or(...sex.map((s) => eq(schema.profiles.sex, s))) : undefined,
+            query ? ilike(schema.users.email, `%${query}%`) : undefined,
             from && to
               ? or(
                   between(
-                    userSchema.users.created_at,
+                    schema.users.created_at,
                     new Date(from),
                     new Date(to),
                   ),
                   between(
-                    userSchema.users.updated_at,
+                    schema.users.updated_at,
                     new Date(from),
                     new Date(to),
                   ),
                 )
               : undefined,
-            query ? ilike(userSchema.users.email, `%${query}%`) : undefined,
-            role ? eq(userSchema.users.role, role) : undefined,
+            role ? eq(schema.users.role, role) : undefined,
           ),
         )
         .$dynamic(),
-      limit: limit,
-      offset: offset,
-      columns: [userSchema.users.id, profileSchema.profiles.id],
+      limit,
+      offset,
+      columns: [schema.users.id, schema.profiles.id],
     });
   }
 
@@ -161,7 +152,7 @@ export class UsersRepository {
    * @returns The `get` function is returning a prepared statement for retrieving a user from the
    * database based on a specified key.
    */
-  get({ by, db }: { by: keyof Users; db?: DatabaseType<typeof userSchema> }) {
+  get({ by, db }: { by: keyof Users; db?: DatabaseType<typeof schema> }) {
     return (db ?? this.db).query.users
       .findFirst({
         columns: {
@@ -199,16 +190,16 @@ export class UsersRepository {
    */
   async update(
     updateUserDTO: UpdateUserDTO,
-    db: DatabaseType | DatabaseType<typeof userSchema> = this.db,
+    db: DatabaseType | DatabaseType<typeof schema> = this.db,
   ) {
     return db
-      .update(userSchema.users)
+      .update(schema.users)
       .set({
         ...updateUserDTO,
         banned_at: updateUserDTO.banned_at,
         role: updateUserDTO.role ? UserRoleEnum[updateUserDTO.role] : undefined,
       })
-      .where(eq(userSchema.users.id, updateUserDTO.id))
+      .where(eq(schema.users.id, updateUserDTO.id))
       .returning();
   }
 
@@ -217,9 +208,9 @@ export class UsersRepository {
    * ID.
    * @returns The `delete()` function is returning a statement that deletes a record from the database.
    */
-  async delete(db: DatabaseType<typeof userSchema> = this.db) {
+  async delete(db: DatabaseType<typeof schema> = this.db) {
     return db
-      .delete(userSchema.users)
-      .where(eq(userSchema.users.id, sql.placeholder("id")));
+      .delete(schema.users)
+      .where(eq(schema.users.id, sql.placeholder("id")));
   }
 }

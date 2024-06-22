@@ -372,7 +372,7 @@ export class AuthService {
       to: [
         {
           address: `<${requestRecoveryDTO.email}>`,
-          name: `${user?.profile?.firstName} ${user?.profile?.lastName}`,
+          name: `${user?.profile?.first_name} ${user?.profile?.last_name}`,
         },
       ],
     });
