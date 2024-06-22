@@ -34,7 +34,7 @@ export class EnhancementsService {
   ): Promise<ReadableStream<unknown> & AsyncIterable<unknown>> {
     const template = JSON.stringify([
       ...COMMON_PROMPT_TEMPLATE_WITH_RESPONSE,
-      "###\nInput: \n{input}\n###",
+      "###\nGenerate title from the input: \n{input}\n###",
     ]);
 
     const chains = PromptTemplate.fromTemplate(template)
@@ -62,7 +62,7 @@ export class EnhancementsService {
     const template = JSON.stringify([
       ...COMMON_PROMPT_TEMPLATE,
       ...(extensions?.template ?? []),
-      "###\nInput: \n{input}\n###",
+      "###\nApply the enhancement option to the following content: \n{input}\n###",
       ...COMMON_RESPONSE,
     ]);
 

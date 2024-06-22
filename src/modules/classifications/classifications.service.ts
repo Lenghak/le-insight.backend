@@ -42,7 +42,10 @@ export class ClassificationsService {
       ]}`,
     );
 
-    const llm = this.llmService.getOllamaInstance(model);
+    const llm = this.llmService.getOllamaInstance({
+      model: model?.model ?? "phi3",
+      name: model?.name ?? "categorizer",
+    });
     const categories = classifyCategoriesDto.categories.join(", ");
 
     const response = await promptTemplate
@@ -62,7 +65,10 @@ export class ClassificationsService {
     classifySensitiviteisDto: ClassifySensitiviesDto,
     model?: GetModelDto,
   ): Promise<GenerateSensitivitiesResponseType> {
-    const llm = this.llmService.getOllamaInstance(model);
+    const llm = this.llmService.getOllamaInstance({
+      model: model?.model ?? "phi3",
+      name: model?.name ?? "sensitizer",
+    });
 
     const chains = PromptTemplate.fromTemplate(
       `${[
