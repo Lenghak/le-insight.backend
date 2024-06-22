@@ -4,6 +4,8 @@ import { ContentToneEnumSchema } from "@/modules/enhancements/dto/content-option
 
 export const CONTENT_ENHANCEMENT_PROMPT = [
   ...COMMON_RULE_WITH_JSON_PROMPT,
+  "- Ensure that your answer is unbiased and avoids relying on stereotypes",
+  "- Ensure that your output contain legal and unharmful content",
   "- Ensure that the content writing style and context of the input are maintained.",
   "- You must provide only the modified content in the response, without any explanatory sentences.",
   "- Indicate in one sentence if you do not understand the context. Avoid providing empty responses.",
