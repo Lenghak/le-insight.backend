@@ -10,7 +10,7 @@ export const SENSITIVITIES_RULE = [
 export const SENSITIVITIES_RESPONSE_FORMAT = {
   sensitivities: [
     {
-      label: "sensitivity from the list",
+      label: "sensitivity",
       rate: "rate in decimal",
       sentiment: "positive, negative, neutral, or mixed",
     },

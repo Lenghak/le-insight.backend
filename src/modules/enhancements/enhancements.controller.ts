@@ -55,7 +55,7 @@ export class EnhancementsController {
       const readable = await this.enhancementsService.enhance(enhancementsDTO, {
         rules: [
           "- I want to write a full detail article from the input title by adding all necessary information.",
-          "- I want you to make it as long as possible with a good article writing structure.",
+          "- I want you to make it as long as possible with a good article format.",
         ],
       });
 
@@ -170,7 +170,7 @@ export class EnhancementsController {
 
   @HttpCode(HttpStatus.OK)
   @Post("/simplify")
-  async summarize(
+  async simplify(
     @Res({ passthrough: false }) res: FastifyReply,
     @Body() enhancementsDTO: EnhancementsDto,
   ) {

@@ -115,7 +115,9 @@ export class SensitivitiesService {
       sensitivities: sensitivities.map((cat) => cat.label),
     });
 
-    response.sensitivities.map(async (cate) => {
+    console.log("generate", response);
+
+    response.sensitivities?.map(async (cate) => {
       const currSensitivities = await this.get({
         by: "label",
         values: { label: cate.label },
@@ -178,31 +180,34 @@ export class SensitivitiesService {
   async apply({ article, sensitivities }: ApplyASDTO) {
     const bridged: ArticlesSensitivitiesType[] = [];
 
-    for (const sensitivity of sensitivities
-      .sort((a, b) => b.rate - a.rate)
-      .filter((sensitivitiy) => sensitivitiy.rate >= 0.75)
-      .slice(0, 3)) {
-      const ligitSensitivity = sensitivity.label
-        ? await this.get({
-            by: "label",
-            values: {
-              label: sensitivity.label,
-            },
-          })
-        : undefined;
+    sensitivities
+      ?.sort((a, b) => b.rate - a.rate)
+      ?.filter((sensitivitiy) => sensitivitiy.rate >= 0.75)
+      ?.slice(0, 3)
+      ?.map(async (sensitivity) => {
+        const ligitSensitivity = sensitivity.label
+          ? await this.get({
+              by: "label",
+              values: {
+                label: sensitivity.label,
+              },
+            })
+          : undefined;
 
-      if (ligitSensitivity?.id && ligitSensitivity.status === "ACTIVE")
-        bridged.push(
-          ...(await this.bridge({
-            article_id: article.id,
-            sensitivity_id: ligitSensitivity.id,
-            sentiment:
-              SensitivitySentimentSchema.Values[
-                sensitivity.sentiment.toUpperCase()
-              ],
-          })),
-        );
-    }
+        console.log(sensitivity);
+
+        if (ligitSensitivity?.id && ligitSensitivity.status === "ACTIVE")
+          bridged.push(
+            ...(await this.bridge({
+              article_id: article.id,
+              sensitivity_id: ligitSensitivity.id,
+              sentiment:
+                SensitivitySentimentSchema.Values[
+                  sensitivity.sentiment.toUpperCase()
+                ],
+            })),
+          );
+      });
 
     return bridged;
   }

@@ -7,7 +7,7 @@ export const CONTENT_ENHANCEMENT_PROMPT = [
   "- Ensure that your answer is unbiased and avoids relying on stereotypes",
   "- Ensure that your output contain legal and unharmful content",
   "- Ensure that the content writing style and context of the input are maintained.",
-  "- You must provide only the modified content in the response, without any explanatory sentences.",
+  "- You must output only the modified content in the response, and no explanation!",
   "- Indicate in one sentence if you do not understand the context. Avoid providing empty responses.",
 ];
 

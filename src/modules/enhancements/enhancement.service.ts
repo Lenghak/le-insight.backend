@@ -62,7 +62,7 @@ export class EnhancementsService {
     const template = JSON.stringify([
       ...COMMON_PROMPT_TEMPLATE,
       ...(extensions?.template ?? []),
-      "###\nApply the enhancement option to the following content: \n{input}\n###",
+      "###\nInput: \n{input}\n###",
       ...COMMON_RESPONSE,
     ]);
 
