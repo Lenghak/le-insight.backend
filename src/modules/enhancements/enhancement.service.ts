@@ -22,7 +22,7 @@ export class EnhancementsService {
   _llm: Ollama = new Ollama({
     cache: false,
     penalizeNewline: true,
-    model: "phi3",
+    model: "llama3.2",
     temperature: 1,
     verbose: true,
     format: "json",

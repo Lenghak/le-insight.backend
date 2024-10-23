@@ -13,9 +13,9 @@
     "start:prod": "node dist/core/app",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "cruise": "pnpm depcruise src -p",
-    "db:seed": "tsx ./src/core/app.seeder.ts",
+    "db:seed": "pnpm tsx ./src/core/app.seeder.ts",
     "db:generate": "pnpm drizzle-kit generate",
-    "db:migrate": "tsx ./src/core/app.migration.ts",
+    "db:migrate": "pnpm tsx ./src/core/app.migration.ts",
     "db:push": "pnpm drizzle-kit push",
     "db:studio": "pnpm drizzle-kit studio --verbose --port 5000",
     "db:drop": "pnpm drizzle-kit drop",
@@ -61,12 +61,16 @@
     "drizzle-orm": "^0.30.10",
     "drizzle-zod": "^0.5.1",
     "fastify": "^4.27.0",
+    "google-auth-library": "^9.14.2",
     "handlebars": "^4.7.8",
     "json-api-serializer": "^2.6.6",
     "langchain": "^0.2.5",
     "nestjs-zod": "^3.0.0",
     "nodemailer": "^6.9.14",
     "passport": "^0.7.0",
+    "passport-facebook": "^3.0.0",
+    "passport-github2": "^0.1.12",
+    "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.12.0",
     "postgres": "^3.4.4",
@@ -92,6 +96,9 @@
     "@types/json-api-serializer": "^2.6.6",
     "@types/node": "^20.14.6",
     "@types/nodemailer": "^6.4.15",
+    "@types/passport-facebook": "^3.0.3",
+    "@types/passport-github2": "^1.2.9",
+    "@types/passport-google-oauth20": "^2.0.16",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "@types/supertest": "^6.0.2",
@@ -114,9 +121,13 @@
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.19.1",
     "typescript": "^5.4.5"
   },
   "lint-staged": {
-    "**/*.{js,ts,json}": ["prettier --write --config .prettierrc.cjs"]
-  }
+    "**/*.{js,ts,json}": [
+      "prettier --write --config .prettierrc.cjs"
+    ]
+  },
+  "packageManager": "pnpm@9.11.0+sha512.0a203ffaed5a3f63242cd064c8fb5892366c103e328079318f78062f24ea8c9d50bc6a47aa3567cabefd824d170e78fa2745ed1f16b132e16436146b7688f19b"
 }

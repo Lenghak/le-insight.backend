@@ -1,11 +1,13 @@
 {
-  "workbench.iconTheme": "bearded-icons",
+  "workbench.iconTheme": "material-icon-theme",
   "editor.codeActionsOnSave": {
     "source.fixAll": "never",
     "source.organizeImports": "always"
   },
+  "editor.formatOnSave": true,
   "files.autoSave": "onFocusChange",
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "material-icon-theme.activeIconPack": "nest",
 }

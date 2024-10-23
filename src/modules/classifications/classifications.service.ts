@@ -43,7 +43,7 @@ export class ClassificationsService {
     );
 
     const llm = this.llmService.getOllamaInstance({
-      model: model?.model ?? "phi3",
+      model: model?.model ?? "llama3.2",
       name: model?.name ?? "categorizer",
     });
     const categories = classifyCategoriesDto.categories.join(", ");
@@ -66,7 +66,7 @@ export class ClassificationsService {
     model?: GetModelDto,
   ): Promise<GenerateSensitivitiesResponseType> {
     const llm = this.llmService.getOllamaInstance({
-      model: model?.model ?? "phi3",
+      model: model?.model ?? "llama3.2",
       name: model?.name ?? "sensitizer",
     });
 

@@ -50,7 +50,7 @@ export const InsertUserSchema = createInsertSchema(users)
   })
   .extend({
     firstName: z.string().max(255),
-    lastName: z.string().max(255),
+    lastName: z.string().max(255).nullable(),
   });
 
 export const UpdateUserSchema = SelectUserSchema.extend({

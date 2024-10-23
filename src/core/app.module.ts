@@ -26,7 +26,7 @@ import { UsersModule } from "@/modules/users/users.module";
 
 import { DrizzleModule } from "@/database/drizzle.module";
 
-import envConf from "@/core/env";
+import { env } from "@/core/env";
 
 import { LoggerMiddleware } from "./app.middleware";
 
@@ -35,7 +35,7 @@ import { LoggerMiddleware } from "./app.middleware";
     // Config configuration modules
     ConfigModule.forRoot({
       envFilePath: [".env"],
-      load: [envConf],
+      load: [() => env],
       isGlobal: true,
       cache: true,
     }),

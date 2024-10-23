@@ -24,11 +24,13 @@ import { AppModule } from "./app.module";
  * documentation, and starts the application on port 8000.
  */
 async function bootstrap() {
+  const fastifyAdapter = new FastifyAdapter({
+    trustProxy: ["0.0.0.0"],
+  });
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({
-      trustProxy: ["0.0.0.0"],
-    }),
+    fastifyAdapter,
   );
   const configService = app.get(ConfigService);
 
@@ -73,9 +75,9 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      (await configService.get("HOSTNAME")) ?? "0.0.0.0",
-      (await configService.get("CLIENT_HOSTNAME")) ?? "http://localhost:4000",
-      (await configService.get("ADMIN_HOSTNAME")) ?? "http://localhost:3000",
+      (await configService.get("HOST_URL")) ?? "0.0.0.0",
+      (await configService.get("CLIENT_URL")) ?? "http://localhost:4000",
+      (await configService.get("ADMIN_URL")) ?? "http://localhost:3000",
     ],
     allowedHeaders: "*",
     credentials: true,
@@ -86,7 +88,7 @@ async function bootstrap() {
   // listening to port 8000 or default from prod
   await app.listen(
     (await configService.get("PORT")) ?? 8000,
-    (await configService.get("HOSTNAME")) ?? "0.0.0.0",
+    (await configService.get("HOST_URL")) ?? "http://localhost",
     undefined,
   );
 }

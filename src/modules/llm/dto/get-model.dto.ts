@@ -4,6 +4,7 @@ import { z } from "nestjs-zod/z";
 export const ModelEnumSchema = z.enum([
   "llama2",
   "llama3",
+  "llama3.2",
   "llama3:text",
   "llama3:70b",
   "mistral",

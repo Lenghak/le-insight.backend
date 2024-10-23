@@ -9,7 +9,7 @@ export class LlmService {
   _llmInstances = new Map<string, Ollama>();
 
   getOllamaInstance(
-    getModelDto: GetModelDto = { model: "phi3", name: "phi3" },
+    getModelDto: GetModelDto = { model: "llama3.2", name: "llama3.2" },
     ollama?: Ollama,
   ) {
     if (
