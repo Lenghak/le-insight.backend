@@ -4,12 +4,14 @@ import { ConfigService } from "@nestjs/config";
 
 import { AuthRepository } from "@/modules/auth/auth.repository";
 import { AuthService } from "@/modules/auth/auth.service";
+import { ProvidersService } from "@/modules/providers/providers.service";
 import { UsersService } from "@/modules/users/users.service";
 
 import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
 import * as schema from "@/database/models";
 import type { ProviderEnumSchema } from "@/database/schemas/providers/providers.schema";
 
+import { and, eq } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import type { FastifyRequest } from "fastify";
@@ -26,6 +28,7 @@ export class OAuthService {
     private userService: UsersService,
     private authService: AuthService,
     private authRepository: AuthRepository,
+    private providersService: ProvidersService,
   ) {}
 
   async verifyGoogleToken(token: string) {
@@ -172,6 +175,19 @@ export class OAuthService {
         image_url: picture,
       });
     }
+
+    const existingProvider = await this.db
+      .selectDistinct()
+      .from(schema.providers)
+      .where(
+        and(
+          eq(schema.providers.user_id, user.id),
+          eq(schema.providers.provider, provider),
+        ),
+      );
+
+    if (!existingProvider?.[0].id)
+      await this.providersService.create({ provider, user_id: user.id });
 
     return {
       user,
