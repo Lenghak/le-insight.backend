@@ -8,6 +8,7 @@ import { jsonAPISerializerProvider } from "@/common/serializers/json-api-seriali
 import { MailModule } from "@/modules/mail/mail.module";
 import { MailSerializer } from "@/modules/mail/mail.serializer";
 import { ProfilesModule } from "@/modules/profiles/profiles.module";
+import { ProvidersModule } from "@/modules/providers/provider.module";
 import { RefreshTokensModule } from "@/modules/refresh-tokens/refresh-tokens.module";
 import { RefrehsTokensSerializer } from "@/modules/refresh-tokens/refresh-tokens.serializer";
 import { SessionsModule } from "@/modules/sessions/sessions.module";
@@ -34,6 +35,7 @@ import { RefreshTokensStrategy } from "./strategies/refresh.strategy";
     SessionsModule,
     PassportModule,
     ConfigModule,
+    ProvidersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -58,6 +60,6 @@ import { RefreshTokensStrategy } from "./strategies/refresh.strategy";
     RefrehsTokensSerializer,
     UsersSerializer,
   ],
-  exports: [PassportModule, JwtModule],
+  exports: [PassportModule, JwtModule, AuthService, AuthRepository],
 })
 export class AuthModule {}

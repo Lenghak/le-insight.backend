@@ -1,4 +1,4 @@
-import env from "@/core/env";
+import { env } from "@/core/env";
 import type { Config } from "drizzle-kit";
 
 export default {
@@ -6,7 +6,7 @@ export default {
   out: "./migrations",
   dialect: "postgresql",
   dbCredentials: {
-    url: env().DATABASE_URL,
+    url: env.DATABASE_URL,
   },
   strict: true,
   verbose: true,

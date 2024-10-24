@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
 import { ProfilesService } from "@/modules/profiles/profiles.service";
+import { ProvidersService } from "@/modules/providers/providers.service";
 import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
 import { SessionsService } from "@/modules/sessions/sessions.service";
 import { UsersService } from "@/modules/users/users.service";
@@ -28,6 +29,7 @@ export class AuthRepository {
     private readonly refreshTokensService: RefreshTokensService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly providersService: ProvidersService,
   ) {}
 
   /**
@@ -41,7 +43,9 @@ export class AuthRepository {
    * @returns an object that contains the `user` and `tokens` properties.
    */
   async signUpTransaction(@Req() req: FastifyRequest, signUpDTO: SignUpDTO) {
-    const { digest, salt } = await this.hashData(signUpDTO.password);
+    const hashed = signUpDTO.password
+      ? await this.hashData(signUpDTO.password)
+      : null;
 
     return await this.db.transaction(async (tx) => {
       const profile = (
@@ -49,6 +53,7 @@ export class AuthRepository {
           createProfilesDTO: {
             firstName: signUpDTO.firstName,
             lastName: signUpDTO.lastName,
+            image_url: signUpDTO.image_url ?? undefined,
           },
           db: tx,
         })
@@ -60,13 +65,18 @@ export class AuthRepository {
             email: signUpDTO.email,
             firstName: signUpDTO.firstName,
             lastName: signUpDTO.lastName,
-            encrypted_password: digest,
-            salt: salt,
+            encrypted_password: hashed?.digest,
+            salt: hashed?.salt,
             profile_id: profile.id,
           },
           tx,
         )
       )[0];
+
+      await this.providersService.create({
+        provider: signUpDTO.provider,
+        user_id: user.id,
+      });
 
       const session = (
         await this.sessionsService.create(

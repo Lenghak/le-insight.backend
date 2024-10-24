@@ -20,6 +20,7 @@ import { ClassificationsModule } from "@/modules/classifications/classifications
 import { EnhancementsModule } from "@/modules/enhancements/enchancement.module";
 import { LlmModule } from "@/modules/llm/llm.module";
 import { MailModule } from "@/modules/mail/mail.module";
+import { OAuthModule } from "@/modules/oauth/oauth.module";
 import { ProfilesModule } from "@/modules/profiles/profiles.module";
 import { SensitivitiesModule } from "@/modules/sensitivities/sensitivities.module";
 import { UsersModule } from "@/modules/users/users.module";
@@ -105,6 +106,7 @@ import { LoggerMiddleware } from "./app.middleware";
     DrizzleModule,
     ArticlesModules,
     AuthModule,
+    OAuthModule,
     CategoriesModule,
     ClassificationsModule,
     EnhancementsModule,

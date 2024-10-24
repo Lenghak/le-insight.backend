@@ -22,6 +22,7 @@ export class ProfilesRepository {
       .values({
         first_name: sql.placeholder("firstName"),
         last_name: sql.placeholder("lastName"),
+        image_url: sql.placeholder("image_url"),
       })
       .returning()
       .prepare("insert_profile");

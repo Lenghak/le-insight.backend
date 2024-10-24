@@ -19,6 +19,7 @@ export class ProfilesService {
     return await this.profileRepository.create(db).execute({
       firstName: createProfilesDTO.firstName,
       lastName: createProfilesDTO.lastName,
+      image_url: createProfilesDTO.image_url ?? null,
     });
   }
 

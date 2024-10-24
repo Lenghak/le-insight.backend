@@ -14,7 +14,6 @@ import { UsersService } from "@/modules/users/users.service";
 
 import bycrypt from "bcrypt";
 import { type FastifyRequest } from "fastify";
-import { OAuth2Client } from "google-auth-library";
 
 import { AuthRepository } from "./auth.repository";
 import { type ConfirmEmailDTO } from "./dto/confirm-email.dto";
@@ -28,8 +27,6 @@ import { type PayloadWithRefreshTokenType } from "./types/payload.type";
 
 @Injectable()
 export class AuthService {
-  private googleClient: OAuth2Client;
-
   constructor(
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
@@ -38,12 +35,7 @@ export class AuthService {
     private readonly mailService: MailService,
     private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
-  ) {
-    this.googleClient = new OAuth2Client(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-    );
-  }
+  ) {}
 
   /**
    * The `signIn` function is responsible for authenticating a user by checking their email and
@@ -105,14 +97,19 @@ export class AuthService {
       email: signUpDTO.email,
       firstName: signUpDTO.firstName,
       lastName: signUpDTO.lastName,
-      password: signUpDTO.password,
+      password: signUpDTO.provider === "credential" ? signUpDTO.password : null,
+      provider: signUpDTO.provider,
+      image_url: signUpDTO.image_url,
     });
 
-    await this.requestConfirm({
-      email: signUpDTO.email,
-      firstName: signUpDTO.firstName,
-      lastName: signUpDTO.lastName,
-    });
+    if (signUpDTO.provider === "credential")
+      await this.requestConfirm({
+        email: signUpDTO.email,
+        firstName: signUpDTO.firstName,
+        lastName: signUpDTO.lastName,
+        provider: signUpDTO.provider,
+        image_url: null,
+      });
 
     return {
       user,
