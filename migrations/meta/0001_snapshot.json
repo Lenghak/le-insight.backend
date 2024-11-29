@@ -1,6 +1,6 @@
 {
-  "id": "b86f286c-416a-4b49-9595-321babe28dfd",
-  "prevId": "e26b0364-28d8-4f2b-9f59-0018a31bf67e",
+  "id": "502d7f53-b94c-4254-9368-ab0a389afdf3",
+  "prevId": "20dbdc92-8415-4a18-8e58-8e029aaaccd5",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -83,6 +83,59 @@
         "articles_categories_article_id_category_id_pk": {
           "name": "articles_categories_article_id_category_id_pk",
           "columns": ["article_id", "category_id"]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.articles_sensitivities": {
+      "name": "articles_sensitivities",
+      "schema": "",
+      "columns": {
+        "article_id": {
+          "name": "article_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sensitivity_id": {
+          "name": "sensitivity_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sentiment": {
+          "name": "sentiment",
+          "type": "sensitivity_sentiment",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "articles_sensitivities_article_id_articles_id_fk": {
+          "name": "articles_sensitivities_article_id_articles_id_fk",
+          "tableFrom": "articles_sensitivities",
+          "tableTo": "articles",
+          "columnsFrom": ["article_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "articles_sensitivities_sensitivity_id_sensitivities_id_fk": {
+          "name": "articles_sensitivities_sensitivity_id_sensitivities_id_fk",
+          "tableFrom": "articles_sensitivities",
+          "tableTo": "sensitivities",
+          "columnsFrom": ["sensitivity_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "articles_sensitivities_article_id_sensitivity_id_pk": {
+          "name": "articles_sensitivities_article_id_sensitivity_id_pk",
+          "columns": ["article_id", "sensitivity_id"]
         }
       },
       "uniqueConstraints": {}
@@ -376,6 +429,61 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.providers": {
+      "name": "providers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "provider": {
+          "name": "provider",
+          "type": "providerEnum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'credential'"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "providers_user_id_users_id_fk": {
+          "name": "providers_user_id_users_id_fk",
+          "tableFrom": "providers",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.refresh_tokens": {
       "name": "refresh_tokens",
       "schema": "",
@@ -456,6 +564,65 @@
           "columns": ["session_id"]
         }
       }
+    },
+    "public.sensitivities": {
+      "name": "sensitivities",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "label": {
+          "name": "label",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assigned_count": {
+          "name": "assigned_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "generated_count": {
+          "name": "generated_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "sensitivity_status": {
+          "name": "sensitivity_status",
+          "type": "sensitivity_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'INACTIVE'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
     "public.sessions": {
       "name": "sessions",
@@ -770,6 +937,11 @@
     }
   },
   "enums": {
+    "public.sensitivity_sentiment": {
+      "name": "sensitivity_sentiment",
+      "schema": "public",
+      "values": ["POSITIVE", "NEGATIVE", "NEUTRAL", "MIXED"]
+    },
     "public.article_status": {
       "name": "article_status",
       "schema": "public",
@@ -784,6 +956,27 @@
       "name": "sexEnum",
       "schema": "public",
       "values": ["MALE", "FEMALE", "RNTS"]
+    },
+    "public.providerEnum": {
+      "name": "providerEnum",
+      "schema": "public",
+      "values": ["credential", "google", "github", "facebook"]
+    },
+    "public.sensitivity_age_range": {
+      "name": "sensitivity_age_range",
+      "schema": "public",
+      "values": [
+        "GENERAL_AUDIENCE",
+        "TEENAGERS",
+        "YOUNG_ADULTS",
+        "ADULTS",
+        "MATURE_ADULTS"
+      ]
+    },
+    "public.sensitivity_status": {
+      "name": "sensitivity_status",
+      "schema": "public",
+      "values": ["ACTIVE", "INACTIVE", "PENDING", "REVOKED"]
     },
     "public.user_role": {
       "name": "user_role",

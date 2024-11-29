@@ -9,7 +9,9 @@ import {
 } from "@nestjs/common";
 
 import { Public } from "@/common/decorators/public.decorator";
+import { User } from "@/common/decorators/user.decorator";
 
+import type { PayloadType } from "@/modules/auth/types/payload.type";
 import type { RequestUpdateUserDTO } from "@/modules/users/dto/update-user.dto";
 
 import { UsersListDTO } from "./dto/users-list.dto";
@@ -22,6 +24,16 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly usersSerializer: UsersSerializer,
   ) {}
+
+  @Get("/me")
+  async getMe(@User() payload: PayloadType) {
+    return this.usersSerializer.serialize(
+      await this.usersService.get({
+        by: "email",
+        values: { email: payload.email },
+      }),
+    );
+  }
 
   @Public()
   @Get("/")

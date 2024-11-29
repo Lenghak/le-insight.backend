@@ -1,1 +1,0 @@
-ALTER TABLE "articles_sensitivities" RENAME COLUMN "perspectiveness" TO "sentiment";

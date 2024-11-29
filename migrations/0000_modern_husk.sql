@@ -1,4 +1,10 @@
 DO $$ BEGIN
+ CREATE TYPE "public"."sensitivity_sentiment" AS ENUM('POSITIVE', 'NEGATIVE', 'NEUTRAL', 'MIXED');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."article_status" AS ENUM('DRAFT', 'PUBLIC', 'PRIVATE', 'PREMIUM', 'ARCHIVED');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -12,6 +18,24 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  CREATE TYPE "public"."sexEnum" AS ENUM('MALE', 'FEMALE', 'RNTS');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."providerEnum" AS ENUM('credential', 'google', 'github', 'facebook');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."sensitivity_age_range" AS ENUM('GENERAL_AUDIENCE', 'TEENAGERS', 'YOUNG_ADULTS', 'ADULTS', 'MATURE_ADULTS');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."sensitivity_status" AS ENUM('ACTIVE', 'INACTIVE', 'PENDING', 'REVOKED');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -33,6 +57,13 @@ CREATE TABLE IF NOT EXISTS "articles_categories" (
 	"article_id" uuid NOT NULL,
 	"category_id" uuid NOT NULL,
 	CONSTRAINT "articles_categories_article_id_category_id_pk" PRIMARY KEY("article_id","category_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "articles_sensitivities" (
+	"article_id" uuid NOT NULL,
+	"sensitivity_id" uuid NOT NULL,
+	"sentiment" "sensitivity_sentiment",
+	CONSTRAINT "articles_sensitivities_article_id_sensitivity_id_pk" PRIMARY KEY("article_id","sensitivity_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "articles" (
@@ -58,7 +89,6 @@ CREATE TABLE IF NOT EXISTS "categories" (
 	"assigned_count" integer DEFAULT 0,
 	"generated_count" integer DEFAULT 0,
 	"category_status" "category_status" DEFAULT 'INACTIVE',
-	"is_archived" boolean DEFAULT false,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -82,6 +112,14 @@ CREATE TABLE IF NOT EXISTS "profiles" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "providers" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"provider" "providerEnum" DEFAULT 'credential',
+	"user_id" uuid NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "refresh_tokens" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"token" varchar,
@@ -91,6 +129,16 @@ CREATE TABLE IF NOT EXISTS "refresh_tokens" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "refresh_tokens_session_id_unique" UNIQUE("session_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "sensitivities" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"label" varchar(100),
+	"assigned_count" integer DEFAULT 0,
+	"generated_count" integer DEFAULT 0,
+	"sensitivity_status" "sensitivity_status" DEFAULT 'INACTIVE',
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "sessions" (
@@ -155,7 +203,25 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "articles_sensitivities" ADD CONSTRAINT "articles_sensitivities_article_id_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."articles"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "articles_sensitivities" ADD CONSTRAINT "articles_sensitivities_sensitivity_id_sensitivities_id_fk" FOREIGN KEY ("sensitivity_id") REFERENCES "public"."sensitivities"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "articles" ADD CONSTRAINT "articles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "providers" ADD CONSTRAINT "providers_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Logger,
   Post,
   Req,
   UnauthorizedException,
@@ -26,9 +25,7 @@ export class OAuthController {
       const user = await this.oauthService.createOrUpdateUser(req, userData);
 
       return user;
-      Logger.debug(userData);
     } catch (error) {
-      console.error(error);
       throw new UnauthorizedException("Invalid Google token");
     }
   }

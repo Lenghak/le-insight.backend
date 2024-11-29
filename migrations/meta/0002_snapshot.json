@@ -1,6 +1,6 @@
 {
-  "id": "37061dd9-69c8-4e80-978d-819ff1d07b11",
-  "prevId": "b86f286c-416a-4b49-9595-321babe28dfd",
+  "id": "7bcc8167-4bd9-42bb-b14c-8a830f8658e5",
+  "prevId": "502d7f53-b94c-4254-9368-ab0a389afdf3",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -103,9 +103,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "perspectiveness": {
-          "name": "perspectiveness",
-          "type": "sensitivity_perspectiveness",
+        "sentiment": {
+          "name": "sentiment",
+          "type": "sensitivity_sentiment",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
@@ -408,6 +408,51 @@
           "primaryKey": false,
           "notNull": false,
           "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.providers": {
+      "name": "providers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "provider": {
+          "name": "provider",
+          "type": "providerEnum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'credential'"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -882,10 +927,10 @@
     }
   },
   "enums": {
-    "public.sensitivity_perspectiveness": {
-      "name": "sensitivity_perspectiveness",
+    "public.sensitivity_sentiment": {
+      "name": "sensitivity_sentiment",
       "schema": "public",
-      "values": ["POSITIVE", "NEGATIVE", "NEUTRAL"]
+      "values": ["POSITIVE", "NEGATIVE", "NEUTRAL", "MIXED"]
     },
     "public.article_status": {
       "name": "article_status",
@@ -901,6 +946,11 @@
       "name": "sexEnum",
       "schema": "public",
       "values": ["MALE", "FEMALE", "RNTS"]
+    },
+    "public.providerEnum": {
+      "name": "providerEnum",
+      "schema": "public",
+      "values": ["credential", "google", "github", "facebook"]
     },
     "public.sensitivity_age_range": {
       "name": "sensitivity_age_range",

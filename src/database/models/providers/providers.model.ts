@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const providerEnum = pgEnum("providerEnum", [
   "credential",
@@ -12,7 +12,7 @@ export const providers = pgTable("providers", {
 
   provider: providerEnum("provider").default("credential"),
 
-  user_id: varchar("user_id", { length: 255 }),
+  user_id: uuid("user_id").notNull(),
 
   created_at: timestamp("created_at", { withTimezone: true })
     .notNull()

@@ -20,4 +20,4 @@ export {
   sensitivityStatusEnum,
 } from "./sensitivities";
 
-export { providerEnum, providers, providersRelations } from "./providers";
+export { providerEnum, providers } from "./providers";

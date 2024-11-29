@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
@@ -11,6 +12,12 @@ import { MailService } from "@/modules/mail/mail.service";
 import { RefreshTokensService } from "@/modules/refresh-tokens/refresh-tokens.service";
 import { SessionsService } from "@/modules/sessions/sessions.service";
 import { UsersService } from "@/modules/users/users.service";
+
+import { DRIZZLE_ASYNC_PROVIDER } from "@/database/drizzle.service";
+import * as schema from "@/database/models";
+
+import { and, eq } from "drizzle-orm";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import bycrypt from "bcrypt";
 import { type FastifyRequest } from "fastify";
@@ -28,6 +35,7 @@ import { type PayloadWithRefreshTokenType } from "./types/payload.type";
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(DRIZZLE_ASYNC_PROVIDER) private readonly db: PostgresJsDatabase,
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
     private readonly sessionsService: SessionsService,
@@ -54,6 +62,23 @@ export class AuthService {
     });
 
     if (!user?.id) throw new UnauthorizedException();
+
+    const provider = await this.db
+      .select()
+      .from(schema.providers)
+      .where(
+        and(
+          eq(schema.providers.user_id, user?.id),
+          eq(schema.providers.provider, "credential"),
+        ),
+      );
+
+    const isCredentialSignIn = provider && signInDTO.password;
+
+    if (!isCredentialSignIn)
+      throw new UnauthorizedException(
+        "This account is issued with other provider. Please provide password.",
+      );
 
     const isPasswordMatched = await bycrypt.compare(
       signInDTO.password,
