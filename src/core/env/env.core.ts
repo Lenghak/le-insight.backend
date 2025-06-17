@@ -1,6 +1,8 @@
 import "dotenv/config";
 import { z } from "zod";
 
+console.log(process.env)
+
 export const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
 
@@ -14,12 +16,8 @@ export const envSchema = z.object({
 
   SESSION_SECRET: z.string().min(1),
   SESSION_SALT: z.string().min(1),
-  GOOGLE_CLIENT_ID: z.string(),
-  GOOGLE_CLIENT_SECRET: z.string(),
-  GOOGLE_CALLBACK_URL: z.string().url(),
   ADMIN_URL: z.string().url(),
   CLIENT_URL: z.string().url(),
-  AI_URL: z.string().url(),
   HOST_URL: z.string().min(1),
   PORT: z.string().min(1),
 
@@ -41,3 +39,4 @@ export const envSchema = z.object({
 });
 
 export default (() => envSchema.parse(process.env))();
+

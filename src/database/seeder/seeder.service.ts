@@ -19,32 +19,27 @@ export class SeederService {
     Logger.debug("Starting seed");
     const db = this.db;
 
-    // fs.readFile(
-    //   join(__dirname, "./categories.json"),
-    //   "utf8",
-    //   function (err, data) {
-    //     if (err) throw err;
-    //     const res: string[] = JSON.parse(data);
+    fs.readFile(
+      join(__dirname, "./categories.json"),
+      "utf8",
+      function (err, data) {
+        if (err) throw err;
+        const res: string[] = JSON.parse(data);
 
-    //     new Set(res).forEach((category) => {
-    //       db.select()
-    //         .from(categories)
-    //         .where(eq(categories.label, category))
-    //         .then(async (existingCategory) => {
-    //           Logger.debug({
-    //             subject: category,
-    //             is_already_exist: !!existingCategory[0]?.id,
-    //           });
-
-    //           if (!existingCategory[0]?.id)
-    //             await db.insert(categories).values({
-    //               label: category,
-    //               status: "ACTIVE",
-    //             });
-    //         });
-    //     });
-    //   },
-    // );
+        new Set(res).forEach((category) => {
+          db.select()
+            .from(categories)
+            .where(eq(categories.label, category))
+            .then(async (existingCategory) => {
+              if (!existingCategory[0]?.id)
+                await db.insert(categories).values({
+                  label: category,
+                  status: "ACTIVE",
+                });
+            });
+        });
+      },
+    );
 
     fs.readFile(
       join(__dirname, "./sensitivities.json"),
@@ -59,7 +54,7 @@ export class SeederService {
             .where(eq(sensitivities.label, sens))
             .then(async (existingSensitivity) => {
               if (!existingSensitivity[0]?.id)
-                await db.insert(categories).values({
+                await db.insert(sensitivities).values({
                   label: sens,
                   status: "ACTIVE",
                 });

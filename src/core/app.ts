@@ -48,22 +48,27 @@ async function bootstrap() {
     ),
   );
 
+  // @ts-expect-error -- plugin version is not compatible
   await app.register(fastifyCompress, {
     global: true,
     encodings: ["gzip", "deflate"],
   });
 
+  // @ts-expect-error -- plugin version is not compatible
   await app.register(fastifyCookie, {
     secret: await configService.get("COOKIE_SECRET"),
   });
 
+  // @ts-expect-error -- plugin version is not compatible
   await app.register(fastifySecureSession, {
     secret: await configService.get("SESSION_SECRET"),
     salt: await configService.get("SESSION_SALT"),
   });
 
+  // @ts-expect-error -- plugin version is not compatible
   await app.register(fastifyHelmet, { global: true });
 
+  // @ts-expect-error -- plugin version is not compatible
   await app.register(fastifyCsrfProtection, {
     sessionPlugin: "@fastify/secure-session",
     cookieOpts: {
@@ -87,9 +92,10 @@ async function bootstrap() {
 
   // listening to port 8000 or default from prod
   await app.listen(
-    (await configService.get("PORT")) ?? 8000,
-    (await configService.get("HOST_URL")) ?? "http://localhost",
-    undefined,
+    {
+      port: (await configService.get("PORT")) ?? 8000,
+      host:(await configService.get("HOST_URL")) ?? "localhost",
+    }
   );
 }
 
